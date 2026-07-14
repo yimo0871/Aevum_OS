@@ -7,9 +7,9 @@
 
 ## 当前阶段
 
-**Phase 0：项目初始化** — ✅ 已完成
+**Phase 1：核心数据层（Experience Layer）** - ✅ 已完成
 
-**下一阶段**：Phase 1 - 核心数据层（Experience Layer）
+**下一阶段**：Phase 2 - Agent 执行层（Agent Execution Layer）
 
 ---
 
@@ -18,7 +18,7 @@
 | Phase | 名称 | 状态 | 进度 |
 |-------|------|------|------|
 | Phase 0 | 项目初始化 | ✅ 完成 | 100% |
-| Phase 1 | 核心数据层（Experience Layer） | ⏳ 待开始 | 0% |
+| Phase 1 | 核心数据层（Experience Layer） | ✅ 完成 | 100% |
 | Phase 2 | Agent 执行层 | ⏳ 待开始 | 0% |
 | Phase 3 | 检索层 | ⏳ 待开始 | 0% |
 | Phase 4 | 评估层 | ⏳ 待开始 | 0% |
@@ -26,7 +26,7 @@
 | Phase 6 | 集成测试与部署 | ⏳ 待开始 | 0% |
 | Phase 7 | 冷启动与 Bootstrap | ⏳ 待开始 | 0% |
 
-**总体进度**：~12%（Phase 0 完成）
+**总体进度**：~25%（Phase 0 + Phase 1 完成）
 
 ---
 
@@ -64,4 +64,5 @@
 
 ## 最近更新
 
+- 2026-07-14: Phase 1 完成 - Experience 数据层（ORM模型、Schema、Alembic迁移、pgvector、CRUD API、图谱关系、经验工厂、单元测试）
 - 2026-07-14: Phase 0 完成 - 项目初始化、后端/前端骨架、Docker 环境、项目状态文件

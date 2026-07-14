@@ -55,6 +55,7 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-# API v1 routes will be added here as phases progress
-# from app.api.v1 import api_router
-# app.include_router(api_router, prefix="/api/v1")
+# API v1 routes
+from app.api.v1 import api_router
+
+app.include_router(api_router, prefix="/api/v1")
