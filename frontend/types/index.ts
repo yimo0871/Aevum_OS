@@ -30,6 +30,9 @@ export interface Experience {
     external_sources: unknown[]
   }
   version: number
+  evaluation_status?: string
+  created_at?: string
+  updated_at?: string
 }
 
 export interface ExperienceListResponse {
@@ -59,4 +62,31 @@ export interface TaskExecution {
   experience_id?: string
   trace?: Record<string, unknown>
   evaluation?: Record<string, unknown>
+}
+
+export interface PipelineStep {
+  step: number
+  name: string
+  status: "pending" | "running" | "completed" | "failed"
+  started_at: string
+  completed_at: string
+  duration_ms: number
+  output: unknown
+  error: string | null
+}
+
+export interface DashboardData {
+  system_metrics: SystemMetrics
+  experience_stats: {
+    total: number
+    evaluated: number
+    pending: number
+    avg_confidence: number
+  }
+}
+
+export interface SearchResult {
+  experience: Experience
+  score: number
+  matched_factors: Record<string, number>
 }
