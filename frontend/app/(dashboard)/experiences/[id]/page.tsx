@@ -4,6 +4,16 @@ import { useQuery, useMutation } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
 import { experienceApi, evaluationApi } from "@/lib/api-client"
 import { ArrowLeft, CheckCircle, XCircle, GitBranch, Clock, Tag } from "lucide-react"
+import { ExperienceGraph } from "../../components/ExperienceGraph"
+
+const RELATION_COLORS: Record<string, string> = {
+  reuse: "#10b981", citation: "#3b82f6", fork: "#8b5cf6",
+  improvement: "#f59e0b", dependency: "#ef4444",
+}
+const RELATION_LABELS: Record<string, string> = {
+  reuse: "复用", citation: "引用", fork: "分叉",
+  improvement: "改进", dependency: "依赖",
+}
 
 export default function ExperienceDetailPage() {
   const params = useParams()
@@ -189,31 +199,39 @@ export default function ExperienceDetailPage() {
       </div>
 
       {/* 图谱关系 */}
-      {relations && relations.length > 0 && (
-        <div className="rounded-lg border p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-            <GitBranch className="w-4 h-4" /> 图谱关系 ({relations.length})
-          </h3>
-          <div className="space-y-2">
-            {relations.map((rel) => (
-              <div key={rel.id} className="flex items-center gap-2 text-sm">
-                <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">
-                  {rel.relation_type}
-                </span>
-                <span className="text-gray-400">
-                  {rel.source_id === id ? "指向" : "来自"}
-                </span>
-                <span className="text-blue-600 font-mono text-xs">
-                  {rel.source_id === id ? rel.target_id : rel.source_id}
-                </span>
-                <span className="text-gray-400 text-xs">
-                  (权重: {rel.weight.toFixed(2)})
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="rounded-lg border p-4 mb-6">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <GitBranch className="w-4 h-4" /> 图谱关系
+          {relations && relations.length > 0 && (
+            <span className="text-xs text-gray-400">({relations.length} 条关系)</span>
+          )}
+        </h3>
+        {relations && relations.length > 0 ? (
+          <>
+            <ExperienceGraph
+              experienceId={id}
+              relations={relations}
+              onNodeClick={(nodeId) => router.push(`/experiences/${nodeId}`)}
+            />
+            <div className="mt-3 space-y-1">
+              {relations.map((rel) => (
+                <div key={rel.id} className="flex items-center gap-2 text-xs text-gray-500">
+                  <span className="px-1.5 py-0.5 rounded" style={{
+                    background: `${RELATION_COLORS[rel.relation_type] || "#9ca3af"}20`,
+                    color: RELATION_COLORS[rel.relation_type] || "#6b7280"
+                  }}>
+                    {RELATION_LABELS[rel.relation_type] || rel.relation_type}
+                  </span>
+                  <span>{rel.source_id === id ? "指向" : "来自"}其他经验</span>
+                  <span className="text-gray-400">权重: {rel.weight.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-gray-400 text-center py-4">暂无图谱关系</p>
+        )}
+      </div>
 
       {/* 原始数据 */}
       <details className="mt-6">
