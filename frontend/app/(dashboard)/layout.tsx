@@ -3,6 +3,7 @@ import Link from "next/link"
 const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/experiences", label: "经验管理" },
+  { href: "/search", label: "经验检索" },
   { href: "/execution", label: "任务执行" },
   { href: "/metrics", label: "指标监控" },
 ]
