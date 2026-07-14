@@ -41,8 +41,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API 限流：每 IP 每分钟 60 次
-app.add_middleware(RateLimitMiddleware, max_requests=60, window_seconds=60)
+# API 限流：每 IP 每分钟 3000 次（开发环境，生产环境可调低）
+app.add_middleware(RateLimitMiddleware, max_requests=3000, window_seconds=60)
 
 
 @app.get("/")

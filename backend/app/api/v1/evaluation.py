@@ -1,5 +1,6 @@
 """Evaluation API routes - 评估接口."""
 
+import time
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -14,6 +15,22 @@ from app.services.evaluation.task_evaluator import TaskEvaluator
 from app.services.experience.repository import ExperienceRepository
 
 router = APIRouter()
+
+# 简单内存缓存（5秒TTL）
+_cache: dict[str, tuple[float, any]] = {}
+_CACHE_TTL = 5.0
+
+
+def _get_cache(key: str):
+    if key in _cache:
+        ts, val = _cache[key]
+        if time.time() - ts < _CACHE_TTL:
+            return val
+    return None
+
+
+def _set_cache(key: str, val):
+    _cache[key] = (time.time(), val)
 
 
 @router.post(
@@ -65,12 +82,18 @@ async def get_system_metrics(
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """获取系统级指标."""
+    cached = _get_cache("metrics")
+    if cached is not None:
+        return cached
+
     calculator = SystemMetricsCalculator(session)
     metrics = await calculator.compute_all()
-    return {
+    result = {
         "metrics": metrics,
         "timestamp": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
     }
+    _set_cache("metrics", result)
+    return result
 
 
 @router.get(
@@ -103,6 +126,10 @@ async def get_dashboard_data(
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """获取 Dashboard 聚合数据."""
+    cached = _get_cache("dashboard")
+    if cached is not None:
+        return cached
+
     from sqlalchemy import func
 
     calculator = SystemMetricsCalculator(session)
@@ -129,7 +156,7 @@ async def get_dashboard_data(
     )
     avg_confidence = avg_confidence_result.scalar() or 0.0
 
-    return {
+    result = {
         "system_metrics": metrics,
         "experience_stats": {
             "total": total_experiences,
@@ -138,3 +165,5 @@ async def get_dashboard_data(
             "avg_confidence": round(float(avg_confidence), 4),
         },
     }
+    _set_cache("dashboard", result)
+    return result
