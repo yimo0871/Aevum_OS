@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.core.rate_limit import RateLimitMiddleware
 
 
 @asynccontextmanager
@@ -39,6 +40,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# API 限流：每 IP 每分钟 60 次
+app.add_middleware(RateLimitMiddleware, max_requests=60, window_seconds=60)
 
 
 @app.get("/")
