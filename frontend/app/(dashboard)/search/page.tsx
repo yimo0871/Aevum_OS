@@ -6,7 +6,7 @@ import { retrievalApi, type SearchResult } from "@/lib/api-client"
 import { Search, Database, TrendingUp, ChevronRight } from "lucide-react"
 import Link from "next/link"
 
-const domains = ["", "backend", "frontend", "devops", "data", "ml", "security", "testing", "general"]
+const domains = ["", "后端开发", "前端开发", "运维部署", "数据处理", "测试质量", "安全审计", "机器学习", "综合通用"]
 
 export default function SearchPage() {
   const [query, setQuery] = useState("")

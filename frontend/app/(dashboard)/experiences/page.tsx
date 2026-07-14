@@ -47,11 +47,14 @@ export default function ExperiencesPage() {
           className="px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">全部领域</option>
-          <option value="devops">DevOps</option>
-          <option value="frontend">前端</option>
-          <option value="backend">后端</option>
-          <option value="data">数据</option>
-          <option value="testing">测试</option>
+          <option value="后端开发">后端开发</option>
+          <option value="前端开发">前端开发</option>
+          <option value="运维部署">运维部署</option>
+          <option value="数据处理">数据处理</option>
+          <option value="测试质量">测试质量</option>
+          <option value="安全审计">安全审计</option>
+          <option value="机器学习">机器学习</option>
+          <option value="综合通用">综合通用</option>
         </select>
       </div>
 

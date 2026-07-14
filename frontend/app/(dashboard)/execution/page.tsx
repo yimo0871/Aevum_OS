@@ -16,10 +16,18 @@ const PIPELINE_STEPS = [
   { num: 8, name: "更新复用索引", key: "update_reuse_index" },
 ]
 
+const STATUS_LABELS: Record<string, string> = {
+  completed: "已完成",
+  failed: "失败",
+  invalid: "无效",
+  running: "运行中",
+  pending: "等待中",
+}
+
 export default function ExecutionPage() {
   const [intent, setIntent] = useState("")
-  const [domain, setDomain] = useState("devops")
-  const [taskType, setTaskType] = useState("deployment")
+  const [domain, setDomain] = useState("运维部署")
+  const [taskType, setTaskType] = useState("部署上线")
   const [result, setResult] = useState<any>(null)
 
   const { data: tools } = useQuery({
@@ -67,12 +75,14 @@ export default function ExecutionPage() {
                 onChange={(e) => setDomain(e.target.value)}
                 className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="devops">DevOps</option>
-                <option value="frontend">前端</option>
-                <option value="backend">后端</option>
-                <option value="data">数据</option>
-                <option value="testing">测试</option>
-                <option value="general">通用</option>
+                <option value="后端开发">后端开发</option>
+                <option value="前端开发">前端开发</option>
+                <option value="运维部署">运维部署</option>
+                <option value="数据处理">数据处理</option>
+                <option value="测试质量">测试质量</option>
+                <option value="安全审计">安全审计</option>
+                <option value="机器学习">机器学习</option>
+                <option value="综合通用">综合通用</option>
               </select>
             </div>
             <div>
@@ -113,7 +123,7 @@ export default function ExecutionPage() {
               {result.status === "completed" ? <CheckCircle className="w-4 h-4" /> :
                result.status === "failed" ? <XCircle className="w-4 h-4" /> :
                <Loader2 className="w-4 h-4" />}
-              {result.status}
+              {STATUS_LABELS[result.status] || result.status}
             </span>
           </div>
 

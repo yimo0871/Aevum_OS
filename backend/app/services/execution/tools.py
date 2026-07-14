@@ -71,7 +71,7 @@ class HTTPRequestTool(Tool):
     """HTTP 请求工具 - 发送 HTTP 请求."""
 
     name = "http_request"
-    description = "Send an HTTP request to a specified URL."
+    description = "向指定 URL 发送 HTTP 请求"
 
     async def execute(self, url: str, method: str = "GET", headers: dict | None = None,
                       body: dict | None = None, timeout: int = 30) -> ToolResult:
@@ -107,7 +107,7 @@ class ShellCommandTool(Tool):
     """Shell 命令工具 - 执行 Shell 命令（受限环境）."""
 
     name = "shell_command"
-    description = "Execute a shell command (restricted environment)."
+    description = "在受限环境中执行 Shell 命令"
 
     async def execute(self, command: str, timeout: int = 30, cwd: str | None = None) -> ToolResult:
         import asyncio
@@ -143,7 +143,7 @@ class FileOperationTool(Tool):
     """文件操作工具 - 读写文件."""
 
     name = "file_operation"
-    description = "Read or write files on the local filesystem."
+    description = "读取或写入本地文件系统中的文件"
 
     async def execute(self, operation: str = "read", path: str = "",
                       content: str | None = None) -> ToolResult:

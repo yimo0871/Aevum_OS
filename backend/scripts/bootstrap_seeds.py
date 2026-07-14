@@ -26,67 +26,69 @@ from pathlib import Path
 
 # ── 数据模板 ──
 
-DOMAINS = ["devops", "frontend", "backend", "data", "testing", "security", "ml", "general"]
+DOMAINS = ["后端开发", "前端开发", "运维部署", "数据处理", "测试质量", "安全审计", "机器学习", "综合通用"]
 
 TASK_TYPES = {
-    "devops": ["deployment", "ci_cd", "infrastructure", "monitoring", "containerization"],
-    "frontend": ["ui_component", "page_layout", "state_management", "performance", "accessibility"],
-    "backend": ["api_design", "database_migration", "authentication", "caching", "error_handling"],
-    "data": ["etl_pipeline", "data_cleaning", "analysis", "visualization", "model_training"],
-    "testing": ["unit_test", "integration_test", "e2e_test", "load_test", "security_test"],
-    "security": ["vulnerability_scan", "auth_audit", "encryption", "penetration_test", "compliance"],
-    "ml": ["model_training", "feature_engineering", "evaluation", "deployment", "optimization"],
-    "general": ["documentation", "refactoring", "code_review", "planning", "research"],
+    "后端开发": ["API设计", "数据库迁移", "身份认证", "缓存优化", "错误处理"],
+    "前端开发": ["UI组件", "页面布局", "状态管理", "性能优化", "无障碍适配"],
+    "运维部署": ["部署上线", "CI/CD流水线", "基础设施", "监控告警", "容器化"],
+    "数据处理": ["ETL管道", "数据清洗", "数据分析", "数据可视化", "模型训练"],
+    "测试质量": ["单元测试", "集成测试", "端到端测试", "压力测试", "安全测试"],
+    "安全审计": ["漏洞扫描", "权限审计", "加密实现", "渗透测试", "合规检查"],
+    "机器学习": ["模型训练", "特征工程", "模型评估", "模型部署", "超参优化"],
+    "综合通用": ["文档编写", "代码重构", "代码审查", "方案规划", "技术调研"],
 }
 
 INTENTS = {
-    "deployment": [
-        "Deploy {app} to {env} environment using {tool}",
-        "Set up {tool} pipeline for {app} deployment to {env}",
-        "Configure {tool} for zero-downtime deployment of {app}",
+    "部署上线": [
+        "使用{tool}将{app}部署到{env}环境",
+        "为{app}搭建{tool}自动化部署流水线到{env}",
+        "配置{tool}实现{app}零停机部署",
     ],
-    "ci_cd": [
-        "Create CI/CD pipeline for {app} with {tool}",
-        "Automate testing and deployment for {app} using {tool}",
-        "Set up {tool} workflow for {app} continuous integration",
+    "CI/CD流水线": [
+        "使用{tool}为{app}创建CI/CD流水线",
+        "使用{tool}自动化{app}的测试和部署流程",
+        "为{app}搭建{tool}持续集成工作流",
     ],
-    "unit_test": [
-        "Write unit tests for {app} module using {tool}",
-        "Achieve {coverage}% test coverage for {app} with {tool}",
-        "Set up {tool} testing framework for {app}",
+    "单元测试": [
+        "使用{tool}为{app}编写单元测试",
+        "使用{tool}为{app}实现{coverage}%测试覆盖率",
+        "为{app}搭建{tool}测试框架",
     ],
-    "api_design": [
-        "Design RESTful API for {app} with {tool}",
-        "Implement {tool} endpoints for {app} CRUD operations",
-        "Create GraphQL schema for {app} using {tool}",
+    "API设计": [
+        "使用{tool}为{app}设计RESTful API",
+        "使用{tool}实现{app}的CRUD接口",
+        "使用{tool}为{app}创建GraphQL Schema",
     ],
-    "model_training": [
-        "Train {model} model on {dataset} using {tool}",
-        "Fine-tune {model} for {task} with {tool}",
-        "Evaluate {model} performance on {dataset} with {tool}",
+    "模型训练": [
+        "使用{tool}在{dataset}上训练{model}模型",
+        "使用{tool}为{task}微调{model}",
+        "使用{tool}在{dataset}上评估{model}性能",
     ],
 }
 
-TOOLS = ["docker", "kubernetes", "git", "pytest", "jest", "nginx", "redis", "postgresql",
-         "mongodb", "elasticsearch", "grafana", "prometheus", "terraform", "ansible",
-         "jenkins", "github_actions", "react", "vue", "fastapi", "django", "flask",
-         "langchain", "openai", "pandas", "numpy", "scikit-learn", "pytorch", "tensorflow"]
+TOOLS = ["Docker容器", "Kubernetes编排", "Git版本控制", "Pytest测试", "Jest测试",
+         "Nginx反代", "Redis缓存", "PostgreSQL数据库", "MongoDB文档库", "Elasticsearch搜索引擎",
+         "Grafana监控", "Prometheus采集", "Terraform基础设施", "Ansible自动化",
+         "Jenkins流水线", "GitHub Actions", "React框架", "Vue框架", "FastAPI框架",
+         "Django框架", "Flask框架", "LangChain链式调用", "OpenAI API", "Pandas数据处理",
+         "NumPy数值计算", "Scikit-learn机器学习", "PyTorch深度学习", "TensorFlow深度学习"]
 
-APPS = ["user-service", "auth-service", "payment-api", "dashboard", "mobile-app",
-        "data-pipeline", "ml-model", "notification-service", "search-engine", "analytics"]
+APPS = ["用户服务", "认证服务", "支付接口", "数据看板", "移动应用",
+        "数据管道", "AI模型", "通知服务", "搜索引擎", "分析平台"]
 
-ENVS = ["production", "staging", "development", "testing"]
+ENVS = ["生产环境", "预发布环境", "开发环境", "测试环境"]
 MODELS = ["BERT", "GPT", "ResNet", "YOLO", "LLaMA", "Transformer"]
-DATASETS = ["MNIST", "CIFAR-10", "ImageNet", "COCO", "Wikipedia", "Common Crawl"]
-TASKS = ["classification", "detection", "generation", "summarization", "translation"]
+DATASETS = ["MNIST", "CIFAR-10", "ImageNet", "COCO", "维基百科", "Common Crawl"]
+TASKS = ["分类任务", "检测任务", "生成任务", "摘要任务", "翻译任务"]
 COVERAGE = ["80", "85", "90", "95", "100"]
 
 
 def generate_intent(domain: str, task_type: str) -> str:
     """Generate a realistic intent string."""
     templates = INTENTS.get(task_type, [
-        f"Execute {task_type} task for {domain} application",
-        f"Perform {task_type} in {domain} context",
+        f"在{domain}领域执行{task_type}任务",
+        f"在{domain}上下文中进行{task_type}",
     ])
     template = random.choice(templates)
     return template.format(
@@ -119,23 +121,23 @@ def generate_experience(index: int) -> dict:
     what_failed = []
     if success:
         what_worked = random.sample([
-            "Standard pattern applied", "Tool configuration correct", "Environment setup verified",
-            "Pre-checks passed", "Rollback plan ready", "Monitoring enabled",
+            "标准模式应用成功", "工具配置正确", "环境验证通过",
+            "预检查通过", "回滚方案就绪", "监控已启用",
         ], random.randint(1, 3))
     else:
         what_failed = random.sample([
-            "Port conflict", "Permission denied", "Timeout exceeded", "Dependency missing",
-            "Configuration error", "Network unreachable", "Resource limit exceeded",
+            "端口冲突", "权限不足", "超时", "依赖缺失",
+            "配置错误", "网络不可达", "资源超限",
         ], random.randint(1, 2))
         what_worked = random.sample([
-            "Initial setup completed", "Partial execution before failure",
+            "初始设置已完成", "失败前部分执行",
         ], random.randint(0, 1))
 
     confidence = random.uniform(0.3, 0.95) if success else random.uniform(0.1, 0.5)
 
     patterns_count = random.randint(0, 3)
     reusable_patterns = [
-        {"pattern": f"pattern_{i}", "applicable": True, "domain": domain}
+        {"pattern": f"模式_{i}", "applicable": True, "domain": domain}
         for i in range(patterns_count)
     ]
 
@@ -148,7 +150,7 @@ def generate_experience(index: int) -> dict:
             "constraints": {
                 "env": random.choice(ENVS),
                 "timeout": random.choice([30, 60, 120, 300]),
-                "resource_limit": random.choice(["low", "medium", "high"]),
+                "resource_limit": random.choice(["低", "中", "高"]),
             },
         },
         "intent": generate_intent(domain, task_type),
@@ -172,7 +174,7 @@ def generate_experience(index: int) -> dict:
         "reflection": {
             "what_worked": what_worked,
             "what_failed": what_failed,
-            "why": "Standard execution pattern" if success else "Unexpected configuration issue",
+            "why": "标准执行流程" if success else "配置异常导致失败",
         },
         "reusable_patterns": reusable_patterns,
         "confidence_score": round(confidence, 4),

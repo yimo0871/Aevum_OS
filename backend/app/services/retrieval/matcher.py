@@ -48,7 +48,7 @@ class ExperienceMatcher:
         self,
         query: str,
         limit: int = 10,
-        min_similarity: float = 0.0,
+        min_similarity: float = -1.0,
         domain: str | None = None,
         task_type: str | None = None,
     ) -> list[MatchResult]:

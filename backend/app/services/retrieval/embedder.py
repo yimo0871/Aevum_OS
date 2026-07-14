@@ -74,8 +74,17 @@ class HashEmbedder:
         """使用哈希生成确定性向量."""
         vector = [0.0] * self._dim
 
-        # 使用分词和哈希填充向量
+        # 分词：英文用空格分词，中文用字符级 bigram
         words = text.lower().split()
+        # 中文 bigram：提取连续中文字符，生成 2-gram
+        import re
+        chinese_segments = re.findall(r'[\u4e00-\u9fff]+', text)
+        for seg in chinese_segments:
+            for i in range(len(seg) - 1):
+                words.append(seg[i:i + 2])
+            if len(seg) == 1:
+                words.append(seg)
+
         for word in words:
             h = int(hashlib.md5(word.encode()).hexdigest(), 16)
             for i in range(min(8, self._dim)):
@@ -100,7 +109,9 @@ class HashEmbedder:
 
 def get_embedder() -> EmbedderProtocol:
     """获取向量化器实例（根据配置自动选择）."""
-    if settings.openai_api_key:
+    api_key = settings.openai_api_key
+    # 排除空值和占位符
+    if api_key and not api_key.startswith("sk-your") and not api_key.startswith("your-"):
         return OpenAIEmbedder(
             model=settings.embedding_model,
             dim=settings.embedding_dimension,
