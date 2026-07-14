@@ -7,9 +7,9 @@
 
 ## 当前阶段
 
-**Phase 3：检索层（Retrieval & Inference Layer）** - ✅ 已完成
+**Phase 4：评估层（Evaluation Layer）** - ✅ 已完成
 
-**下一阶段**：Phase 4 - 评估层（Evaluation Layer）
+**下一阶段**：Phase 5 - 前端 Dashboard
 
 ---
 
@@ -20,13 +20,13 @@
 | Phase 0 | 项目初始化 | ✅ 完成 | 100% |
 | Phase 1 | 核心数据层（Experience Layer） | ✅ 完成 | 100% |
 | Phase 2 | Agent 执行层 | ⏳ 待开始 | 0% |
-| Phase 3 | 检索层 | ⏳ 待开始 | 0% |
-| Phase 4 | 评估层 | ⏳ 待开始 | 0% |
+| Phase 3 | 检索层 | ✅ 完成 | 100% |
+| Phase 4 | 评估层 | ✅ 完成 | 100% |
 | Phase 5 | 前端 Dashboard | ⏳ 待开始 | 0% |
 | Phase 6 | 集成测试与部署 | ⏳ 待开始 | 0% |
 | Phase 7 | 冷启动与 Bootstrap | ⏳ 待开始 | 0% |
 
-**总体进度**：~50%（Phase 0 + 1 + 2 + 3 完成）
+**总体进度**：~62%（Phase 0-4 完成，后端核心闭环已闭合）
 
 ---
 
@@ -64,6 +64,7 @@
 
 ## 最近更新
 
+- 2026-07-14: Phase 4 完成 - 评估层（任务评估4维度、经验评估4维度+置信度更新、7个系统指标、评估API、Dashboard聚合、测试）
 - 2026-07-14: Phase 3 完成 - 检索层（向量化、相似度匹配、6因子排序、四级优先级链、检索API、测试）
 - 2026-07-14: Phase 2 完成 - Agent 执行层（工具调用、追踪记录、收敛控制、执行引擎、8步流水线、Celery异步、API路由、测试）
 - 2026-07-14: Phase 1 完成 - Experience 数据层（ORM模型、Schema、Alembic迁移、pgvector、CRUD API、图谱关系、经验工厂、单元测试）
