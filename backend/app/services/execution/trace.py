@@ -4,6 +4,8 @@
 记录每步操作、工具调用、中间结果，生成结构化 trace 对象。
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from typing import Any
 

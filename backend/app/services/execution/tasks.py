@@ -1,5 +1,7 @@
 """Celery async tasks for experience pipeline."""
 
+from __future__ import annotations
+
 from app.celery_app import celery_app
 
 

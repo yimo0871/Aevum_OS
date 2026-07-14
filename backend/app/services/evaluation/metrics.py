@@ -13,6 +13,8 @@
 | human_intervention_rate | 人类干预率（越低越好） |
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timezone, timedelta
 from uuid import UUID
 

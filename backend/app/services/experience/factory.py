@@ -1,5 +1,7 @@
 """Experience factory - 从执行记录生成 Experience 对象."""
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
 
 from app.models.experience import Experience
@@ -128,4 +130,5 @@ class ExperienceFactory:
             confidence_score=create_schema.confidence_score,
             provenance=create_schema.provenance.model_dump(),
             version=create_schema.version,
+            evaluation_status="pending",
         )

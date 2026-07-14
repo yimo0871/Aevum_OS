@@ -1,5 +1,7 @@
 """Retrieval API routes - 经验检索接口."""
 
+from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 

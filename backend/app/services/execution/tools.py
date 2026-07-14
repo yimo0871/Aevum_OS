@@ -4,6 +4,8 @@ Agent 执行层通过 Tool 接口调用外部工具/API/MCP。
 每个工具必须注册后才能被执行引擎调用。
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any

@@ -14,6 +14,8 @@
 失败条件：如果未生成 Experience 对象 -> 该任务视为无效。
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID

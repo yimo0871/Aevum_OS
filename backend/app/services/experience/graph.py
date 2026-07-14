@@ -1,5 +1,7 @@
 """Experience graph - 图谱关系管理."""
 
+from __future__ import annotations
+
 from uuid import UUID
 
 from sqlalchemy import select

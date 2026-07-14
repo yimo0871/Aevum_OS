@@ -7,6 +7,8 @@ Agent 执行层的核心，负责：
 - 生成执行追踪记录
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4

@@ -3,6 +3,8 @@
 使用向量余弦相似度计算经验与查询上下文的匹配度。
 """
 
+from __future__ import annotations
+
 import math
 from dataclasses import dataclass
 

@@ -13,6 +13,8 @@
 各因子权重可配置，默认等权重。
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 

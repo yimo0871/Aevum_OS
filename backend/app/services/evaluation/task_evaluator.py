@@ -7,6 +7,8 @@
 - 资源消耗 (resource_usage): 资源使用情况
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
@@ -74,8 +76,8 @@ class TaskEvaluator:
 
         # ── 完成度评估 ──
         completed_steps = sum(1 for s in steps if s.get("status") == "completed")
-        total_steps = max(len(steps), 1)
-        completeness = completed_steps / total_steps if steps else (1.0 if success else 0.0)
+        total_steps = len(steps)
+        completeness = completed_steps / total_steps if total_steps > 0 else (1.0 if success else 0.0)
 
         # ── 正确性评估 ──
         correctness = 1.0 if success and not error else 0.0

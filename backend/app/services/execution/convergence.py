@@ -10,6 +10,8 @@
 | 终止保证 | 所有循环均可终止 |
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -141,23 +143,24 @@ class ConvergenceController:
             self.state.best_performance = performance
             self.state.best_iteration = iteration
 
-        # ── 检查最大迭代限制 ──
-        if iteration + 1 >= self.state.max_iterations:
-            self._freeze("max_iterations_reached")
-            return ConvergenceStatus.MAX_ITERATIONS
-
-        # ── 检查改进阈值 ──
+        # ── 检查改进阈值（停滞检查）──
         if iteration > 0 and improvement < self.state.improvement_threshold:
             self.state.stagnation_count += 1
             if self.state.stagnation_count >= self.state.stagnation_limit:
                 self._freeze("stagnation_detected")
                 return ConvergenceStatus.STAGNATED
+            return ConvergenceStatus.CONTINUE
         else:
             self.state.stagnation_count = 0
 
-        # ── 检查收敛（改进非常小）──
-        if iteration > 0 and improvement < self.state.improvement_threshold * 0.1:
+        # ── 检查收敛（改进非常小但非零）──
+        if iteration > 0 and 0 < improvement < self.state.improvement_threshold * 0.1:
             return ConvergenceStatus.CONVERGED
+
+        # ── 检查最大迭代限制 ──
+        if iteration + 1 >= self.state.max_iterations:
+            self._freeze("max_iterations_reached")
+            return ConvergenceStatus.MAX_ITERATIONS
 
         return ConvergenceStatus.CONTINUE
 

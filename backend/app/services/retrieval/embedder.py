@@ -4,6 +4,8 @@
 优先使用 OpenAI embedding API，无 API Key 时降级为哈希模拟。
 """
 
+from __future__ import annotations
+
 import hashlib
 import math
 from typing import Protocol

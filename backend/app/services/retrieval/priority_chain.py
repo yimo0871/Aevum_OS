@@ -10,6 +10,8 @@
 逐级检索，上级有结果则不查下级。
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import IntEnum
 

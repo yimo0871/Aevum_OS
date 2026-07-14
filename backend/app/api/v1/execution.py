@@ -1,5 +1,7 @@
 """Execution API routes - 任务执行接口."""
 
+from __future__ import annotations
+
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
