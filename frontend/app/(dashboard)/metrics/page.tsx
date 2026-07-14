@@ -5,13 +5,13 @@ import { evaluationApi } from "@/lib/api-client"
 import { TrendingUp, TrendingDown, Activity } from "lucide-react"
 
 const METRIC_CONFIG = [
-  { key: "experience_reuse_rate", label: "经验复用率", color: "text-blue-600", bg: "bg-blue-50", format: "percent", inverse: false },
-  { key: "workflow_success_rate", label: "工作流成功率", color: "text-green-600", bg: "bg-green-50", format: "percent", inverse: false },
-  { key: "cross_agent_transfer_rate", label: "跨Agent迁移率", color: "text-purple-600", bg: "bg-purple-50", format: "percent", inverse: false },
-  { key: "external_dependency_ratio", label: "外部依赖比例", color: "text-orange-600", bg: "bg-orange-50", format: "percent", inverse: true },
+  { key: "experience_reuse_rate", label: "经验复用率", color: "text-blue-600", bg: "bg-blue-50", format: "percent", inverse: false, suffix: undefined },
+  { key: "workflow_success_rate", label: "工作流成功率", color: "text-green-600", bg: "bg-green-50", format: "percent", inverse: false, suffix: undefined },
+  { key: "cross_agent_transfer_rate", label: "跨Agent迁移率", color: "text-purple-600", bg: "bg-purple-50", format: "percent", inverse: false, suffix: undefined },
+  { key: "external_dependency_ratio", label: "外部依赖比例", color: "text-orange-600", bg: "bg-orange-50", format: "percent", inverse: true, suffix: undefined },
   { key: "learning_velocity", label: "学习速度", color: "text-yellow-600", bg: "bg-yellow-50", format: "number", suffix: "/天", inverse: false },
-  { key: "convergence_speed", label: "收敛速度", color: "text-cyan-600", bg: "bg-cyan-50", format: "percent", inverse: false },
-  { key: "human_intervention_rate", label: "人类干预率", color: "text-red-600", bg: "bg-red-50", format: "percent", inverse: true },
+  { key: "convergence_speed", label: "收敛速度", color: "text-cyan-600", bg: "bg-cyan-50", format: "percent", inverse: false, suffix: undefined },
+  { key: "human_intervention_rate", label: "人类干预率", color: "text-red-600", bg: "bg-red-50", format: "percent", inverse: true, suffix: undefined },
 ] as const
 
 function formatValue(value: number, format: string, suffix?: string) {

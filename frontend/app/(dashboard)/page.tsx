@@ -5,13 +5,13 @@ import { evaluationApi } from "@/lib/api-client"
 import { Activity, Database, TrendingUp, Zap, Target, Globe, Shield, Clock } from "lucide-react"
 
 const metricConfig = [
-  { key: "experience_reuse_rate", label: "经验复用率", icon: TrendingUp, color: "text-blue-600", format: "percent" },
-  { key: "workflow_success_rate", label: "工作流成功率", icon: Target, color: "text-green-600", format: "percent" },
-  { key: "cross_agent_transfer_rate", label: "跨Agent迁移率", icon: Globe, color: "text-purple-600", format: "percent" },
-  { key: "external_dependency_ratio", label: "外部依赖比例", icon: Shield, color: "text-orange-600", format: "percent", inverse: true },
-  { key: "learning_velocity", label: "学习速度", icon: Zap, color: "text-yellow-600", format: "number", suffix: "/天" },
-  { key: "convergence_speed", label: "收敛速度", icon: Activity, color: "text-cyan-600", format: "percent" },
-  { key: "human_intervention_rate", label: "人类干预率", icon: Clock, color: "text-red-600", format: "percent", inverse: true },
+  { key: "experience_reuse_rate", label: "经验复用率", icon: TrendingUp, color: "text-blue-600", format: "percent", inverse: false, suffix: undefined },
+  { key: "workflow_success_rate", label: "工作流成功率", icon: Target, color: "text-green-600", format: "percent", inverse: false, suffix: undefined },
+  { key: "cross_agent_transfer_rate", label: "跨Agent迁移率", icon: Globe, color: "text-purple-600", format: "percent", inverse: false, suffix: undefined },
+  { key: "external_dependency_ratio", label: "外部依赖比例", icon: Shield, color: "text-orange-600", format: "percent", inverse: true, suffix: undefined },
+  { key: "learning_velocity", label: "学习速度", icon: Zap, color: "text-yellow-600", format: "number", inverse: false, suffix: "/天" },
+  { key: "convergence_speed", label: "收敛速度", icon: Activity, color: "text-cyan-600", format: "percent", inverse: false, suffix: undefined },
+  { key: "human_intervention_rate", label: "人类干预率", icon: Clock, color: "text-red-600", format: "percent", inverse: true, suffix: undefined },
 ] as const
 
 function formatValue(value: number, format: string, suffix?: string) {
