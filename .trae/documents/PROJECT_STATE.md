@@ -7,9 +7,9 @@
 
 ## 当前阶段
 
-**Phase 6：集成测试与部署** - ✅ 已完成
+**Phase 7：冷启动与 Bootstrap** - ✅ 已完成
 
-**下一阶段**：Phase 7 - 冷启动与 Bootstrap
+**项目状态**：全部 Phase 完成，系统可上线
 
 ---
 
@@ -24,15 +24,23 @@
 | Phase 4 | 评估层 | ✅ 完成 | 100% |
 | Phase 5 | 前端 Dashboard | ✅ 完成 | 100% |
 | Phase 6 | 集成测试与部署 | ✅ 完成 | 100% |
-| Phase 7 | 冷启动与 Bootstrap | ⏳ 待开始 | 0% |
+| Phase 7 | 冷启动与 Bootstrap | ✅ 完成 | 100% |
 
-**总体进度**：~87%（Phase 0-6 完成，仅剩冷启动）
+**总体进度**：100%（全部 Phase 完成，系统可上线）
 
 ---
 
 ## 当前阻塞项
 
-无。
+无。系统已可上线。
+
+## 上线步骤
+
+1. `docker-compose up -d` 启动服务
+2. `docker-compose exec backend alembic upgrade head` 执行数据库迁移
+3. `python scripts/bootstrap_seeds.py --db --count 10000` 生成种子数据
+4. `python scripts/verify_bootstrap.py --api http://localhost:8000` 验证冷启动
+5. 访问 http://localhost:3000 使用系统
 
 ---
 
@@ -64,6 +72,7 @@
 
 ## 最近更新
 
+- 2026-07-14: Phase 7 完成 - 冷启动与 Bootstrap（种子数据生成脚本10,000条、冷启动验证脚本、全部Phase完成）
 - 2026-07-14: Phase 6 完成 - 集成测试与部署（端到端8步流水线测试、API健康检查、路由验证、输入验证、部署指南、开发指南）
 - 2026-07-14: Phase 5 完成 - 前端 Dashboard（API客户端、React Query、Dashboard总览、经验管理+详情、任务执行+8步流水线、指标监控、全部对接后端API）
 - 2026-07-14: Phase 4 完成 - 评估层（任务评估4维度、经验评估4维度+置信度更新、7个系统指标、评估API、Dashboard聚合、测试）
