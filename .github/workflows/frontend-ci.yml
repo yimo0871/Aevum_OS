@@ -2,12 +2,12 @@ name: Frontend CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, master, develop]
     paths:
       - "frontend/**"
       - ".github/workflows/frontend-ci.yml"
   pull_request:
-    branches: [main]
+    branches: [main, master]
     paths:
       - "frontend/**"
 
@@ -40,3 +40,7 @@ jobs:
       - name: Build
         working-directory: frontend
         run: npm run build
+
+      - name: Test
+        working-directory: frontend
+        run: npm test -- --coverage --watchAll=false
