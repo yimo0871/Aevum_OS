@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { executionApi } from "@/lib/api-client"
-import { Play, Loader2, CheckCircle, XCircle, Clock, ArrowRight, Wrench } from "lucide-react"
+import { Play, Loader2, CheckCircle, XCircle, Clock, ArrowRight, Wrench, Radio } from "lucide-react"
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 const PIPELINE_STEPS = [
   { num: 1, name: "检索相似经验", key: "retrieve_similar_experiences" },
@@ -24,16 +26,104 @@ const STATUS_LABELS: Record<string, string> = {
   pending: "等待中",
 }
 
+interface SSEStepState {
+  step: number
+  total: number
+  name: string
+  status: "pending" | "running" | "completed"
+  timestamp?: string
+}
+
 export default function ExecutionPage() {
   const [intent, setIntent] = useState("")
   const [domain, setDomain] = useState("运维部署")
   const [taskType, setTaskType] = useState("部署上线")
   const [result, setResult] = useState<any>(null)
 
+  // SSE 实时进度状态
+  const [sseSteps, setSseSteps] = useState<Record<number, SSEStepState>>({})
+  const [sseFinished, setSseFinished] = useState(false)
+  const [sseActive, setSseActive] = useState(false)
+  const eventSourceRef = useRef<EventSource | null>(null)
+
   const { data: tools } = useQuery({
     queryKey: ["tools"],
     queryFn: () => executionApi.listTools(),
   })
+
+  // 启动 SSE 实时进度追踪
+  const startStreaming = (taskId: string) => {
+    // 关闭已有连接
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close()
+    }
+
+    // 重置状态
+    setSseFinished(false)
+    setSseActive(true)
+
+    // 初始化所有步骤为 pending
+    const initialSteps: Record<number, SSEStepState> = {}
+    PIPELINE_STEPS.forEach(({ num, key }) => {
+      initialSteps[num] = { step: num, total: PIPELINE_STEPS.length, name: key, status: "pending" }
+    })
+    setSseSteps(initialSteps)
+
+    // 连接 SSE 端点（如果环境不支持 EventSource 则静默跳过）
+    if (typeof EventSource === "undefined") {
+      setSseActive(false)
+      return
+    }
+
+    const eventSource = new EventSource(
+      `${API_BASE}/api/v1/execution/tasks/${taskId}/stream`
+    )
+    eventSourceRef.current = eventSource
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+
+        if (data.status === "finished") {
+          setSseFinished(true)
+          setSseActive(false)
+          eventSource.close()
+          eventSourceRef.current = null
+          return
+        }
+
+        if (data.step) {
+          setSseSteps((prev) => ({
+            ...prev,
+            [data.step]: {
+              step: data.step,
+              total: data.total,
+              name: data.name,
+              status: data.status,
+              timestamp: data.timestamp,
+            },
+          }))
+        }
+      } catch {
+        // 忽略解析错误
+      }
+    }
+
+    eventSource.onerror = () => {
+      setSseActive(false)
+      eventSource.close()
+      eventSourceRef.current = null
+    }
+  }
+
+  // 组件卸载时清理 EventSource
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+      }
+    }
+  }, [])
 
   const submitMutation = useMutation({
     mutationFn: () =>
@@ -41,7 +131,13 @@ export default function ExecutionPage() {
         intent,
         context: { domain, task_type: taskType, constraints: {} },
       }),
-    onSuccess: (data) => setResult(data),
+    onSuccess: (data) => {
+      setResult(data)
+      // 提交成功后启动 SSE 实时进度追踪
+      if (data.id) {
+        startStreaming(data.id)
+      }
+    },
     onError: (err: any) => setResult({ status: "failed", error: err.message }),
   })
 
@@ -147,6 +243,88 @@ export default function ExecutionPage() {
               查看生成的经验 <ArrowRight className="w-3 h-3" />
             </a>
           )}
+        </div>
+      )}
+
+      {/* SSE 实时进度追踪 */}
+      {(sseActive || sseFinished) && (
+        <div className="rounded-lg border p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Radio className="w-5 h-5 text-blue-600" />
+              实时进度追踪（SSE）
+            </h2>
+            <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+              sseFinished ? "bg-green-50 text-green-700" : "bg-blue-50 text-blue-700"
+            }`}>
+              {sseFinished ? (
+                <><CheckCircle className="w-4 h-4" /> 已完成</>
+              ) : (
+                <><Loader2 className="w-4 h-4 animate-spin" /> 实时追踪中</>
+              )}
+            </span>
+          </div>
+
+          {/* 进度条 */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-1">
+              <span>总体进度</span>
+              <span>
+                {Object.values(sseSteps).filter((s) => s.status === "completed").length}
+                /{PIPELINE_STEPS.length}
+              </span>
+            </div>
+            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-600 rounded-full transition-all duration-300"
+                style={{
+                  width: `${(Object.values(sseSteps).filter((s) => s.status === "completed").length / PIPELINE_STEPS.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* 8 步进度指示器 */}
+          <div className="space-y-2">
+            {PIPELINE_STEPS.map(({ num, name }) => {
+              const stepState = sseSteps[num]
+              const status = stepState?.status || "pending"
+              return (
+                <div
+                  key={num}
+                  className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                    status === "completed" ? "border-green-200 bg-green-50" :
+                    status === "running" ? "border-blue-200 bg-blue-50" :
+                    "border-gray-200"
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    status === "completed" ? "bg-green-600 text-white" :
+                    status === "running" ? "bg-blue-600 text-white" :
+                    "bg-gray-200 text-gray-500"
+                  }`}>
+                    {status === "completed" ? <CheckCircle className="w-4 h-4" /> :
+                     status === "running" ? <Loader2 className="w-4 h-4 animate-spin" /> : num}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{name}</p>
+                    {stepState?.timestamp && status !== "pending" && (
+                      <p className="text-xs text-gray-400">
+                        <Clock className="w-3 h-3 inline" /> {stepState.timestamp}
+                      </p>
+                    )}
+                  </div>
+                  <span className={`text-xs font-medium ${
+                    status === "completed" ? "text-green-600" :
+                    status === "running" ? "text-blue-600" :
+                    "text-gray-400"
+                  }`}>
+                    {STATUS_LABELS[status] || status}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
 

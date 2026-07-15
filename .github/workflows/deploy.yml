@@ -1,0 +1,76 @@
+# Aevum（薪火）OS - 部署流水线
+# 触发条件：推送 v* 标签时自动部署
+
+name: Deploy
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "部署环境"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: aevum-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: aevum-frontend:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://localhost
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Generate deployment package
+        run: |
+          mkdir -p deploy-package
+          cp docker-compose.prod.yml deploy-package/
+          cp -r nginx/ deploy-package/
+          cp .env.example deploy-package/.env
+          tar -czf deploy.tar.gz deploy-package/
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-package
+          path: deploy.tar.gz
+          retention-days: 7
+
+      - name: Summary
+        run: |
+          echo "## 部署包已生成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 部署步骤：" >> $GITHUB_STEP_SUMMARY
+          echo "1. 下载部署包 deploy.tar.gz" >> $GITHUB_STEP_SUMMARY
+          echo "2. 解压: \`tar -xzf deploy.tar.gz\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. 编辑 .env 配置文件" >> $GITHUB_STEP_SUMMARY
+          echo "4. 启动: \`docker-compose -f docker-compose.prod.yml up -d\`" >> $GITHUB_STEP_SUMMARY
+          echo "5. 验证: \`curl http://localhost/health\`" >> $GITHUB_STEP_SUMMARY

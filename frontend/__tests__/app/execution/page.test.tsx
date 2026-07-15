@@ -89,7 +89,7 @@ describe("Execution Page", () => {
     await waitFor(() => {
       expect(screen.getByText("执行结果")).toBeInTheDocument()
     })
-    expect(screen.getByText("已完成")).toBeInTheDocument()
+    expect(screen.getAllByText("已完成").length).toBeGreaterThan(0)
     expect(executionApi.submitTask).toHaveBeenCalledWith(
       expect.objectContaining({
         intent: "部署应用到生产环境",

@@ -3,6 +3,7 @@
 import math
 import pytest
 from datetime import datetime, timezone, timedelta
+from unittest.mock import patch
 
 
 class TestHashEmbedder:
@@ -183,3 +184,154 @@ class TestPriorityLevel:
         assert PriorityLevel.USER < PriorityLevel.COMMUNITY
         assert PriorityLevel.COMMUNITY < PriorityLevel.GLOBAL
         assert PriorityLevel.GLOBAL < PriorityLevel.EXTERNAL
+
+    def test_priority_values(self) -> None:
+        from app.services.retrieval.priority_chain import PriorityLevel
+
+        assert int(PriorityLevel.USER) == 1
+        assert int(PriorityLevel.COMMUNITY) == 2
+        assert int(PriorityLevel.GLOBAL) == 3
+        assert int(PriorityLevel.EXTERNAL) == 4
+
+
+class TestHashEmbedderAsync:
+    """Test HashEmbedder async interface."""
+
+    @pytest.mark.asyncio
+    async def test_embed_async_returns_same_as_sync(self) -> None:
+        from app.services.retrieval.embedder import HashEmbedder
+
+        embedder = HashEmbedder(dim=64)
+        sync_vec = embedder.embed("test text")
+        async_vec = await embedder.embed_async("test text")
+
+        assert sync_vec == async_vec
+
+    @pytest.mark.asyncio
+    async def test_embed_async_deterministic(self) -> None:
+        from app.services.retrieval.embedder import HashEmbedder
+
+        embedder = HashEmbedder(dim=128)
+        vec1 = await embedder.embed_async("hello world")
+        vec2 = await embedder.embed_async("hello world")
+
+        assert vec1 == vec2
+
+    def test_dimension_property(self) -> None:
+        from app.services.retrieval.embedder import HashEmbedder
+
+        embedder = HashEmbedder(dim=256)
+        assert embedder.dimension == 256
+
+
+class TestHashEmbedderChinese:
+    """Test HashEmbedder with Chinese text."""
+
+    def test_chinese_text_embedding(self) -> None:
+        from app.services.retrieval.embedder import HashEmbedder
+
+        embedder = HashEmbedder(dim=128)
+        vec = embedder.embed("部署应用到生产环境")
+
+        assert len(vec) == 128
+        norm = math.sqrt(sum(v * v for v in vec))
+        assert abs(norm - 1.0) < 0.01 or norm == 0.0
+
+    def test_chinese_deterministic(self) -> None:
+        from app.services.retrieval.embedder import HashEmbedder
+
+        embedder = HashEmbedder(dim=64)
+        vec1 = embedder.embed("测试中文")
+        vec2 = embedder.embed("测试中文")
+
+        assert vec1 == vec2
+
+    def test_single_chinese_char(self) -> None:
+        from app.services.retrieval.embedder import HashEmbedder
+
+        embedder = HashEmbedder(dim=32)
+        vec = embedder.embed("测")
+
+        assert len(vec) == 32
+
+    def test_mixed_text(self) -> None:
+        from app.services.retrieval.embedder import HashEmbedder
+
+        embedder = HashEmbedder(dim=64)
+        vec = embedder.embed("deploy 部署 application")
+
+        assert len(vec) == 64
+
+
+class TestGetEmbedder:
+    """Test get_embedder factory."""
+
+    def test_returns_hash_embedder_without_key(self) -> None:
+        from app.services.retrieval.embedder import get_embedder, HashEmbedder
+
+        with patch("app.services.retrieval.embedder.settings") as mock_settings:
+            mock_settings.openai_api_key = ""
+            mock_settings.embedding_dimension = 1536
+            embedder = get_embedder()
+
+        assert isinstance(embedder, HashEmbedder)
+
+    def test_returns_hash_embedder_with_placeholder_key(self) -> None:
+        from app.services.retrieval.embedder import get_embedder, HashEmbedder
+
+        with patch("app.services.retrieval.embedder.settings") as mock_settings:
+            mock_settings.openai_api_key = "sk-your-key-here"
+            mock_settings.embedding_dimension = 1536
+            embedder = get_embedder()
+
+        assert isinstance(embedder, HashEmbedder)
+
+    def test_returns_hash_embedder_with_your_prefix(self) -> None:
+        from app.services.retrieval.embedder import get_embedder, HashEmbedder
+
+        with patch("app.services.retrieval.embedder.settings") as mock_settings:
+            mock_settings.openai_api_key = "your-api-key"
+            mock_settings.embedding_dimension = 1536
+            embedder = get_embedder()
+
+        assert isinstance(embedder, HashEmbedder)
+
+    def test_returns_openai_embedder_with_real_key(self) -> None:
+        from app.services.retrieval.embedder import get_embedder, OpenAIEmbedder
+
+        with patch("app.services.retrieval.embedder.settings") as mock_settings:
+            mock_settings.openai_api_key = "sk-real-key-12345"
+            mock_settings.embedding_model = "text-embedding-3-small"
+            mock_settings.embedding_dimension = 1536
+            embedder = get_embedder()
+
+        assert isinstance(embedder, OpenAIEmbedder)
+
+
+class TestOpenAIEmbedder:
+    """Test OpenAIEmbedder."""
+
+    def test_dimension(self) -> None:
+        from app.services.retrieval.embedder import OpenAIEmbedder
+
+        embedder = OpenAIEmbedder(dim=512)
+        assert embedder.dimension == 512
+
+    def test_default_model(self) -> None:
+        from app.services.retrieval.embedder import OpenAIEmbedder
+
+        embedder = OpenAIEmbedder()
+        assert embedder.model == "text-embedding-3-small"
+        assert embedder.dimension == 1536
+
+    @pytest.mark.asyncio
+    async def test_embed_without_key_falls_back_to_hash(self) -> None:
+        from app.services.retrieval.embedder import OpenAIEmbedder
+
+        embedder = OpenAIEmbedder(dim=64)
+
+        with patch("app.services.retrieval.embedder.settings") as mock_settings:
+            mock_settings.openai_api_key = ""
+            vec = await embedder.embed("test text")
+
+        assert len(vec) == 64

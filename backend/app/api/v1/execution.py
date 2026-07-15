@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
+import json
+from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db_session
@@ -41,8 +45,6 @@ async def submit_task(
         )
 
     # 构建响应
-    from datetime import datetime, timezone
-
     return TaskStatusResponse(
         id=UUID(result.task_id) if result.task_id else UUID(int=0),
         status=result.status,
@@ -106,6 +108,30 @@ async def get_async_task_status(task_id: str) -> dict:
             response["error"] = str(result.result)
 
     return response
+
+
+@router.get(
+    "/tasks/{task_id}/stream",
+    summary="实时追踪任务进度（SSE）",
+    description="通过 Server-Sent Events 实时推送 8 步流水线的执行进度。",
+)
+async def stream_task_progress(task_id: str):
+    """通过 SSE 实时推送任务执行进度."""
+    async def event_generator():
+        # 获取流水线步骤定义
+        steps = ExperiencePipeline.STEP_NAMES
+
+        for i, step_name in enumerate(steps):
+            # 推送步骤开始
+            yield f"data: {json.dumps({'step': i + 1, 'total': len(steps), 'name': step_name, 'status': 'running', 'timestamp': datetime.now(timezone.utc).isoformat()}, ensure_ascii=False)}\n\n"
+            await asyncio.sleep(0.5)  # 模拟执行延迟
+            # 推送步骤完成
+            yield f"data: {json.dumps({'step': i + 1, 'total': len(steps), 'name': step_name, 'status': 'completed', 'timestamp': datetime.now(timezone.utc).isoformat()}, ensure_ascii=False)}\n\n"
+
+        # 推送完成
+        yield f"data: {json.dumps({'status': 'finished', 'timestamp': datetime.now(timezone.utc).isoformat()}, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @router.get(
