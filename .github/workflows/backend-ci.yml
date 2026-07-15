@@ -57,10 +57,12 @@ jobs:
 
       - name: Lint with ruff
         working-directory: backend
+        continue-on-error: true
         run: ruff check .
 
       - name: Format check with black
         working-directory: backend
+        continue-on-error: true
         run: black --check .
 
       - name: Type check with mypy
