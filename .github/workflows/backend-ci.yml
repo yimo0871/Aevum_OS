@@ -67,7 +67,14 @@ jobs:
 
       - name: Type check with mypy
         working-directory: backend
+        continue-on-error: true
         run: mypy app/ --ignore-missing-imports || true
+
+      - name: Run database migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://aevum:test_password@localhost:5432/aevum_test
+        run: alembic upgrade head
 
       - name: Test with pytest
         working-directory: backend
@@ -75,6 +82,8 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://aevum:test_password@localhost:5432/aevum_test
           CELERY_BROKER_URL: redis://localhost:6379/0
           CELERY_RESULT_BACKEND: redis://localhost:6379/1
+          OPENAI_API_KEY: ""
+          SECRET_KEY: test-secret-key
         run: pytest -v --cov=app --cov-report=xml
 
       - name: Upload coverage
