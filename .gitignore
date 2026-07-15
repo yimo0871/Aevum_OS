@@ -93,3 +93,11 @@ tmp/
 *.pid
 *.seed
 *.pid.lock
+
+# ── 本地文档（不上传） ──
+Aevum_薪火OS_产品路演.md
+Aevum_薪火OS_会话总结.md
+Aevum_薪火OS_会话总结_v2.md
+Autonomous_Project_Execution_Charter.md
+.trae/documents/
+.gitignore.local
