@@ -1,0 +1,1771 @@
+﻿node.exe : PASS __tests__/lib/api-client.test.ts
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (PASS __tests__/lib/api-client.test.ts:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  experienceApi
+    √ list calls correct endpoint with query params (18 ms)
+    √ list omits empty/undefined params
+    √ get calls correct endpoint (1 ms)
+    √ getRelations calls correct endpoint
+    √ delete calls DELETE method
+  evaluationApi
+    √ getDashboard calls correct endpoint (1 ms)
+    √ getMetrics calls correct endpoint
+    √ evaluateExperience calls POST method
+  retrievalApi
+    √ search calls correct endpoint with query params (1 ms)
+  executionApi
+    √ listTools calls correct endpoint
+    √ submitTask calls POST with JSON body
+  fetchAPI error handling
+    √ throws on non-ok response (4 ms)
+
+FAIL __tests__/app/experiences/page.test.tsx
+  Experiences Page
+    √ renders the page heading (31 ms)
+    √ renders total experience count (6 ms)
+    × renders the experience list with data (22 ms)
+    √ renders domain filter dropdown with all options (47 ms)
+    √ shows confidence score (16 ms)
+    √ calls list with domain filter when selected (64 ms)
+    √ shows pagination when total > 20 (29 ms)
+    √ renders search input (15 ms)
+
+  ● Experiences Page › renders the experience list with data
+
+    TestingLibraryElementError: Found multiple elements with the text: 后端开发
+
+    Here are the matching elements:
+
+    Ignored nodes: comments, script, style
+    [36m<option[39m
+      [33mvalue[39m=[32m"后端开发"[39m
+    [36m>[39m
+      [0m后端开发[0m
+    [36m</option>[39m
+
+    Ignored nodes: comments, script, style
+    [36m<span[39m
+      [33mclass[39m=[32m"px-2 py-0.5 bg-blue-50 text-blue-700 rounded"[39m
+    [36m>[39m
+      [0m后端开发[0m
+    [36m</span>[39m
+
+    (If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `fi
+ndAllByText`)).
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-6"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-2xl font-bold"[39m
+            [36m>[39m
+              [0m经验管理[0m
+            [36m</h1>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-sm text-gray-500"[39m
+            [36m>[39m
+              [0m共 [0m
+              [0m1[0m
+              [0m 条经验[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-4 mb-6"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 relative"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-4
+00"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<input[39m
+                [33mclass[39m=[32m"w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 
+focus:ring-blue-500"[39m
+                [33mplaceholder[39m=[32m"搜索经验..."[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue
+-500"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m""[39m
+              [36m>[39m
+                [0m全部领域[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"后端开发"[39m
+              [36m>[39m
+                [0m后端开发[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"前端开发"[39m
+              [36m>[39m
+                [0m前端开发[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"运维部署"[39m
+              [36m>[39m
+                [0m运维部署[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"数据处理"[39m
+              [36m>[39m
+                [0m数据处理[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"测试质量"[39m
+              [36m>[39m
+                [0m测试质量[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"安全审计"[39m
+              [36m>[39m
+                [0m安全审计[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"机器学习"[39m
+              [36m>[39m
+                [0m机器学习[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"综合通用"[39m
+              [36m>[39m
+                [0m综合通用[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-3"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-4 hover:shadow-md transition-shadow"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-start justify-between"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"block"[39m
+                    [33mhref[39m=[32m"/experiences/test-1"[39m
+                  [36m>[39m
+                    [36m<h3[39m
+                      [33mclass[39m=[32m"font-medium text-gray-900 truncate hover:text-blue-600"[39m
+                    [36m>[39m
+                      [0m测试意图[0m
+                    [36m</h3>[39m
+                  [36m</a>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-center gap-3 mt-2 text-xs text-gray-500"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"px-2 py-0.5 bg-blue-50 text-blue-700 rounded"[39m
+                    [36m>[39m
+                      [0m后端开发[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"px-2 py-0.5 bg-gray-50 text-gray-600 rounded"[39m
+                    [36m>[39m
+                      [0mAPI设计[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"px-2 py-0.5 rounded bg-green-50 text-green-700"[39m
+                    [36m>[39m
+                      [0m成功[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"px-2 py-0.5 rounded bg-green-50 text-green-700"[39m
+                    [36m>[39m
+                      [0m已评估[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-2 ml-4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-right"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-xs text-gray-400"[39m
+                    [36m>[39m
+                      [0m置信度[0m
+                    [36m</p>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm font-bold text-blue-600"[39m
+                    [36m>[39m
+                      [0m80[0m
+                      [0m%[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<a[39m
+                    [33mhref[39m=[32m"/experiences/test-1"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33mclass[39m=[32m"p-1.5 text-gray-400 hover:text-blue-600 rounded"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"lucide lucide-external-link w-4 h-4"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"24"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"2"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"24"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M15 3h6v6"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M10 14 21 3"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                    [36m</button>[39m
+                  [36m</a>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"p-1.5 text-gray-400 hover:text-red-600 rounded"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-trash2 lucide-trash-2 w-4 h-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M10 11v6"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M14 11v6"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M3 6h18"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+    [0m [90m 41 |[39m       expect(screen[33m.[39mgetByText([32m"测试意图"[39m))[33m.[39mtoBeInTheDocument()
+     [90m 42 |[39m     })
+    [31m[1m>[22m[39m[90m 43 |[39m     expect(screen[33m.[39mgetByText([32m"后端开发"[39m))[33m.[39mtoBeInTheDoc
+ument()
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 44 |[39m     expect(screen[33m.[39mgetByText([32m"API设计"[39m))[33m.[39mtoBeInTheDocument()
+     [90m 45 |[39m     expect(screen[33m.[39mgetByText([32m"成功"[39m))[33m.[39mtoBeInTheDocument()
+     [90m 46 |[39m     expect(screen[33m.[39mgetByText([32m"已评估"[39m))[33m.[39mtoBeInTheDocument()[0m
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at getElementError (node_modules/@testing-library/dom/dist/query-helpers.js:20:35)
+      at getMultipleElementsFoundError (node_modules/@testing-library/dom/dist/query-helpers.js:23:10)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (__tests__/app/experiences/page.test.tsx:43:19)
+
+PASS __tests__/app/execution/page.test.tsx
+  Execution Page
+    √ renders the page heading (41 ms)
+    √ renders task intent textarea (6 ms)
+    √ renders domain dropdown with all options (34 ms)
+    √ renders task type input with default value (3 ms)
+    √ submit button is disabled when intent is empty (8 ms)
+    √ submit button is enabled when intent is provided (146 ms)
+    √ submits task and displays result (260 ms)
+    √ renders available tools section after data loads (16 ms)
+    √ displays pipeline steps label (2 ms)
+    √ can change domain selection (58 ms)
+    √ can change task type (157 ms)
+
+FAIL __tests__/app/metrics/page.test.tsx
+  Metrics Page
+    √ renders the page heading (23 ms)
+    × renders auto-refresh label (6 ms)
+    × renders all metric cards after data loads (1016 ms)
+    √ displays formatted metric values (31 ms)
+    √ renders metric explanation section (31 ms)
+    √ shows '越低越好' for inverse metrics (29 ms)
+
+  ● Metrics Page › renders auto-refresh label
+
+    TestingLibraryElementError: Unable to find an element with the text: 每 15 秒自动刷新. This could be because the text is 
+broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher mor
+e flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-2xl font-bold mb-6"[39m
+          [36m>[39m
+            [0m指标监控[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-6 animate-pulse"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-4 bg-gray-200 rounded w-24 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-8 bg-gray-200 rounded w-20 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-2 bg-gray-200 rounded"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-6 animate-pulse"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-4 bg-gray-200 rounded w-24 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-8 bg-gray-200 rounded w-20 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-2 bg-gray-200 rounded"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-6 animate-pulse"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-4 bg-gray-200 rounded w-24 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-8 bg-gray-200 rounded w-20 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-2 bg-gray-200 rounded"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-6 animate-pulse"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-4 bg-gray-200 rounded w-24 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-8 bg-gray-200 rounded w-20 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-2 bg-gray-200 rounded"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-6 animate-pulse"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-4 bg-gray-200 rounded w-24 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-8 bg-gray-200 rounded w-20 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-2 bg-gray-200 rounded"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-6 animate-pulse"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-4 bg-gray-200 rounded w-24 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-8 bg-gray-200 rounded w-20 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-2 bg-gray-200 rounded"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"border rounded-lg p-6 animate-pulse"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-4 bg-gray-200 rounded w-24 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-8 bg-gray-200 rounded w-20 mb-3"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"h-2 bg-gray-200 rounded"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+    [0m [90m 27 |[39m   it([32m"renders auto-refresh label"[39m[33m,[39m [36masync[39m () [33m=>[39m {
+     [90m 28 |[39m     renderWithQueryClient([33m<[39m[33mMetricsPage[39m [33m/[39m[33m>[39m)
+    [31m[1m>[22m[39m[90m 29 |[39m     expect(screen[33m.[39mgetByText([32m"每 15 秒自动刷新"[39m))[33m.[39mtoBeIn
+TheDocument()
+     [90m    |[39m                   [31m[1m^[22m[39m
+     [90m 30 |[39m   })
+     [90m 31 |[39m
+     [90m 32 |[39m   it([32m"renders all metric cards after data loads"[39m[33m,[39m [36masync[39m () [33m=>[
+39m {[0m
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (__tests__/app/metrics/page.test.tsx:29:19)
+
+  ● Metrics Page › renders all metric cards after data loads
+
+    Found multiple elements with the text: 经验复用率
+
+    Here are the matching elements:
+
+    Ignored nodes: comments, script, style
+    [36m<p[39m
+      [33mclass[39m=[32m"text-sm text-gray-600"[39m
+    [36m>[39m
+      [0m经验复用率[0m
+    [36m</p>[39m
+
+    Ignored nodes: comments, script, style
+    [36m<span[39m
+      [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+    [36m>[39m
+      [0m经验复用率[0m
+    [36m</span>[39m
+
+    (If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `fi
+ndAllByText`)).
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between mb-6"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-2xl font-bold"[39m
+            [36m>[39m
+              [0m指标监控[0m
+            [36m</h1>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center gap-2 text-sm text-gray-400"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-activity w-4 h-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0
+ 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0m每 15 秒自动刷新[0m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6 bg-blue-50"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                [36m>[39m
+                  [0m经验复用率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-up w-5 h-5 text-blue-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 7h6v6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-blue-600"[39m
+              [36m>[39m
+                [0m30.00%[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full bg-gray-200 rounded-full h-2 mt-2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"h-2 rounded-full transition-all bg-blue-500"[39m
+                  [33mstyle[39m=[32m"width: 30%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6 bg-green-50"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                [36m>[39m
+                  [0m工作流成功率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-up w-5 h-5 text-green-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 7h6v6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-green-600"[39m
+              [36m>[39m
+                [0m75.00%[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full bg-gray-200 rounded-full h-2 mt-2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"h-2 rounded-full transition-all bg-blue-500"[39m
+                  [33mstyle[39m=[32m"width: 75%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6 bg-purple-50"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                [36m>[39m
+                  [0m跨Agent迁移率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-up w-5 h-5 text-purple-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 7h6v6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-purple-600"[39m
+              [36m>[39m
+                [0m50.00%[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full bg-gray-200 rounded-full h-2 mt-2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"h-2 rounded-full transition-all bg-blue-500"[39m
+                  [33mstyle[39m=[32m"width: 50%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6 bg-orange-50"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                [36m>[39m
+                  [0m外部依赖比例[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-down w-5 h-5 text-orange-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 17h6v-6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 17-8.5-8.5-5 5L2 7"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-orange-600"[39m
+              [36m>[39m
+                [0m20.00%[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full bg-gray-200 rounded-full h-2 mt-2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"h-2 rounded-full transition-all bg-orange-500"[39m
+                  [33mstyle[39m=[32m"width: 80%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-400 mt-2"[39m
+              [36m>[39m
+                [0m越低越好[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6 bg-yellow-50"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                [36m>[39m
+                  [0m学习速度[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-up w-5 h-5 text-yellow-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 7h6v6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-yellow-600"[39m
+              [36m>[39m
+                [0m10.00/天[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full bg-gray-200 rounded-full h-2 mt-2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"h-2 rounded-full transition-all bg-blue-500"[39m
+                  [33mstyle[39m=[32m"width: 100%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6 bg-cyan-50"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                [36m>[39m
+                  [0m收敛速度[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-up w-5 h-5 text-cyan-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 7h6v6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-cyan-600"[39m
+              [36m>[39m
+                [0m90.00%[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full bg-gray-200 rounded-full h-2 mt-2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"h-2 rounded-full transition-all bg-blue-500"[39m
+                  [33mstyle[39m=[32m"width: 90%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6 bg-red-50"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                [36m>[39m
+                  [0m人类干预率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-down w-5 h-5 text-red-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 17h6v-6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 17-8.5-8.5-5 5L2 7"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-red-600"[39m
+              [36m>[39m
+                [0m10.00%[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full bg-gray-200 rounded-full h-2 mt-2"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"h-2 rounded-full transition-all bg-orange-500"[39m
+                  [33mstyle[39m=[32m"width: 90%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-400 mt-2"[39m
+              [36m>[39m
+                [0m越低越好[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-lg border p-6"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-lg font-semibold mb-4"[39m
+            [36m>[39m
+              [0m指标说明[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-3 text-sm text-gray-600"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+                [36m>[39m
+                  [0m经验复用率[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m被复用的经验数占总经验数的比例，越高说明经验价值越大[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+                [36m>[39m
+                  [0m工作流成功率[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m成功执行的经验占总经验数的比例[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+                [36m>[39m
+                  [0m跨Agent迁移率[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m被其他 Agent 引用或分叉的经验比例，反映集体智能程度[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+                [36m>[39m
+                  [0m外部依赖比例[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m依赖外部网络数据的经验比例，越低说明自身经验库越完善[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+                [36m>[39m
+                  [0m学习速度[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m最近7天平均每天新增的经验数量[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+                [36m>[39m
+                  [0m收敛速度[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m已评估经验占总经验的比例，反映系统评估能力[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex gap-3"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-medium text-gray-900 min-w-32"[39m
+                [36m>[39m
+                  [0m人类干预率[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m需要人类干预的经验比例，越低说明系统自动化程度越高[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+    [0m [90m 33 |[39m     renderWithQueryClient([33m<[39m[33mMetricsPage[39m [33m/[39m[33m>[39m)
+     [90m 34 |[39m
+    [31m[1m>[22m[39m[90m 35 |[39m     [36mawait[39m waitFor(() [33m=>[39m {
+     [90m    |[39m                  [31m[1m^[22m[39m
+     [90m 36 |[39m       expect(screen[33m.[39mgetByText([32m"经验复用率"[39m))[33m.[39mtoBeInTheDocument()
+     [90m 37 |[39m     })
+     [90m 38 |[39m     expect(screen[33m.[39mgetByText([32m"工作流成功率"[39m))[33m.[39mtoBeInTheDocument()[0m
+
+      at waitForWrapper (node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+      at Object.<anonymous> (__tests__/app/metrics/page.test.tsx:35:18)
+
+FAIL __tests__/app/page.test.tsx
+  Dashboard Page
+    √ renders the page heading (23 ms)
+    √ renders statistics cards after data loads (21 ms)
+    √ renders system metrics section (28 ms)
+    √ renders metric labels (14 ms)
+    × displays correct stat values from mock data (1020 ms)
+    √ displays formatted metric values (27 ms)
+    √ shows '越低越好' for inverse metrics (29 ms)
+
+  ● Dashboard Page › displays correct stat values from mock data
+
+    Found multiple elements with the text: 10000
+
+    Here are the matching elements:
+
+    Ignored nodes: comments, script, style
+    [36m<p[39m
+      [33mclass[39m=[32m"text-3xl font-bold mt-2"[39m
+    [36m>[39m
+      [0m10000[0m
+    [36m</p>[39m
+
+    Ignored nodes: comments, script, style
+    [36m<p[39m
+      [33mclass[39m=[32m"text-3xl font-bold mt-2 text-green-600"[39m
+    [36m>[39m
+      [0m10000[0m
+    [36m</p>[39m
+
+    (If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `fi
+ndAllByText`)).
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-2xl font-bold mb-6"[39m
+          [36m>[39m
+            [0mDashboard[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m经验总数[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-database w-5 h-5 text-gray-400"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<ellipse[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"5"[39m
+                    [33mrx[39m=[32m"9"[39m
+                    [33mry[39m=[32m"3"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M3 5V19A9 3 0 0 0 21 19V5"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M3 12A9 3 0 0 0 21 12"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold mt-2"[39m
+              [36m>[39m
+                [0m10000[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m已评估[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-target w-5 h-5 text-green-400"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"10"[39m
+                  [36m/>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"6"[39m
+                  [36m/>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"2"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold mt-2 text-green-600"[39m
+              [36m>[39m
+                [0m10000[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m待评估[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-clock w-5 h-5 text-orange-400"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"10"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M12 6v6l4 2"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold mt-2 text-orange-600"[39m
+              [36m>[39m
+                [0m0[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m平均置信度[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-up w-5 h-5 text-blue-400"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 7h6v6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-3xl font-bold mt-2 text-blue-600"[39m
+              [36m>[39m
+                [0m49.0[0m
+                [0m%[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold mb-4"[39m
+          [36m>[39m
+            [0m系统指标[0m
+          [36m</h2>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m经验复用率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-trending-up w-5 h-5 text-blue-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 7h6v6"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-2xl font-bold text-blue-600"[39m
+              [36m>[39m
+                [0m30.0%[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m工作流成功率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-target w-5 h-5 text-green-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"10"[39m
+                  [36m/>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"6"[39m
+                  [36m/>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"2"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-2xl font-bold text-green-600"[39m
+              [36m>[39m
+                [0m75.0%[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m跨Agent迁移率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-globe w-5 h-5 text-purple-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"10"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M2 12h20"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-2xl font-bold text-purple-600"[39m
+              [36m>[39m
+                [0m50.0%[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m外部依赖比例[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-shield w-5 h-5 text-orange-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1
+c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-2xl font-bold text-orange-600"[39m
+              [36m>[39m
+                [0m20.0%[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-400 mt-1"[39m
+              [36m>[39m
+                [0m越低越好[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m学习速度[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-zap w-5 h-5 text-yellow-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a
+1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-2xl font-bold text-yellow-600"[39m
+              [36m>[39m
+                [0m10.0/天[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m收敛速度[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-activity w-5 h-5 text-cyan-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0
+ 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-2xl font-bold text-cyan-600"[39m
+              [36m>[39m
+                [0m90.0%[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-lg border p-6"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex items-center justify-between mb-3"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                [36m>[39m
+                  [0m人类干预率[0m
+                [36m</p>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-clock w-5 h-5 text-red-600"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"12"[39m
+                    [33mr[39m=[32m"10"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M12 6v6l4 2"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-2xl font-bold text-red-600"[39m
+              [36m>[39m
+                [0m10.0%[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-400 mt-1"[39m
+              [36m>[39m
+                [0m越低越好[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+    [0m [90m 61 |[39m     renderWithQueryClient([33m<[39m[33mDashboardPage[39m [33m/[39m[33m>[39m)
+     [90m 62 |[39m
+    [31m[1m>[22m[39m[90m 63 |[39m     [36mawait[39m waitFor(() [33m=>[39m {
+     [90m    |[39m                  [31m[1m^[22m[39m
+     [90m 64 |[39m       expect(screen[33m.[39mgetByText([32m"10000"[39m))[33m.[39mtoBeInTheDocument()
+     [90m 65 |[39m     })
+     [90m 66 |[39m     [90m// avg confidence 0.49 -> 49.0%[39m[0m
+
+      at waitForWrapper (node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+      at Object.<anonymous> (__tests__/app/page.test.tsx:63:18)
+
+FAIL __tests__/app/search/page.test.tsx
+  Search Page
+    √ renders the page heading (31 ms)
+    √ renders search input with placeholder (4 ms)
+    √ renders search button (29 ms)
+    √ renders initial empty state prompt before search (4 ms)
+    √ displays search results after searching (155 ms)
+    × displays empty result prompt when no results (1249 ms)
+    √ search button is disabled when query is empty (4 ms)
+    √ triggers search on Enter key (117 ms)
+    √ renders domain filter dropdown (3 ms)
+
+  ● Search Page › displays empty result prompt when no results
+
+    Unable to find an element with the text: 未找到相关经验. This could be because the text is broken up by multiple elements.
+ In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-2xl font-bold mb-6"[39m
+          [36m>[39m
+            [0m经验检索[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-3 mb-6"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative flex-1"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-4
+00"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<input[39m
+                [33mclass[39m=[32m"w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ri
+ng-blue-500"[39m
+                [33mplaceholder[39m=[32m"输入任务描述、意图关键词..."[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m"不存在的关键词"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<select[39m
+              [33mclass[39m=[32m"px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"[3
+9m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m""[39m
+              [36m>[39m
+                [0m全部领域[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"后端开发"[39m
+              [36m>[39m
+                [0m后端开发[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"前端开发"[39m
+              [36m>[39m
+                [0m前端开发[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"运维部署"[39m
+              [36m>[39m
+                [0m运维部署[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"数据处理"[39m
+              [36m>[39m
+                [0m数据处理[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"测试质量"[39m
+              [36m>[39m
+                [0m测试质量[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"安全审计"[39m
+              [36m>[39m
+                [0m安全审计[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"机器学习"[39m
+              [36m>[39m
+                [0m机器学习[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"综合通用"[39m
+              [36m>[39m
+                [0m综合通用[0m
+              [36m</option>[39m
+            [36m</select>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 d
+isabled:cursor-not-allowed"[39m
+            [36m>[39m
+              [0m搜索[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-gray-500 mb-4"[39m
+            [36m>[39m
+              [0m找到 [0m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-semibold text-gray-700"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</span>[39m
+              [0m 条相关经验[0m
+            [36m</p>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-3"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mclass[39m=[32m"block rounded-lg border p-4 hover:border-blue-300 hover:bg-blue-50 transition-col
+ors"[39m
+                [33mhref[39m=[32m"/experiences/test-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-start justify-between gap-4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center gap-2 mb-1"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600"[39m
+                      [36m>[39m
+                        [0m后端开发[0m
+                      [36m</span>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600"[39m
+                      [36m>[39m
+                        [0mAPI设计[0m
+                      [36m</span>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"text-xs px-2 py-0.5 rounded bg-green-100 text-green-700"[39m
+                      [36m>[39m
+                        [0m成功[0m
+                      [36m</span>[39m
+                    [36m</div>[39m
+                    [36m<h3[39m
+                      [33mclass[39m=[32m"font-medium text-gray-900 truncate"[39m
+                    [36m>[39m
+                      [0m测试意图[0m
+                    [36m</h3>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center gap-4 mt-2 text-xs text-gray-500"[39m
+                    [36m>[39m
+                      [36m<span>[39m
+                        [0m置信度: [0m
+                        [0m80.0[0m
+                        [0m%[0m
+                      [36m</span>[39m
+                      [36m<span>[39m
+                        [0m工具: [0m
+                        [0mtool-a, tool-b[0m
+                      [36m</span>[39m
+                      [36m<span>[39m
+                        [0m优势: [0m
+                        [0m1[0m
+                        [0m项[0m
+                      [36m</span>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex flex-col items-end gap-2"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center gap-1"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"lucide lucide-trending-up w-4 h-4 text-blue-500"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"24"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"2"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"24"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M16 7h6v6"[39m
+                        [36m/>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"m22 7-8.5 8.5-5-5L2 17"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"font-bold text-blue-600"[39m
+                      [36m>[39m
+                        [0m85.0[0m
+                        [0m%[0m
+                      [36m</span>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-right w-5 h-5 text-gray-300"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m9 18 6-6-6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+    [0m [90m 70 |[39m     [36mawait[39m user[33m.[39mclick(screen[33m.[39mgetByRole([32m"button"[39m[33m,[
+39m { name[33m:[39m [32m"搜索"[39m }))
+     [90m 71 |[39m
+    [31m[1m>[22m[39m[90m 72 |[39m     [36mawait[39m waitFor(() [33m=>[39m {
+     [90m    |[39m                  [31m[1m^[22m[39m
+     [90m 73 |[39m       expect(screen[33m.[39mgetByText([32m"未找到相关经验"[39m))[33m.[39mtoBeInTheDocument()
+     [90m 74 |[39m     })
+     [90m 75 |[39m   })[0m
+
+      at waitForWrapper (node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+      at Object.<anonymous> (__tests__/app/search/page.test.tsx:72:18)
+
+Test Suites: 4 failed, 2 passed, 6 total
+Tests:       5 failed, 48 passed, 53 total
+Snapshots:   0 total
+Time:        3.895 s
+Ran all test suites.
