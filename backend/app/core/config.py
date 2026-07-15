@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     embedding_model: str = "text-embedding-3-small"
     embedding_dimension: int = 1536
 
+    # LLM 配置
+    llm_model: str = "gpt-4o-mini"
+    llm_temperature: float = 0.7
+    llm_max_tokens: int = 2000
+
     # Security
     secret_key: str = "dev-secret-key-change-in-production"
     algorithm: str = "HS256"
