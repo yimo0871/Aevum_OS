@@ -60,6 +60,9 @@ class Experience(Base):
     # 实际类型: Vector(1536)
     # 注意：pgvector 的 Vector 类型需要在迁移中手动添加
 
+    # ── 数据隔离 ──
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
+
     # ── 审计字段 ──
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
@@ -106,6 +109,7 @@ class Experience(Base):
             "confidence_score": self.confidence_score,
             "provenance": self.provenance,
             "version": self.version,
+            "user_id": str(self.user_id) if self.user_id else None,
             "evaluation_status": self.evaluation_status,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,

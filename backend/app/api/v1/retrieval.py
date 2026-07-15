@@ -5,7 +5,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session
+from app.api.deps import get_db_session, get_optional_user
+from app.models.user import User
 from app.schemas.experience import (
     ExperienceResponse,
     ExperienceSearchRequest,
@@ -24,15 +25,18 @@ router = APIRouter()
 )
 async def search_experiences(
     request: ExperienceSearchRequest,
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> list[ExperienceSearchResult]:
     """搜索经验 - 四级优先级链检索."""
+    user_id = str(current_user.id) if current_user else None
     chain = PriorityChain(session, min_results=request.limit, max_results=request.limit * 2)
 
     chain_results = await chain.search(
         query=request.query,
         domain=request.domain,
         task_type=request.task_type,
+        user_id=user_id,
     )
 
     best_results = chain.get_best_results(chain_results, limit=request.limit)
@@ -61,15 +65,18 @@ async def recommend_experiences(
     domain: str | None = Query(None, description="领域"),
     task_type: str | None = Query(None, description="任务类型"),
     limit: int = Query(5, ge=1, le=20, description="推荐数量"),
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> list[ExperienceSearchResult]:
     """推荐经验."""
+    user_id = str(current_user.id) if current_user else None
     chain = PriorityChain(session, min_results=limit, max_results=limit * 2)
 
     chain_results = await chain.search(
         query=query,
         domain=domain,
         task_type=task_type,
+        user_id=user_id,
     )
 
     best_results = chain.get_best_results(chain_results, limit=limit)
@@ -94,15 +101,18 @@ async def search_with_priority_chain(
     domain: str | None = Query(None, description="领域"),
     task_type: str | None = Query(None, description="任务类型"),
     limit: int = Query(10, ge=1, le=50, description="每级最大返回数量"),
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """查看优先级链执行详情."""
+    user_id = str(current_user.id) if current_user else None
     chain = PriorityChain(session, min_results=limit, max_results=limit)
 
     chain_results = await chain.search(
         query=query,
         domain=domain,
         task_type=task_type,
+        user_id=user_id,
     )
 
     return {

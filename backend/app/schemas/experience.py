@@ -77,7 +77,7 @@ class ExperienceBase(BaseModel):
 class ExperienceCreate(ExperienceBase):
     """创建 Experience 请求."""
 
-    pass
+    user_id: UUID | None = Field(None, description="关联用户 ID（数据隔离）")
 
 
 class ExperienceUpdate(BaseModel):
@@ -100,6 +100,7 @@ class ExperienceResponse(ExperienceBase):
 
     id: UUID
     timestamp: datetime
+    user_id: UUID | None = Field(None, description="关联用户 ID（数据隔离）")
     evaluation_status: str = "pending"
     created_at: datetime
     updated_at: datetime

@@ -29,6 +29,7 @@ class ExperienceRepository:
             confidence_score=data.confidence_score,
             provenance=data.provenance.model_dump(),
             version=data.version,
+            user_id=data.user_id,
         )
         self.session.add(experience)
         await self.session.flush()

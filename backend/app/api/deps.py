@@ -84,6 +84,29 @@ async def get_current_admin(
     return current_user
 
 
+async def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    session: AsyncSession = Depends(get_db_session),
+) -> User | None:
+    """可选认证 - 如果 token 存在则返回用户，否则返回 None（不抛异常）."""
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        return None
+
+    payload = decode_access_token(credentials.credentials)
+    if payload is None:
+        return None
+
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+
+    result = await session.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None or not user.is_active:
+        return None
+    return user
+
+
 async def get_current_agent(
     session: AsyncSession = Depends(get_db_session),
     x_api_key: str = Header(..., alias="X-API-Key"),

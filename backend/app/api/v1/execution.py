@@ -11,7 +11,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session
+from app.api.deps import get_db_session, get_optional_user
+from app.models.user import User
 from app.schemas.execution import TaskSubmitRequest, TaskStatusResponse
 from app.services.execution.engine import ExecutionEngine, TaskInput
 from app.services.execution.pipeline import ExperiencePipeline
@@ -28,14 +29,17 @@ router = APIRouter()
 )
 async def submit_task(
     request: TaskSubmitRequest,
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> TaskStatusResponse:
     """提交任务 - 同步执行 8 步流水线."""
+    user_id = str(current_user.id) if current_user else None
     pipeline = ExperiencePipeline(session)
     result = await pipeline.run(
         intent=request.intent,
         context=request.context,
         constraints=request.constraints,
+        user_id=user_id,
     )
 
     if result.status == "invalid":
@@ -66,14 +70,19 @@ async def submit_task(
     summary="提交任务（异步执行）",
     description="提交任务异步执行，返回 Celery 任务 ID。使用 GET /execution/tasks/{task_id} 查询状态。",
 )
-async def submit_task_async(request: TaskSubmitRequest) -> dict:
+async def submit_task_async(
+    request: TaskSubmitRequest,
+    current_user: User | None = Depends(get_optional_user),
+) -> dict:
     """提交任务 - 异步执行（通过 Celery）."""
     from app.services.execution.tasks import execute_task_async
 
+    user_id = str(current_user.id) if current_user else None
     task = execute_task_async.delay(
         intent=request.intent,
         context=request.context,
         constraints=request.constraints,
+        user_id=user_id,
     )
 
     return {

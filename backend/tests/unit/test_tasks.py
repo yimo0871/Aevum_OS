@@ -65,6 +65,7 @@ class TestExecuteTaskAsync:
             context=None,
             constraints=None,
             workflow=None,
+            user_id=None,
         )
 
     def test_execute_task_async_with_workflow(self) -> None:

@@ -146,22 +146,22 @@ class PriorityChain:
         domain: str | None, task_type: str | None,
     ) -> list[MatchResult]:
         """搜索用户自身经验."""
-        # MVP: 使用全局搜索（用户隔离在后期实现）
+        if not user_id:
+            return []
         try:
             return await self.matcher.match_by_vector(
-                query, limit=self.max_results, domain=domain, task_type=task_type
+                query, limit=self.max_results, domain=domain,
+                task_type=task_type, user_id=user_id
             )
         except Exception:
-            return await self.matcher.match_by_keywords(
-                query, limit=self.max_results, domain=domain
-            )
+            return []
 
     async def _search_community(
         self, query: str, community_id: str,
         domain: str | None, task_type: str | None,
     ) -> list[MatchResult]:
         """搜索社区经验."""
-        # MVP: 与全局搜索相同（社区隔离在后期实现）
+        # MVP: 社区搜索 = 全局搜索（排除自己的经验）
         try:
             return await self.matcher.match_by_vector(
                 query, limit=self.max_results, domain=domain, task_type=task_type

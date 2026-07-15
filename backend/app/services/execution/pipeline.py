@@ -87,6 +87,7 @@ class ExperiencePipeline:
         context: dict | None = None,
         constraints: dict | None = None,
         workflow: list[dict] | None = None,
+        user_id: str | None = None,
     ) -> PipelineResult:
         """运行完整的 8 步流水线.
 
@@ -95,6 +96,7 @@ class ExperiencePipeline:
             context: 任务上下文
             constraints: 约束条件
             workflow: 工作流定义（可选）
+            user_id: 用户 ID（用于数据隔离，关联生成的 Experience）
 
         Returns:
             PipelineResult: 流水线结果
@@ -176,6 +178,9 @@ class ExperiencePipeline:
             # MVP: 基于规则的基础评估
             evaluation_score = self._rule_based_evaluate(experience_create.model_dump())
             experience_create.confidence_score = evaluation_score
+
+            # 关联用户 ID（数据隔离）
+            experience_create.user_id = user_id
 
             # ── Step 7: 存入图谱 ──
             step7 = await self._execute_step(7, "store_into_graph", {

@@ -258,13 +258,10 @@ class TestPriorityChainSearchHelpers:
         session = AsyncMock()
         chain = PriorityChain(session)
         chain.matcher.match_by_vector = AsyncMock(side_effect=Exception("vector error"))
-        keyword_matches = [_make_match_result()]
-        chain.matcher.match_by_keywords = AsyncMock(return_value=keyword_matches)
 
         result = await chain._search_user("query", "user1", "devops", None)
 
-        assert result == keyword_matches
-        chain.matcher.match_by_keywords.assert_awaited_once()
+        assert result == []
 
     @pytest.mark.asyncio
     async def test_search_community_vector_success(self) -> None:

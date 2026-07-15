@@ -51,6 +51,7 @@ class ExperienceMatcher:
         min_similarity: float = -1.0,
         domain: str | None = None,
         task_type: str | None = None,
+        user_id: str | None = None,
     ) -> list[MatchResult]:
         """向量相似度匹配.
 
@@ -60,6 +61,7 @@ class ExperienceMatcher:
             min_similarity: 最低相似度阈值
             domain: 领域过滤
             task_type: 任务类型过滤
+            user_id: 用户 ID 过滤（数据隔离，仅匹配该用户的经验）
 
         Returns:
             匹配结果列表（按相似度降序）
@@ -92,6 +94,10 @@ class ExperienceMatcher:
         if task_type:
             sql = text(sql.text + " AND context->>'task_type' = :task_type")
             params["task_type"] = task_type
+
+        if user_id:
+            sql = text(sql.text + " AND user_id = :user_id")
+            params["user_id"] = user_id
 
         sql = text(sql.text + " AND 1 - (embedding <=> :vector) >= :min_sim")
         params["min_sim"] = min_similarity
@@ -135,6 +141,7 @@ class ExperienceMatcher:
         query: str,
         limit: int = 10,
         domain: str | None = None,
+        user_id: str | None = None,
     ) -> list[MatchResult]:
         """关键词匹配（当向量不可用时的降级方案）."""
         keywords = query.lower().split()
@@ -147,6 +154,9 @@ class ExperienceMatcher:
             query_stmt = query_stmt.where(
                 Experience.context["domain"].astext == domain
             )
+
+        if user_id:
+            query_stmt = query_stmt.where(Experience.user_id == user_id)
 
         result = await self.session.execute(query_stmt.limit(limit * 3))
         experiences = result.scalars().all()
