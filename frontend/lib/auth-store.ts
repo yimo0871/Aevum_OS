@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import type { User } from "@/types"
+import { authApi } from "@/lib/api-client"
 
 interface AuthState {
   token: string | null
@@ -10,7 +11,7 @@ interface AuthState {
   isLoading: boolean
   login: (token: string, user: User) => void
   logout: () => void
-  hydrate: () => void
+  hydrate: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -26,10 +27,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     localStorage.removeItem("aevum_token")
     set({ token: null, user: null, isAuthenticated: false, isLoading: false })
   },
-  hydrate: () => {
+  hydrate: async () => {
     const token = localStorage.getItem("aevum_token")
     if (token) {
-      set({ token, isAuthenticated: true, isLoading: false })
+      try {
+        const user = await authApi.getMe()
+        set({ token, user, isAuthenticated: true, isLoading: false })
+      } catch {
+        // Token invalid or expired - clear it
+        localStorage.removeItem("aevum_token")
+        set({ token: null, user: null, isAuthenticated: false, isLoading: false })
+      }
     } else {
       set({ isLoading: false })
     }
