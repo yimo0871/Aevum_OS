@@ -184,10 +184,26 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ## 恢复指令
 
+### 启动前检查（每次新对话必须执行）
+
 1. 读取此文件了解项目状态
-2. `docker-compose up -d db redis backend worker` 启动后端
-3. `cd frontend && npm run dev` 启动前端
-4. 访问 http://localhost:3000 验证系统（登录/注册/Dashboard/经验管理/检索/管理员/Agent/治理/人类表达）
-5. `docker exec aevum-backend python -m pytest tests/unit/ -v` 验证测试
-6. `docker exec aevum-backend python -m alembic current` 确认迁移版本
-7. Phase 0-9 全部完成，后续可推进长期愿景（经验市场/多模态/联邦网络）
+2. **文档同步检查**：运行 `git log --oneline -5`，对比本文件「Git 提交历史」和 CHANGELOG.md，若发现 commit 未反映在文档中，**必须先补齐文档再继续任何开发**
+3. `docker-compose up -d db redis backend worker` 启动后端
+4. `cd frontend && npm run dev` 启动前端
+5. 访问 http://localhost:3000 验证系统（登录/注册/Dashboard/经验管理/检索/管理员/Agent/治理/人类表达）
+6. `docker exec aevum-backend python -m pytest tests/unit/ -v` 验证测试
+7. `docker exec aevum-backend python -m alembic current` 确认迁移版本
+
+### 闭环检查清单（每轮工作结束前必须执行）
+
+> 详见 `Autonomous_Project_Execution_Charter.md` 第 5.1 节
+
+- [ ] 代码已 git commit
+- [ ] PROJECT_STATE.md 已同步（模块/Bug/测试数/迁移/Git历史）
+- [ ] CHANGELOG.md 已同步（Added/Fixed/Changed）
+- [ ] 后端 + 前端测试全通过
+- [ ] 对比 git log 确认无遗漏
+
+### 当前状态
+
+Phase 0-9 全部完成，后续可推进长期愿景（经验市场/多模态/联邦网络）
