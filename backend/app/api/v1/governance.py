@@ -1,6 +1,7 @@
 """治理层 API 路由 - 经验版本控制与信任评分."""
 from __future__ import annotations
 
+import logging
 from types import SimpleNamespace
 from uuid import UUID
 
@@ -15,6 +16,7 @@ from app.models.user import User
 from app.services.governance.trust import TrustScorer
 from app.services.governance.versioning import VersionManager
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -40,14 +42,26 @@ async def fork_experience(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ):
+    logger.info(
+        "[API:FORK] 收到请求: experience_id=%s, user=%s",
+        experience_id, current_user.username,
+    )
+
     source = await session.get(Experience, experience_id)
     if source is None:
+        logger.warning("[API:FORK] 源经验不存在: experience_id=%s", experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "源经验不存在")
 
     manager = VersionManager()
     new_experience = await manager.fork(experience_id, current_user.id, session)
     if new_experience is None:
+        logger.error("[API:FORK] VersionManager.fork 返回 None: experience_id=%s", experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "源经验不存在")
+
+    logger.info(
+        "[API:FORK] 分叉成功: source=%s -> forked=%s, user=%s",
+        source.id, new_experience.id, current_user.username,
+    )
 
     return {
         "forked_experience": new_experience.to_dict(),
@@ -66,8 +80,15 @@ async def improve_experience(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ):
+    logger.info(
+        "[API:IMPROVE] 收到请求: experience_id=%s, user=%s, improvements_keys=%s",
+        experience_id, current_user.username,
+        list(data.improvements.keys()) if data.improvements else [],
+    )
+
     source = await session.get(Experience, experience_id)
     if source is None:
+        logger.warning("[API:IMPROVE] 源经验不存在: experience_id=%s", experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "源经验不存在")
 
     manager = VersionManager()
@@ -75,7 +96,13 @@ async def improve_experience(
         experience_id, data.improvements, current_user.id, session
     )
     if new_experience is None:
+        logger.error("[API:IMPROVE] VersionManager.improve 返回 None: experience_id=%s", experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "源经验不存在")
+
+    logger.info(
+        "[API:IMPROVE] 改进成功: source=%s -> improved=%s, user=%s",
+        source.id, new_experience.id, current_user.username,
+    )
 
     return {
         "improved_experience": new_experience.to_dict(),
@@ -94,18 +121,35 @@ async def cite_experience(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ):
+    logger.info(
+        "[API:CITE] 收到请求: target_experience_id=%s (被引用), citing_experience_id=%s (引用方), user=%s",
+        experience_id, data.citing_experience_id, current_user.username,
+    )
+
     # 验证被引用的经验存在
     target = await session.get(Experience, experience_id)
     if target is None:
+        logger.warning("[API:CITE] 被引用的经验不存在: experience_id=%s", experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "被引用的经验不存在")
 
     # 验证引用方经验存在
     citing = await session.get(Experience, data.citing_experience_id)
     if citing is None:
+        logger.warning("[API:CITE] 引用方经验不存在: citing_experience_id=%s", data.citing_experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "引用方经验不存在")
+
+    logger.info(
+        "[API:CITE] 双方经验已验证: target='%s', citing='%s'",
+        target.intent[:60], citing.intent[:60],
+    )
 
     manager = VersionManager()
     relation = await manager.cite(experience_id, data.citing_experience_id, session)
+
+    logger.info(
+        "[API:CITE] 引用成功: relation_id=%s, source=%s -> target=%s, user=%s",
+        relation.id, data.citing_experience_id, experience_id, current_user.username,
+    )
 
     return {
         "id": str(relation.id),

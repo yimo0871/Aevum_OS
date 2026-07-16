@@ -21,6 +21,10 @@ from app.services.experience.graph import ExperienceGraph
 from app.services.experience.repository import ExperienceRepository
 from app.services.retrieval.embedder import get_embedder
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 
@@ -171,10 +175,16 @@ async def add_relation(
     data: RelationCreate,
     session: AsyncSession = Depends(get_db_session),
 ) -> RelationResponse:
+    logger.info(
+        "[API:ADD_RELATION] 收到请求: source=%s, target=%s, type=%s, weight=%.2f",
+        experience_id, data.target_id, data.relation_type, data.weight,
+    )
+
     repo = ExperienceRepository(session)
     # 验证源经验存在（使用 unfiltered 以支持所有可见性）
     source = await repo._get_by_id_unfiltered(experience_id)
     if source is None:
+        logger.warning("[API:ADD_RELATION] 源经验不存在: experience_id=%s", experience_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Source experience {experience_id} not found",
@@ -183,13 +193,25 @@ async def add_relation(
     # 验证目标经验存在
     target = await repo._get_by_id_unfiltered(data.target_id)
     if target is None:
+        logger.warning("[API:ADD_RELATION] 目标经验不存在: target_id=%s", data.target_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Target experience {data.target_id} not found",
         )
 
+    logger.info(
+        "[API:ADD_RELATION] 双方经验已验证: source='%s', target='%s'",
+        source.intent[:60], target.intent[:60],
+    )
+
     graph = ExperienceGraph(session)
     relation = await graph.add_relation(experience_id, data)
+
+    logger.info(
+        "[API:ADD_RELATION] 关系边已创建: relation_id=%s, source=%s -> target=%s, type=%s",
+        relation.id, experience_id, data.target_id, data.relation_type,
+    )
+
     return RelationResponse.model_validate(relation)
 
 
