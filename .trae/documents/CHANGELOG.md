@@ -4,6 +4,20 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-16 (LangGraph 适配器)
+
+#### LangGraph Agent 框架接入
+- `backend/aevum/adapters/langgraph.py` AevumRunner: 包裹 LangGraph 编译图，自动检索+存储经验
+  - invoke(): 执行前搜索 Aevum, 注入经验到 state, 执行后自动存储新经验
+  - ainvoke(): 异步版本
+  - with_experience_context(): 节点级装饰器，细粒度控制
+- `backend/aevum/demo_langgraph.py` 3 个真实任务场景演示
+  - Docker 部署 Python 应用 (devops)
+  - 编写 pytest 单元测试 (testing)
+  - 调试 Python TypeError (debugging)
+  - 验证结果: 场景3置信度 0.45->0.88 (+0.43), 失败项 3->0
+- `backend/tests/unit/test_langgraph_adapter.py` 10 个单元测试
+
 ### Added - 2026-07-16 (文档闭环 + 三层保障)
 
 #### 三层文档同步保障机制

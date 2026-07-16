@@ -8,7 +8,7 @@
 
 **Phase 8-9: 产品化升级 -- 已完成**
 
-Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。
+Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。
 
 > 剩余 20-25% 为长期愿景（经验市场、多模态、联邦网络等），不在当前上线计划范围内。
 
@@ -59,6 +59,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | Bug: evaluation_status | ✅ | 新经验默认 "pending" 被搜索过滤, 修复为 API 创建时设为 "evaluated" |
 | Bug: get_optional_user | ✅ | 只检查 JWT 不检查 API Key, 修复为支持 Agent API Key 认证(返回关联用户) |
 | Bug: 向量搜索无回退 | ✅ | HashEmbedder 不抛异常但返回空结果, 修复为向量搜索空时回退关键词搜索 |
+| LangGraph 适配器 | ✅ | AevumRunner 包裹 LangGraph, 自动检索+存储经验, 10 个单元测试, 3 个真实场景验证(置信度+0.43) |
 
 ---
 
@@ -140,7 +141,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 
 | 类型 | 数量 | 状态 |
 |------|------|------|
-| 后端单元测试 | 290 | ✅ 全通过 (含 15 个 SDK 测试) |
+| 后端单元测试 | 300 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试) |
 | 前端组件测试 | 64 | ✅ 全通过 (9个URL路径错误已修复) |
 | 端到端测试 | 8 | ✅ 全通过 |
 | API 压测 | 4 | ✅ 全通过 |
