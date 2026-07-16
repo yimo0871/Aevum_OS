@@ -63,6 +63,15 @@ class Experience(Base):
     # ── 数据隔离 ──
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
 
+    # ── 可见性 ──
+    # private: 仅创建者可见
+    # community: 同社区用户可见
+    # public: 所有人可见（含匿名）
+    visibility = Column(String(20), nullable=False, default="private", server_default="private", index=True)
+
+    # ── 社区关联 ──
+    community_id = Column(UUID(as_uuid=True), ForeignKey("communities.id"), nullable=True, index=True)
+
     # ── 审计字段 ──
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
@@ -110,6 +119,8 @@ class Experience(Base):
             "provenance": self.provenance,
             "version": self.version,
             "user_id": str(self.user_id) if self.user_id else None,
+            "visibility": self.visibility,
+            "community_id": str(self.community_id) if self.community_id else None,
             "evaluation_status": self.evaluation_status,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,

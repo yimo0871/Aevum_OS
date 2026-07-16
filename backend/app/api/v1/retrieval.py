@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db_session, get_optional_user
+from app.models.community import user_community
 from app.models.user import User
 from app.schemas.experience import (
     ExperienceResponse,
@@ -15,6 +17,16 @@ from app.schemas.experience import (
 from app.services.retrieval.priority_chain import PriorityChain
 
 router = APIRouter()
+
+
+async def _get_user_community_ids(session: AsyncSession, user_id: str) -> list[str]:
+    """查询用户所属的社区 ID 列表."""
+    result = await session.execute(
+        select(user_community.c.community_id).where(
+            user_community.c.user_id == user_id
+        )
+    )
+    return [str(row[0]) for row in result.fetchall()]
 
 
 @router.post(
@@ -30,6 +42,7 @@ async def search_experiences(
 ) -> list[ExperienceSearchResult]:
     """搜索经验 - 四级优先级链检索."""
     user_id = str(current_user.id) if current_user else None
+    community_ids = await _get_user_community_ids(session, user_id) if user_id else None
     chain = PriorityChain(session, min_results=request.limit, max_results=request.limit * 2)
 
     chain_results = await chain.search(
@@ -37,6 +50,7 @@ async def search_experiences(
         domain=request.domain,
         task_type=request.task_type,
         user_id=user_id,
+        community_ids=community_ids,
     )
 
     best_results = chain.get_best_results(chain_results, limit=request.limit)
@@ -70,6 +84,7 @@ async def recommend_experiences(
 ) -> list[ExperienceSearchResult]:
     """推荐经验."""
     user_id = str(current_user.id) if current_user else None
+    community_ids = await _get_user_community_ids(session, user_id) if user_id else None
     chain = PriorityChain(session, min_results=limit, max_results=limit * 2)
 
     chain_results = await chain.search(
@@ -77,6 +92,7 @@ async def recommend_experiences(
         domain=domain,
         task_type=task_type,
         user_id=user_id,
+        community_ids=community_ids,
     )
 
     best_results = chain.get_best_results(chain_results, limit=limit)
@@ -106,6 +122,7 @@ async def search_with_priority_chain(
 ) -> dict:
     """查看优先级链执行详情."""
     user_id = str(current_user.id) if current_user else None
+    community_ids = await _get_user_community_ids(session, user_id) if user_id else None
     chain = PriorityChain(session, min_results=limit, max_results=limit)
 
     chain_results = await chain.search(
@@ -113,6 +130,7 @@ async def search_with_priority_chain(
         domain=domain,
         task_type=task_type,
         user_id=user_id,
+        community_ids=community_ids,
     )
 
     return {

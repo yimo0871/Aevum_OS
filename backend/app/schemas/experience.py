@@ -65,6 +65,12 @@ class ExperienceBase(BaseModel):
     confidence_score: float = Field(default=0.0, ge=0.0, le=1.0, description="置信度评分")
     provenance: ExperienceProvenance = Field(default_factory=ExperienceProvenance)
     version: int = Field(default=1, ge=1, description="版本号")
+    visibility: str = Field(
+        default="private",
+        pattern="^(private|community|public)$",
+        description="可见性: private(仅创建者) | community(同社区) | public(所有人)",
+    )
+    community_id: UUID | None = Field(None, description="所属社区 ID")
 
     @field_validator("intent")
     @classmethod
@@ -93,6 +99,8 @@ class ExperienceUpdate(BaseModel):
     provenance: ExperienceProvenance | None = None
     version: int | None = Field(None, ge=1)
     evaluation_status: str | None = Field(None, pattern="^(pending|evaluated|skipped)$")
+    visibility: str | None = Field(None, pattern="^(private|community|public)$")
+    community_id: UUID | None = Field(None, description="所属社区 ID")
 
 
 class ExperienceResponse(ExperienceBase):
@@ -101,6 +109,8 @@ class ExperienceResponse(ExperienceBase):
     id: UUID
     timestamp: datetime
     user_id: UUID | None = Field(None, description="关联用户 ID（数据隔离）")
+    visibility: str = "private"
+    community_id: UUID | None = Field(None, description="所属社区 ID")
     evaluation_status: str = "pending"
     created_at: datetime
     updated_at: datetime

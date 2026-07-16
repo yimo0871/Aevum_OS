@@ -52,6 +52,9 @@ class ExperienceMatcher:
         domain: str | None = None,
         task_type: str | None = None,
         user_id: str | None = None,
+        visibility_levels: list[str] | None = None,
+        exclude_user_id: str | None = None,
+        community_ids: list[str] | None = None,
     ) -> list[MatchResult]:
         """向量相似度匹配.
 
@@ -62,6 +65,9 @@ class ExperienceMatcher:
             domain: 领域过滤
             task_type: 任务类型过滤
             user_id: 用户 ID 过滤（数据隔离，仅匹配该用户的经验）
+            visibility_levels: 可见性级别过滤（如 ['public'] 或 ['community', 'public']）
+            exclude_user_id: 排除该用户的经验（用于社区搜索排除自己的经验）
+            community_ids: 社区 ID 列表（用于社区搜索隔离，仅返回这些社区内的 community 可见性经验）
 
         Returns:
             匹配结果列表（按相似度降序）
@@ -80,6 +86,7 @@ class ExperienceMatcher:
             SELECT id, timestamp, context, intent, execution, outcome,
                    reflection, reusable_patterns, confidence_score,
                    provenance, version, evaluation_status, created_at, updated_at,
+                   visibility, user_id, community_id,
                    1 - (embedding <=> :vector) as similarity
             FROM experiences
             WHERE evaluation_status != 'pending'
@@ -98,6 +105,21 @@ class ExperienceMatcher:
         if user_id:
             sql = text(sql.text + " AND user_id = :user_id")
             params["user_id"] = user_id
+
+        if visibility_levels:
+            # PostgreSQL ANY 数组匹配
+            sql = text(sql.text + " AND visibility = ANY(:visibility_levels)")
+            params["visibility_levels"] = visibility_levels
+
+        if exclude_user_id:
+            sql = text(sql.text + " AND (user_id IS NULL OR user_id != :exclude_user_id)")
+            params["exclude_user_id"] = exclude_user_id
+
+        if community_ids:
+            # 社区隔离：community 可见性的经验仅返回用户所属社区内的
+            # public 可见性的经验不受社区限制
+            sql = text(sql.text + " AND (visibility != 'community' OR community_id = ANY(:community_ids))")
+            params["community_ids"] = community_ids
 
         sql = text(sql.text + " AND 1 - (embedding <=> :vector) >= :min_sim")
         params["min_sim"] = min_similarity
@@ -126,8 +148,11 @@ class ExperienceMatcher:
                 evaluation_status=row[11],
                 created_at=row[12],
                 updated_at=row[13],
+                visibility=row[14],
+                user_id=row[15],
+                community_id=row[16],
             )
-            similarity = row[14] if row[14] is not None else 0.0
+            similarity = row[17] if row[17] is not None else 0.0
             matches.append(MatchResult(
                 experience=exp,
                 similarity=similarity,
@@ -142,6 +167,9 @@ class ExperienceMatcher:
         limit: int = 10,
         domain: str | None = None,
         user_id: str | None = None,
+        visibility_levels: list[str] | None = None,
+        exclude_user_id: str | None = None,
+        community_ids: list[str] | None = None,
     ) -> list[MatchResult]:
         """关键词匹配（当向量不可用时的降级方案）."""
         keywords = query.lower().split()
@@ -157,6 +185,26 @@ class ExperienceMatcher:
 
         if user_id:
             query_stmt = query_stmt.where(Experience.user_id == user_id)
+
+        if visibility_levels:
+            query_stmt = query_stmt.where(
+                Experience.visibility.in_(visibility_levels)
+            )
+
+        if exclude_user_id:
+            query_stmt = query_stmt.where(
+                (Experience.user_id.is_(None)) | (Experience.user_id != exclude_user_id)
+            )
+
+        if community_ids:
+            # 社区隔离：community 可见性的经验仅返回用户所属社区内的
+            from sqlalchemy import or_
+            query_stmt = query_stmt.where(
+                or_(
+                    Experience.visibility != "community",
+                    Experience.community_id.in_(community_ids),
+                )
+            )
 
         result = await self.session.execute(query_stmt.limit(limit * 3))
         experiences = result.scalars().all()

@@ -7,7 +7,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session
+from app.api.deps import get_db_session, get_optional_user
+from app.models.user import User
 from app.schemas.experience import (
     ExperienceCreate,
     ExperienceListResponse,
@@ -45,7 +46,7 @@ async def create_experience(
     "",
     response_model=ExperienceListResponse,
     summary="列出经验",
-    description="分页列出经验，支持按领域、任务类型、置信度过滤。",
+    description="分页列出经验，支持按领域、任务类型、置信度、可见性过滤。仅返回当前用户有权查看的经验。",
 )
 async def list_experiences(
     page: int = Query(1, ge=1, description="页码"),
@@ -54,8 +55,11 @@ async def list_experiences(
     task_type: str | None = Query(None, description="任务类型过滤"),
     min_confidence: float | None = Query(None, ge=0.0, le=1.0, description="最低置信度"),
     evaluation_status: str | None = Query(None, description="评估状态过滤"),
+    visibility: str | None = Query(None, pattern="^(private|community|public)$", description="可见性过滤"),
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> ExperienceListResponse:
+    current_user_id = str(current_user.id) if current_user else None
     repo = ExperienceRepository(session)
     experiences, total = await repo.list(
         page=page,
@@ -64,6 +68,8 @@ async def list_experiences(
         task_type=task_type,
         min_confidence=min_confidence,
         evaluation_status=evaluation_status,
+        visibility=visibility,
+        current_user_id=current_user_id,
     )
     return ExperienceListResponse(
         items=[ExperienceResponse.model_validate(exp) for exp in experiences],
@@ -77,14 +83,16 @@ async def list_experiences(
     "/{experience_id}",
     response_model=ExperienceResponse,
     summary="获取经验",
-    description="根据 ID 获取单个 Experience 对象。",
+    description="根据 ID 获取单个 Experience 对象。仅返回当前用户有权查看的经验。",
 )
 async def get_experience(
     experience_id: UUID,
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> ExperienceResponse:
+    current_user_id = str(current_user.id) if current_user else None
     repo = ExperienceRepository(session)
-    experience = await repo.get_by_id(experience_id)
+    experience = await repo.get_by_id(experience_id, current_user_id=current_user_id)
     if experience is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -148,9 +156,9 @@ async def add_relation(
     data: RelationCreate,
     session: AsyncSession = Depends(get_db_session),
 ) -> RelationResponse:
-    # 验证源经验存在
     repo = ExperienceRepository(session)
-    source = await repo.get_by_id(experience_id)
+    # 验证源经验存在（使用 unfiltered 以支持所有可见性）
+    source = await repo._get_by_id_unfiltered(experience_id)
     if source is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -158,7 +166,7 @@ async def add_relation(
         )
 
     # 验证目标经验存在
-    target = await repo.get_by_id(data.target_id)
+    target = await repo._get_by_id_unfiltered(data.target_id)
     if target is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

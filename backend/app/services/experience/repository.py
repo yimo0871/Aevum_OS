@@ -4,11 +4,32 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.experience import Experience
 from app.schemas.experience import ExperienceCreate, ExperienceUpdate
+
+
+def build_visibility_filter(current_user_id: str | None):
+    """构建可见性过滤条件.
+
+    规则:
+    - 匿名用户 (current_user_id=None): 仅可见 visibility='public' 的经验
+    - 已认证用户: 可见自己的所有经验 + 他人的 community/public 经验
+
+    Args:
+        current_user_id: 当前用户 ID（None 表示匿名）
+
+    Returns:
+        SQLAlchemy 过滤条件
+    """
+    if current_user_id is None:
+        return Experience.visibility == "public"
+    return or_(
+        Experience.user_id == current_user_id,
+        Experience.visibility.in_(["community", "public"]),
+    )
 
 
 class ExperienceRepository:
@@ -30,14 +51,32 @@ class ExperienceRepository:
             provenance=data.provenance.model_dump(),
             version=data.version,
             user_id=data.user_id,
+            visibility=data.visibility,
+            community_id=data.community_id,
         )
         self.session.add(experience)
         await self.session.flush()
         await self.session.refresh(experience)
         return experience
 
-    async def get_by_id(self, experience_id: UUID) -> Experience | None:
-        """根据 ID 获取经验."""
+    async def get_by_id(
+        self,
+        experience_id: UUID,
+        current_user_id: str | None = None,
+    ) -> Experience | None:
+        """根据 ID 获取经验（受可见性权限约束）.
+
+        Args:
+            experience_id: 经验 ID
+            current_user_id: 当前用户 ID（None 表示匿名，仅可获取 public 经验）
+        """
+        query = select(Experience).where(Experience.id == experience_id)
+        query = query.where(build_visibility_filter(current_user_id))
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def _get_by_id_unfiltered(self, experience_id: UUID) -> Experience | None:
+        """根据 ID 获取经验（不过滤可见性，供内部操作使用）."""
         result = await self.session.execute(
             select(Experience).where(Experience.id == experience_id)
         )
@@ -51,15 +90,37 @@ class ExperienceRepository:
         task_type: str | None = None,
         min_confidence: float | None = None,
         evaluation_status: str | None = None,
+        visibility: str | None = None,
+        current_user_id: str | None = None,
     ) -> tuple[list[Experience], int]:
         """列出经验（分页 + 过滤）.
+
+        Args:
+            visibility: 显式按可见性过滤（private/community/public）
+            current_user_id: 当前用户 ID，用于可见性权限过滤
 
         Returns:
             (experiences, total_count)
         """
         query = select(Experience)
 
-        # ── 过滤条件 ──
+        # ── 可见性权限过滤 ──
+        if visibility:
+            # 显式指定 visibility 时，仍需确保权限：私有经验仅创建者可见
+            if visibility == "private" and current_user_id:
+                query = query.where(
+                    Experience.visibility == "private",
+                    Experience.user_id == current_user_id,
+                )
+            elif visibility == "private":
+                # 匿名用户无法看到任何私有经验
+                query = query.where("1 = 0")
+            else:
+                query = query.where(Experience.visibility == visibility)
+        else:
+            query = query.where(build_visibility_filter(current_user_id))
+
+        # ── 其他过滤条件 ──
         if domain:
             query = query.where(
                 Experience.context["domain"].astext == domain
@@ -88,7 +149,7 @@ class ExperienceRepository:
 
     async def update(self, experience_id: UUID, data: ExperienceUpdate) -> Experience | None:
         """更新经验."""
-        experience = await self.get_by_id(experience_id)
+        experience = await self._get_by_id_unfiltered(experience_id)
         if experience is None:
             return None
 
@@ -107,7 +168,7 @@ class ExperienceRepository:
             experience.provenance = update_data["provenance"] if isinstance(update_data["provenance"], dict) else update_data["provenance"].model_dump() if hasattr(update_data["provenance"], "model_dump") else update_data["provenance"]
 
         # ── 处理简单字段 ──
-        for field in ["intent", "reusable_patterns", "confidence_score", "version", "evaluation_status"]:
+        for field in ["intent", "reusable_patterns", "confidence_score", "version", "evaluation_status", "visibility", "community_id"]:
             if field in update_data and update_data[field] is not None:
                 setattr(experience, field, update_data[field])
 
@@ -117,7 +178,7 @@ class ExperienceRepository:
 
     async def delete(self, experience_id: UUID) -> bool:
         """删除经验."""
-        experience = await self.get_by_id(experience_id)
+        experience = await self._get_by_id_unfiltered(experience_id)
         if experience is None:
             return False
         await self.session.delete(experience)

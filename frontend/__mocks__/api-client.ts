@@ -132,6 +132,47 @@ export const workflowApi = {
   }),
 }
 
+export const authApi = {
+  register: jest.fn().mockResolvedValue({
+    access_token: "mock-token",
+    token_type: "bearer",
+    user: {
+      id: "user-1",
+      email: "test@test.com",
+      username: "testuser",
+      is_active: true,
+      is_admin: false,
+      bio: "",
+      created_at: "2024-01-01T00:00:00Z",
+      updated_at: "2024-01-01T00:00:00Z",
+    },
+  }),
+  login: jest.fn().mockResolvedValue({
+    access_token: "mock-token",
+    token_type: "bearer",
+    user: {
+      id: "user-1",
+      email: "test@test.com",
+      username: "testuser",
+      is_active: true,
+      is_admin: false,
+      bio: "",
+      created_at: "2024-01-01T00:00:00Z",
+      updated_at: "2024-01-01T00:00:00Z",
+    },
+  }),
+  getMe: jest.fn().mockResolvedValue({
+    id: "user-1",
+    email: "test@test.com",
+    username: "testuser",
+    is_active: true,
+    is_admin: false,
+    bio: "",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+  }),
+}
+
 export type Relation = {
   id: string
   source_id: string
@@ -151,4 +192,69 @@ export type SearchResult = {
 export type ToolInfo = {
   name: string
   description: string
+}
+
+export const adminApi = {
+  listUsers: jest.fn().mockResolvedValue({
+    items: [
+      { id: "u1", email: "admin@test.com", username: "admin", is_active: true, is_admin: true, bio: "", created_at: "2024-01-01T00:00:00Z", updated_at: "2024-01-01T00:00:00Z" },
+    ],
+    total: 1, page: 1, page_size: 20,
+  }),
+  updateUser: jest.fn().mockResolvedValue({ id: "u1", is_active: true, is_admin: false }),
+  deleteUser: jest.fn().mockResolvedValue(undefined),
+  listExperiences: jest.fn().mockResolvedValue({
+    items: [{ id: "e1", intent: "test", context: { domain: "dev" }, evaluation_status: "evaluated", user: { id: "u1", username: "admin", email: "admin@test.com" } }],
+    total: 1,
+  }),
+  deleteExperience: jest.fn().mockResolvedValue(undefined),
+  updateExperienceStatus: jest.fn().mockResolvedValue({ id: "e1", evaluation_status: "approved" }),
+  getStats: jest.fn().mockResolvedValue({
+    users: { total: 10, active: 8, admins: 2, recent_7d: 3 },
+    agents: { total: 5, active: 3 },
+    experiences: { total: 100, evaluated: 80, pending: 20, recent_7d: 15 },
+  }),
+}
+
+export const agentApi = {
+  create: jest.fn().mockResolvedValue({ id: "a1", user_id: "u1", name: "test-agent", description: "", is_active: true, capabilities: {}, created_at: "2024-01-01T00:00:00Z", last_active_at: null, api_key: "test-key-123" }),
+  list: jest.fn().mockResolvedValue([
+    { id: "a1", user_id: "u1", name: "test-agent", description: "Test", is_active: true, capabilities: {}, created_at: "2024-01-01T00:00:00Z", last_active_at: null },
+  ]),
+  delete: jest.fn().mockResolvedValue(undefined),
+  regenerateKey: jest.fn().mockResolvedValue({ id: "a1", user_id: "u1", name: "test-agent", description: "", is_active: true, capabilities: {}, created_at: "2024-01-01T00:00:00Z", last_active_at: null, api_key: "new-key-456" }),
+}
+
+export const governanceApi = {
+  fork: jest.fn().mockResolvedValue({ forked_experience: { id: "e2", intent: "forked" }, source_id: "e1" }),
+  improve: jest.fn().mockResolvedValue({ improved_experience: { id: "e3", intent: "improved" }, source_id: "e1" }),
+  cite: jest.fn().mockResolvedValue({ id: "r1", source_id: "e1", target_id: "e2", relation_type: "citation", weight: 1.0, created_at: "2024-01-01T00:00:00Z" }),
+  getTrust: jest.fn().mockResolvedValue({ experience_id: "e1", trust_score: 0.75, metrics: { usage_count: 10, success_rate: 0.8, citation_count: 5, reuse_count: 3, stability: 0.9 } }),
+  getLineage: jest.fn().mockResolvedValue({ experience_id: "e1", ancestors: [], descendants: [{ relation_id: "r1", relation_type: "fork", target_experience_id: "e2", experience: { id: "e2", intent: "forked" } }] }),
+}
+
+export const humanApi = {
+  createExpression: jest.fn().mockResolvedValue({
+    id: "h1", user_id: "u1", type: "text", content: { text: "test" }, metadata: {}, created_at: "2024-01-01T00:00:00Z", updated_at: "2024-01-01T00:00:00Z",
+  }),
+  listExpressions: jest.fn().mockResolvedValue({
+    items: [
+      { id: "h1", user_id: "u1", type: "text", content: { text: "hello" }, metadata: {}, created_at: "2024-01-01T00:00:00Z", updated_at: "2024-01-01T00:00:00Z" },
+    ],
+    total: 1, page: 1, page_size: 20,
+  }),
+  getExpression: jest.fn().mockResolvedValue({
+    id: "h1", user_id: "u1", type: "text", content: { text: "hello" }, metadata: {}, created_at: "2024-01-01T00:00:00Z", updated_at: "2024-01-01T00:00:00Z",
+  }),
+  updateExpression: jest.fn().mockResolvedValue({
+    id: "h1", user_id: "u1", type: "text", content: { text: "updated" }, metadata: {}, created_at: "2024-01-01T00:00:00Z", updated_at: "2024-01-01T00:00:00Z",
+  }),
+  deleteExpression: jest.fn().mockResolvedValue(undefined),
+  observe: jest.fn().mockResolvedValue([
+    { id: "h1", user_id: "u1", type: "text", content: { text: "match" }, metadata: {}, created_at: "2024-01-01T00:00:00Z", similarity: 0.85 },
+  ]),
+  createBridge: jest.fn().mockResolvedValue({
+    id: "b1", bridge_type: "inspiration", human_expression_id: "h1", experience_id: "e1", metadata: {}, created_by: "u1", created_at: "2024-01-01T00:00:00Z",
+  }),
+  listBridges: jest.fn().mockResolvedValue({ items: [], total: 0 }),
 }

@@ -36,11 +36,15 @@ class ExperienceFactory:
         reusable_patterns: list[dict] | None = None,
         confidence_score: float = 0.5,
         agent_signals: list[dict] | None = None,
+        visibility: str = "private",
     ) -> ExperienceCreate:
         """从执行追踪生成 Experience 创建请求.
 
         这是 8 步流水线 Step 5 的核心实现：
         将非结构化的执行过程转化为结构化的 Experience 对象。
+
+        Args:
+            visibility: 经验可见性 (private|community|public)，默认 private
         """
         # ── 构建上下文 ──
         exp_context = ExperienceContext(
@@ -84,6 +88,7 @@ class ExperienceFactory:
             confidence_score=confidence_score,
             provenance=exp_provenance,
             version=1,
+            visibility=visibility,
         )
 
     @staticmethod
@@ -101,6 +106,7 @@ class ExperienceFactory:
         reusable_patterns: list[dict] | None = None,
         confidence_score: float = 0.5,
         agent_signals: list[dict] | None = None,
+        visibility: str = "private",
     ) -> Experience:
         """从执行追踪直接生成 Experience ORM 模型."""
         create_schema = ExperienceFactory.from_trace(
@@ -117,6 +123,7 @@ class ExperienceFactory:
             reusable_patterns=reusable_patterns,
             confidence_score=confidence_score,
             agent_signals=agent_signals,
+            visibility=visibility,
         )
 
         return Experience(
@@ -131,4 +138,5 @@ class ExperienceFactory:
             provenance=create_schema.provenance.model_dump(),
             version=create_schema.version,
             evaluation_status="pending",
+            visibility=create_schema.visibility,
         )
