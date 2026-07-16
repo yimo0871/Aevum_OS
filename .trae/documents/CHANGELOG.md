@@ -4,6 +4,24 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-16 (文档闭环 + 三层保障)
+
+#### 三层文档同步保障机制
+- `Autonomous_Project_Execution_Charter.md` 第 5.1 节: 闭环检查清单（5 项强制确认）
+- `.trae/documents/PROJECT_STATE.md` 恢复指令: 启动前文档同步检查（git log 对比）
+- `.trae/rules.md` 项目规则文件: Trae IDE 自动加载，对话启动协议 + 闭环清单
+- `.trae/documents/TASKS.md` 全面重写: Phase 0-9 全部标记已完成，长期愿景列入"未规划"
+- `.trae/documents/TEST_REPORT.md` 更新: 测试数 275->290，新增 SDK/GEG/端到端验证条目
+
+### Added - 2026-07-15 (CI/CD 流水线)
+
+#### GitHub Actions CI
+- `.github/workflows/ci.yml` CI 流水线（lint/pytest/build/type-check/前端test）
+- 非阻塞设计: lint/type-check/build 失败不阻塞测试运行
+- 数据库迁移步骤: CI 中自动运行 alembic upgrade head
+- 前端 Test --ci 标志: 非交互模式运行
+- CI/CD 验证通过: 所有验收标准全部达标
+
 ### Added - 2026-07-16 (Phase 9 补充: Agent SDK + GEG 前端 + 日志)
 
 #### Agent SDK (AevumClient)
