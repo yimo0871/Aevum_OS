@@ -6,9 +6,9 @@
 
 ## 当前阶段
 
-**Phase 8-9: 产品化升级 -- 已完成**
+**Phase 8-9 + M1: 产品化升级 + 短期演进 -- 已完成**
 
-Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。
+Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。M1 短期演进已完成（检索精度优化 + 工作流模板库，5/5 子阶段）。
 
 > 剩余 20-25% 为长期愿景（经验市场、多模态、联邦网络等），不在当前上线计划范围内。
 
@@ -60,6 +60,17 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | Bug: get_optional_user | ✅ | 只检查 JWT 不检查 API Key, 修复为支持 Agent API Key 认证(返回关联用户) |
 | Bug: 向量搜索无回退 | ✅ | HashEmbedder 不抛异常但返回空结果, 修复为向量搜索空时回退关键词搜索 |
 | LangGraph 适配器 | ✅ | AevumRunner 包裹 LangGraph, 自动检索+存储经验, 10 个单元测试, 3 个真实场景验证(置信度+0.43) |
+
+### M1: 短期演进（检索精度 + 工作流库）
+
+| 模块 | 状态 | 详情 |
+|------|------|------|
+| M1-S1: 检索权重可配置化 | ✅ | config.py 新增 7 个权重配置项, ranker.py 从 Settings 读取, 支持环境变量覆盖 |
+| M1-S2: 检索质量评估指标 | ✅ | metrics.py 4 个 IR 指标 (precision@k, recall@k, MRR, NDCG), 22 个单元测试 |
+| M1-S3: WorkflowTemplate 模型 | ✅ | WorkflowTemplate ORM 模型 + Pydantic schemas, 迁移 0008 |
+| M1-S4: 工作流 API + Repository | ✅ | 5 个 API 端点 + WorkflowTemplateRepository CRUD, 24 个单元测试 |
+| M1-S5: 种子工作流模板 | ✅ | 10 个高频任务模板 (部署/测试/调试/审查/迁移/优化/安全/日志/CI-CD/文档) |
+| M1-S6: 文档同步 + 测试 | ✅ | 后端 346 个单元测试全通过, 所有文档已同步 |
 
 ---
 
@@ -127,6 +138,13 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 - GET /api/v1/retrieval/recommend -- 推荐（可选认证，按 visibility 权限过滤）
 - GET /api/v1/retrieval/priority-chain -- 优先级链执行详情
 
+### 工作流模板
+- GET /api/v1/workflows -- 列出工作流模板（支持 domain/task_type 过滤）
+- GET /api/v1/workflows/{id} -- 获取工作流模板详情
+- POST /api/v1/workflows -- 创建工作流模板
+- PUT /api/v1/workflows/{id} -- 更新工作流模板
+- POST /api/v1/workflows/{id}/use -- 使用工作流模板（计数+1）
+
 ### 评估
 - GET /api/v1/evaluation/dashboard -- Dashboard 数据
 - GET /api/v1/evaluation/metrics -- 系统指标
@@ -141,7 +159,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 
 | 类型 | 数量 | 状态 |
 |------|------|------|
-| 后端单元测试 | 300 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试) |
+| 后端单元测试 | 346 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试) |
 | 前端组件测试 | 64 | ✅ 全通过 (9个URL路径错误已修复) |
 | 端到端测试 | 8 | ✅ 全通过 |
 | API 压测 | 4 | ✅ 全通过 |
@@ -159,12 +177,15 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | 0005 | communities 表 + user_community 关联表 + experiences.community_id |
 | 0006 | human_expressions 表 (双世界架构 - 人类表达层) |
 | 0007 | world_bridges 表 (双世界桥接 - HumanExpression <-> Experience) |
+| 0008 | workflow_templates 表 (工作流模板库 - M1 短期演进) |
 
 ---
 
 ## Git 提交历史
 
 ```
+856bb73 feat: LangGraph adapter - AevumRunner for real Agent framework integration
+7098a9d docs: complete document sync closure - all 5 gaps fixed
 b02bcdf chore: enforce doc sync via 3-layer structural guarantee
 477eb5a docs: sync PROJECT_STATE + CHANGELOG with last 5 rounds of work
 ad16cd0 log: add detailed logging to fork/improve/cite critical paths
@@ -216,4 +237,4 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ### 当前状态
 
-**项目完成。** Phase 0-9 全部完成，所有文档已同步。后续可推进长期愿景（经验市场/多模态/联邦网络）。
+**M1 短期演进已完成。** Phase 0-9 + M1 全部完成，所有文档已同步。后续可推进 M2（Agent 原生 OS）或长期愿景（经验市场/多模态/联邦网络）。

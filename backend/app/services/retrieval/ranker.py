@@ -11,18 +11,22 @@
         trust_score,           # 信任评分（治理层）
     ) * decay_factor           # 衰减因子（治理层，乘法惩罚）
 
-各因子权重可配置，默认等权重。
+各因子权重可通过环境变量配置（M1-S1），默认值在 config.py Settings 中定义。
 """
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
+from app.core.config import get_settings
 from app.models.experience import Experience
 from app.services.governance.decay import DecayManager
 from app.services.governance.trust import TrustScorer
 from app.services.retrieval.matcher import MatchResult
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -69,8 +73,23 @@ class RankedResult:
         }
 
 
-# ── 默认权重 ──
+# ── 默认权重（从 Settings 读取，可通过环境变量覆盖） ──
 
+def _get_default_weights() -> dict[str, float]:
+    """从 Settings 读取权重配置."""
+    s = get_settings()
+    return {
+        "context_similarity": s.weight_context_similarity,
+        "success_rate": s.weight_success_rate,
+        "reuse_count": s.weight_reuse_count,
+        "domain_distance": s.weight_domain_distance,
+        "recency": s.weight_recency,
+        "confidence": s.weight_confidence,
+        "trust_score": s.weight_trust_score,
+    }
+
+
+# 保留常量供向后兼容（测试中使用）
 DEFAULT_WEIGHTS: dict[str, float] = {
     "context_similarity": 0.25,
     "success_rate": 0.15,
@@ -105,11 +124,12 @@ class ExperienceRanker:
         max_reuse_count: int = 100,
         recency_half_life_days: int = 30,
     ) -> None:
-        self.weights = weights or DEFAULT_WEIGHTS
+        self.weights = weights or _get_default_weights()
         self.max_reuse_count = max_reuse_count
         self.recency_half_life_days = recency_half_life_days
         self._trust_scorer = TrustScorer()
         self._decay_manager = DecayManager()
+        logger.debug("[Ranker] weights loaded: %s", self.weights)
 
     def rank(
         self,

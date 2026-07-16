@@ -59,6 +59,15 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: str = '["http://localhost:3000"]'
 
+    # Retrieval weights (M1-S1: configurable ranking weights)
+    weight_context_similarity: float = 0.25
+    weight_success_rate: float = 0.15
+    weight_reuse_count: float = 0.08
+    weight_domain_distance: float = 0.07
+    weight_recency: float = 0.12
+    weight_confidence: float = 0.13
+    weight_trust_score: float = 0.20
+
     @property
     def database_url_computed(self) -> str:
         """Compute database URL if not explicitly set."""

@@ -4,6 +4,23 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-16 (M1: 短期演进 - 检索精度 + 工作流库)
+
+#### 检索精度优化
+- `backend/app/core/config.py` 新增 7 个权重配置项（weight_context_similarity 等）
+- `backend/app/services/retrieval/ranker.py` 从 Settings 读取权重，支持环境变量覆盖
+- `backend/app/services/retrieval/metrics.py`（新建）4 个 IR 质量指标：precision@k, recall@k, MRR, NDCG
+- `backend/tests/unit/test_retrieval_metrics.py` 22 个测试
+
+#### 工作流库
+- `backend/app/models/workflow_template.py` WorkflowTemplate ORM 模型
+- `backend/app/schemas/workflow_template.py` Pydantic schemas (Create/Update/Response/List)
+- `backend/alembic/versions/0008_workflow_templates.py` 迁移 0008
+- `backend/app/services/experience/workflow_repository.py` CRUD repository
+- `backend/app/api/v1/workflows.py` 5 个 API 端点
+- `backend/app/services/bootstrap/workflow_seeds.py` 10 个种子工作流模板
+- `backend/tests/unit/test_workflow_template.py` 24 个测试
+
 ### Added - 2026-07-16 (LangGraph 适配器)
 
 #### LangGraph Agent 框架接入

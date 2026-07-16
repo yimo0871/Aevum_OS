@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-**Phase 0-9 全部完成** - 后端 300 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。
+**Phase 0-9 + M1 全部完成** - 后端 346 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。M1 短期演进完成（检索精度优化 + 工作流模板库）。
 
 ---
 
@@ -28,7 +28,7 @@
 
 | 测试项 | 结果 | 详情 |
 |--------|------|------|
-| 单元测试总数 | ✅ 300 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试) |
+| 单元测试总数 | ✅ 346 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试) |
 | 可见性过滤 | ✅ 通过 | private/community/public 三级隔离 |
 | 优先级链四级 | ✅ 通过 | 用户->社区->全球->外部 |
 | 信任评分排序 | ✅ 通过 | trust_score + decay_factor 接入 ranker |
@@ -41,6 +41,10 @@
 | SDK 端到端 | ✅ 通过 | 首次 45s -> 二次 12s，效率提升 73% |
 | GEG 前端 | ✅ 通过 | fork/improve/cite 操作 + 即时刷新 |
 | LangGraph 适配器 | ✅ 通过 | AevumRunner 10 个测试, 3 场景验证(置信度+0.43, 失败项3->0) |
+| 检索权重配置 | ✅ 通过 | 7 个权重因子支持环境变量覆盖, ranker 从 Settings 读取 |
+| 检索质量指标 | ✅ 通过 | precision@k, recall@k, MRR, NDCG 4 个 IR 指标 + 22 个测试 |
+| 工作流模板 CRUD | ✅ 通过 | WorkflowTemplate 模型 + 5 API 端点 + Repository, 24 个测试 |
+| 种子工作流模板 | ✅ 通过 | 10 个高频任务模板入库, API 可查询 |
 
 ### 前端测试（2026-07-16）
 
@@ -60,7 +64,7 @@
 | 用户登录 | ✅ 通过 | POST /api/v1/auth/login |
 | 经验列表 | ✅ 通过 | GET /api/v1/experiences (total=10001) |
 | 前端页面 | ✅ 通过 | /login, /register 可访问 |
-| 数据库迁移 | ✅ 通过 | alembic head = 0007 |
+| 数据库迁移 | ✅ 通过 | alembic head = 0008 |
 
 ---
 
@@ -85,11 +89,13 @@
 | `tests/unit/test_external.py` | 外部搜索 Provider + 集成 | 8 |
 | `tests/unit/test_sdk.py` | Agent SDK (AevumClient + MemoryContext) | 15 |
 | `tests/unit/test_langgraph_adapter.py` | LangGraph 适配器 (AevumRunner + decorator) | 10 |
+| `tests/unit/test_retrieval_metrics.py` | 检索质量指标 (precision/recall/MRR/NDCG) | 22 |
+| `tests/unit/test_workflow_template.py` | 工作流模板 CRUD + 列表 + 使用计数 | 24 |
 | `tests/e2e/test_pipeline_e2e.py` | 8步流水线/生命周期/人机分离 | 8 |
 | `tests/e2e/test_api_health.py` | API 路由/输入验证 | 9 |
 | `tests/integration/test_experiences_api.py` | API 端点集成 | 6 |
 
-**总计**: 300 单元测试 + 8 E2E + 6 集成 + 4 压测 = 318 测试用例
+**总计**: 346 单元测试 + 8 E2E + 6 集成 + 4 压测 = 364 测试用例
 
 ---
 

@@ -9,6 +9,7 @@ from app.models.experience import Experience, ExperienceRelation
 from app.models.human_expression import HumanExpression
 from app.models.user import User
 from app.models.world_bridge import WorldBridge
+from app.models.workflow_template import WorkflowTemplate
 
 __all__ = [
     "Base",
@@ -23,4 +24,5 @@ __all__ = [
     "user_community",
     "HumanExpression",
     "WorldBridge",
+    "WorkflowTemplate",
 ]
