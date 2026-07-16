@@ -2,9 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { experienceApi } from "@/lib/api-client"
+import { experienceApi, governanceApi } from "@/lib/api-client"
 import Link from "next/link"
-import { Search, Trash2, ExternalLink } from "lucide-react"
+import { Search, Trash2, ExternalLink, GitFork } from "lucide-react"
 
 export default function ExperiencesPage() {
   const queryClient = useQueryClient()
@@ -19,6 +19,11 @@ export default function ExperiencesPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => experienceApi.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["experiences"] }),
+  })
+
+  const forkMutation = useMutation({
+    mutationFn: (id: string) => governanceApi.fork(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["experiences"] }),
   })
 
@@ -119,6 +124,14 @@ export default function ExperiencesPage() {
                       <ExternalLink className="w-4 h-4" />
                     </button>
                   </Link>
+                  <button
+                    onClick={() => forkMutation.mutate(exp.id)}
+                    disabled={forkMutation.isPending}
+                    title="Fork 分叉"
+                    className="p-1.5 text-gray-400 hover:text-purple-600 rounded disabled:opacity-50"
+                  >
+                    <GitFork className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={() => {
                       if (confirm("确定删除这条经验？")) deleteMutation.mutate(exp.id)
