@@ -54,6 +54,9 @@ class TestMatchByVector:
             "evaluated",                               # evaluation_status
             datetime.now(timezone.utc),                # created_at
             datetime.now(timezone.utc),                # updated_at
+            "private",                                 # visibility
+            None,                                      # user_id
+            None,                                      # community_id
             0.85,                                      # similarity
         )
 
@@ -94,7 +97,8 @@ class TestMatchByVector:
         mock_row = (
             uuid.uuid4(), datetime.now(timezone.utc), {"domain": "devops"},
             "Deploy", {}, {"success": True}, {}, [], 0.8, {}, 1, "evaluated",
-            datetime.now(timezone.utc), datetime.now(timezone.utc), 0.7,
+            datetime.now(timezone.utc), datetime.now(timezone.utc),
+            "private", None, None, 0.7,
         )
         result_mock = MagicMock()
         result_mock.fetchall.return_value = [mock_row]
@@ -115,7 +119,8 @@ class TestMatchByVector:
         mock_row = (
             uuid.uuid4(), datetime.now(timezone.utc), {"domain": "devops"},
             "Deploy", {}, {"success": True}, {}, [], 0.8, {}, 1, "evaluated",
-            datetime.now(timezone.utc), datetime.now(timezone.utc), None,  # null similarity
+            datetime.now(timezone.utc), datetime.now(timezone.utc),
+            "private", None, None, None,  # null community_id, null similarity
         )
         result_mock = MagicMock()
         result_mock.fetchall.return_value = [mock_row]
@@ -135,7 +140,8 @@ class TestMatchByVector:
         mock_row = (
             uuid.uuid4(), datetime.now(timezone.utc), {"domain": "devops"},
             "Deploy", {}, {"success": True}, {}, [], 0.8, {}, 1, "evaluated",
-            datetime.now(timezone.utc), datetime.now(timezone.utc), 0.9,
+            datetime.now(timezone.utc), datetime.now(timezone.utc),
+            "private", None, None, 0.9,
         )
         result_mock = MagicMock()
         result_mock.fetchall.return_value = [mock_row]
@@ -281,3 +287,76 @@ class TestMatchResultToDict:
         assert d["experience_id"] == str(exp.id)
         assert d["similarity"] == 0.85
         assert d["matched_fields"] == ["vector", "intent"]
+
+
+class TestMatchByVectorVisibility:
+    """Test visibility filtering in match_by_vector."""
+
+    @pytest.mark.asyncio
+    async def test_visibility_levels_filter_applied(self) -> None:
+        session = AsyncMock()
+        mock_row = (
+            uuid.uuid4(), datetime.now(timezone.utc), {"domain": "devops"},
+            "Deploy", {}, {"success": True}, {}, [], 0.8, {}, 1, "evaluated",
+            datetime.now(timezone.utc), datetime.now(timezone.utc),
+            "public", None, None, 0.9,
+        )
+        result_mock = MagicMock()
+        result_mock.fetchall.return_value = [mock_row]
+        session.execute.return_value = result_mock
+
+        matcher = ExperienceMatcher(session)
+        with patch.object(matcher, "embedder") as mock_embedder:
+            mock_embedder.embed_async = AsyncMock(return_value=[0.1, 0.2])
+            matches = await matcher.match_by_vector(
+                "query", visibility_levels=["public", "community"]
+            )
+
+        assert len(matches) == 1
+        assert matches[0].experience.visibility == "public"
+
+    @pytest.mark.asyncio
+    async def test_exclude_user_id_filter_applied(self) -> None:
+        session = AsyncMock()
+        mock_row = (
+            uuid.uuid4(), datetime.now(timezone.utc), {"domain": "devops"},
+            "Deploy", {}, {"success": True}, {}, [], 0.8, {}, 1, "evaluated",
+            datetime.now(timezone.utc), datetime.now(timezone.utc),
+            "public", None, None, 0.9,
+        )
+        result_mock = MagicMock()
+        result_mock.fetchall.return_value = [mock_row]
+        session.execute.return_value = result_mock
+
+        matcher = ExperienceMatcher(session)
+        with patch.object(matcher, "embedder") as mock_embedder:
+            mock_embedder.embed_async = AsyncMock(return_value=[0.1, 0.2])
+            matches = await matcher.match_by_vector(
+                "query", exclude_user_id="user-123"
+            )
+
+        assert len(matches) == 1
+
+    @pytest.mark.asyncio
+    async def test_community_ids_filter_applied(self) -> None:
+        """community_ids 参数应正确过滤社区经验."""
+        session = AsyncMock()
+        mock_row = (
+            uuid.uuid4(), datetime.now(timezone.utc), {"domain": "devops"},
+            "Deploy", {}, {"success": True}, {}, [], 0.8, {}, 1, "evaluated",
+            datetime.now(timezone.utc), datetime.now(timezone.utc),
+            "community", None, "comm-1", 0.9,
+        )
+        result_mock = MagicMock()
+        result_mock.fetchall.return_value = [mock_row]
+        session.execute.return_value = result_mock
+
+        matcher = ExperienceMatcher(session)
+        with patch.object(matcher, "embedder") as mock_embedder:
+            mock_embedder.embed_async = AsyncMock(return_value=[0.1, 0.2])
+            matches = await matcher.match_by_vector(
+                "query", community_ids=["comm-1", "comm-2"]
+            )
+
+        assert len(matches) == 1
+        assert matches[0].experience.community_id == "comm-1"

@@ -31,6 +31,7 @@ class TestExperienceFactory:
         assert create_schema.outcome.success is True
         assert create_schema.confidence_score == 0.92
         assert create_schema.version == 1
+        assert create_schema.visibility == "private"
 
     def test_from_trace_defaults(self) -> None:
         from app.services.experience.factory import ExperienceFactory
@@ -77,6 +78,7 @@ class TestExperienceFactory:
         assert model.timestamp is not None
         assert model.version == 1
         assert model.evaluation_status == "pending"
+        assert model.visibility == "private"
 
     def test_from_trace_with_failure(self) -> None:
         from app.services.experience.factory import ExperienceFactory
@@ -98,3 +100,38 @@ class TestExperienceFactory:
         assert create_schema.outcome.success is False
         assert create_schema.reflection.what_failed == ["Port conflict during deploy"]
         assert create_schema.confidence_score == 0.3
+
+    def test_from_trace_with_custom_visibility(self) -> None:
+        from app.schemas.experience import ExperienceCreate
+        from app.services.experience.factory import ExperienceFactory
+
+        create_schema = ExperienceFactory.from_trace(
+            intent="Public task",
+            context={"domain": "devops", "task_type": "deployment"},
+            steps=[],
+            tools=[],
+            trace={},
+            outcome_success=True,
+            outcome_metrics={},
+            visibility="public",
+        )
+
+        assert create_schema.visibility == "public"
+
+    def test_from_trace_to_model_with_visibility(self) -> None:
+        from app.models.experience import Experience
+        from app.services.experience.factory import ExperienceFactory
+
+        model = ExperienceFactory.from_trace_to_model(
+            intent="Community task",
+            context={"domain": "devops", "task_type": "deployment"},
+            steps=[],
+            tools=[],
+            trace={},
+            outcome_success=True,
+            outcome_metrics={},
+            visibility="community",
+        )
+
+        assert isinstance(model, Experience)
+        assert model.visibility == "community"

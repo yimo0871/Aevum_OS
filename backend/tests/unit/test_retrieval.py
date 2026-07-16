@@ -92,6 +92,7 @@ class TestExperienceRanker:
         confidence: float = 0.8,
         domain: str = "devops",
         days_ago: int = 1,
+        provenance: dict | None = None,
     ) -> "Experience":
         from app.models.experience import Experience
 
@@ -101,6 +102,7 @@ class TestExperienceRanker:
             intent="Test intent",
             outcome={"success": success, "metrics": {}},
             confidence_score=confidence,
+            provenance=provenance or {},
             created_at=datetime.now(timezone.utc) - timedelta(days=days_ago),
         )
 
@@ -173,6 +175,79 @@ class TestExperienceRanker:
         ranker.update_weights({"confidence": 0.5})
         assert ranker.get_weights()["confidence"] == 0.5
         assert ranker.get_weights()["context_similarity"] == original["context_similarity"]
+
+    def test_trust_score_factor_computed(self) -> None:
+        """信任评分应被计算并影响排序."""
+        from app.services.retrieval.matcher import MatchResult
+        from app.services.retrieval.ranker import ExperienceRanker
+
+        # 高信任经验：有使用次数和引用次数
+        exp_high_trust = self._make_experience(
+            provenance={"usage_count": 50, "citation_count": 10},
+        )
+        # 低信任经验：无使用和引用
+        exp_low_trust = self._make_experience(
+            provenance={"usage_count": 0, "citation_count": 0},
+        )
+
+        match1 = MatchResult(experience=exp_high_trust, similarity=0.5, matched_fields=["vector"])
+        match2 = MatchResult(experience=exp_low_trust, similarity=0.5, matched_fields=["vector"])
+
+        ranker = ExperienceRanker()
+        results = ranker.rank([match1, match2])
+
+        assert results[0].factors.trust_score > results[1].factors.trust_score
+        assert results[0].experience is exp_high_trust
+
+    def test_decay_factor_applied(self) -> None:
+        """衰减因子应作为乘法惩罚降低旧经验得分."""
+        from app.services.retrieval.matcher import MatchResult
+        from app.services.retrieval.ranker import ExperienceRanker
+
+        # 新经验（90天内，decay=1.0）
+        exp_new = self._make_experience(days_ago=1)
+        # 旧经验（超过90天，decay<1.0）
+        exp_old = self._make_experience(days_ago=200)
+
+        match1 = MatchResult(experience=exp_new, similarity=0.5, matched_fields=["vector"])
+        match2 = MatchResult(experience=exp_old, similarity=0.5, matched_fields=["vector"])
+
+        ranker = ExperienceRanker()
+        results = ranker.rank([match1, match2])
+
+        assert results[0].factors.decay_factor == 1.0  # 新经验无衰减
+        assert results[1].factors.decay_factor < 1.0   # 旧经验有衰减
+        assert results[0].total_score > results[1].total_score
+
+    def test_decay_factor_no_penalty_for_recent(self) -> None:
+        """90天内的经验不应有衰减惩罚."""
+        from app.services.retrieval.matcher import MatchResult
+        from app.services.retrieval.ranker import ExperienceRanker
+
+        exp = self._make_experience(days_ago=30)
+        match = MatchResult(experience=exp, similarity=0.8, matched_fields=["vector"])
+
+        ranker = ExperienceRanker()
+        results = ranker.rank([match])
+
+        assert results[0].factors.decay_factor == 1.0
+
+    def test_trust_score_in_factors_dict(self) -> None:
+        """trust_score 和 decay_factor 应出现在 factors.to_dict() 中."""
+        from app.services.retrieval.matcher import MatchResult
+        from app.services.retrieval.ranker import ExperienceRanker
+
+        exp = self._make_experience()
+        match = MatchResult(experience=exp, similarity=0.7, matched_fields=["vector"])
+
+        ranker = ExperienceRanker()
+        results = ranker.rank([match])
+
+        factors_dict = results[0].factors.to_dict()
+        assert "trust_score" in factors_dict
+        assert "decay_factor" in factors_dict
+        assert factors_dict["trust_score"] >= 0.0
+        assert factors_dict["decay_factor"] > 0.0
 
 
 class TestPriorityLevel:

@@ -31,6 +31,7 @@ def _make_experience_create(**overrides) -> ExperienceCreate:
         confidence_score=0.9,
         provenance=ExperienceProvenance(agent_signals=[{"agent_id": "a1"}]),
         version=1,
+        visibility="private",
     )
     defaults.update(overrides)
     return ExperienceCreate(**defaults)
@@ -53,6 +54,7 @@ def _make_experience(**overrides) -> Experience:
         evaluation_status="pending",
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
+        visibility="private",
     )
     defaults.update(overrides)
     return Experience(**defaults)
@@ -94,6 +96,7 @@ class TestExperienceRepositoryCreate:
         assert added_obj.outcome["success"] is True
         assert added_obj.reflection["what_worked"] == ["docker"]
         assert added_obj.provenance["agent_signals"] == [{"agent_id": "a1"}]
+        assert added_obj.visibility == "private"
 
 
 class TestExperienceRepositoryGetById:
@@ -406,3 +409,96 @@ class TestExperienceRepositoryUpdateEmbedding:
 
         session.execute.assert_awaited_once()
         session.flush.assert_awaited_once()
+
+
+class TestVisibilityFiltering:
+    """Test visibility-based access control."""
+
+    @pytest.mark.asyncio
+    async def test_get_by_id_anonymous_cannot_see_private(self) -> None:
+        """Anonymous user (current_user_id=None) cannot retrieve private experiences."""
+        session = AsyncMock()
+        # Mock returns None because visibility filter would exclude private exp
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        session.execute.return_value = result_mock
+
+        repo = ExperienceRepository(session)
+        result = await repo.get_by_id(uuid.uuid4(), current_user_id=None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_get_by_id_owner_can_see_private(self) -> None:
+        """Owner can retrieve their own private experiences."""
+        session = AsyncMock()
+        exp = _make_experience(visibility="private")
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = exp
+        session.execute.return_value = result_mock
+
+        repo = ExperienceRepository(session)
+        result = await repo.get_by_id(exp.id, current_user_id=str(exp.user_id) if exp.user_id else "user1")
+
+        assert result is exp
+
+    @pytest.mark.asyncio
+    async def test_get_by_id_anonymous_can_see_public(self) -> None:
+        """Anonymous user can retrieve public experiences."""
+        session = AsyncMock()
+        exp = _make_experience(visibility="public")
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = exp
+        session.execute.return_value = result_mock
+
+        repo = ExperienceRepository(session)
+        result = await repo.get_by_id(exp.id, current_user_id=None)
+
+        assert result is exp
+
+    @pytest.mark.asyncio
+    async def test_list_with_visibility_filter(self) -> None:
+        """List with explicit visibility filter."""
+        session = AsyncMock()
+        count_result = MagicMock()
+        count_result.scalar.return_value = 1
+        data_result = MagicMock()
+        scalars_mock = MagicMock()
+        scalars_mock.all.return_value = [_make_experience(visibility="public")]
+        data_result.scalars.return_value = scalars_mock
+
+        session.execute.side_effect = [count_result, data_result]
+
+        repo = ExperienceRepository(session)
+        experiences, total = await repo.list(visibility="public", current_user_id="user1")
+
+        assert total == 1
+        assert len(experiences) == 1
+
+    @pytest.mark.asyncio
+    async def test_create_with_visibility(self) -> None:
+        """Create experience with community visibility."""
+        session = AsyncMock()
+        repo = ExperienceRepository(session)
+        data = _make_experience_create(visibility="community")
+
+        await repo.create(data)
+
+        added_obj = session.add.call_args[0][0]
+        assert added_obj.visibility == "community"
+
+    @pytest.mark.asyncio
+    async def test_update_visibility(self) -> None:
+        """Update experience visibility."""
+        session = AsyncMock()
+        exp = _make_experience(visibility="private")
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = exp
+        session.execute.return_value = result_mock
+
+        repo = ExperienceRepository(session)
+        update_data = ExperienceUpdate(visibility="public")
+        result = await repo.update(exp.id, update_data)
+
+        assert result is exp
+        assert exp.visibility == "public"

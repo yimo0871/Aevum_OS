@@ -118,7 +118,7 @@ class TestPriorityChainSearch:
             [_make_ranked_result() for _ in range(3)],
         ])
 
-        results = await chain.search("query", user_id="user1", community_id="comm1")
+        results = await chain.search("query", user_id="user1", community_ids=["comm1"])
 
         assert len(results) == 2
         assert results[0].level == PriorityLevel.USER
@@ -139,7 +139,7 @@ class TestPriorityChainSearch:
             [_make_ranked_result() for _ in range(5)],  # global
         ])
 
-        results = await chain.search("query", user_id="user1", community_id="comm1")
+        results = await chain.search("query", user_id="user1", community_ids=["comm1"])
 
         assert len(results) == 3
         assert results[2].level == PriorityLevel.GLOBAL
@@ -156,7 +156,7 @@ class TestPriorityChainSearch:
         chain._search_global = AsyncMock(return_value=[])
         chain.ranker.rank = MagicMock(return_value=[])
 
-        results = await chain.search("query", user_id="user1", community_id="comm1")
+        results = await chain.search("query", user_id="user1", community_ids=["comm1"])
 
         assert len(results) == 4
         assert results[3].level == PriorityLevel.EXTERNAL
@@ -217,7 +217,7 @@ class TestPriorityChainSearch:
             [_make_ranked_result() for _ in range(3)],  # global
         ])
 
-        results = await chain.search("query", user_id="u1", community_id="c1")
+        results = await chain.search("query", user_id="u1", community_ids=["c1"])
 
         assert len(results) == 3
         # External not included
@@ -270,7 +270,7 @@ class TestPriorityChainSearchHelpers:
         matches = [_make_match_result()]
         chain.matcher.match_by_vector = AsyncMock(return_value=matches)
 
-        result = await chain._search_community("query", "comm1", "devops", "deployment")
+        result = await chain._search_community("query", ["comm1"], "devops", "deployment")
 
         assert result == matches
 
@@ -280,7 +280,7 @@ class TestPriorityChainSearchHelpers:
         chain = PriorityChain(session)
         chain.matcher.match_by_vector = AsyncMock(side_effect=Exception("error"))
 
-        result = await chain._search_community("query", "comm1", None, None)
+        result = await chain._search_community("query", ["comm1"], None, None)
 
         assert result == []
 
@@ -349,3 +349,66 @@ class TestGetBestResults:
         best = chain.get_best_results([], limit=5)
 
         assert best == []
+
+
+class TestPriorityChainVisibility:
+    """Test visibility filtering in priority chain."""
+
+    @pytest.mark.asyncio
+    async def test_community_search_passes_visibility_and_exclude_user(self) -> None:
+        """Community search should filter by community+public visibility, exclude own experiences, and pass community_ids."""
+        session = AsyncMock()
+        chain = PriorityChain(session, min_results=5, max_results=10)
+        chain.matcher.match_by_vector = AsyncMock(return_value=[])
+
+        await chain._search_community("query", ["comm1"], "devops", "deployment", exclude_user_id="user1")
+
+        chain.matcher.match_by_vector.assert_awaited_once_with(
+            "query", limit=10, domain="devops", task_type="deployment",
+            visibility_levels=["community", "public"],
+            exclude_user_id="user1",
+            community_ids=["comm1"],
+        )
+
+    @pytest.mark.asyncio
+    async def test_global_search_passes_public_visibility(self) -> None:
+        """Global search should filter by public visibility only."""
+        session = AsyncMock()
+        chain = PriorityChain(session)
+        chain.matcher.match_by_vector = AsyncMock(return_value=[])
+
+        await chain._search_global("query", "devops", "deployment")
+
+        chain.matcher.match_by_vector.assert_awaited_once_with(
+            "query", limit=10, domain="devops", task_type="deployment",
+            visibility_levels=["public"],
+        )
+
+    @pytest.mark.asyncio
+    async def test_user_search_no_visibility_filter(self) -> None:
+        """User search should not filter by visibility (user sees all own experiences)."""
+        session = AsyncMock()
+        chain = PriorityChain(session)
+        chain.matcher.match_by_vector = AsyncMock(return_value=[])
+
+        await chain._search_user("query", "user1", "devops", "deployment")
+
+        chain.matcher.match_by_vector.assert_awaited_once_with(
+            "query", limit=10, domain="devops", task_type="deployment",
+            user_id="user1",
+        )
+
+    @pytest.mark.asyncio
+    async def test_global_fallback_keywords_with_visibility(self) -> None:
+        """Global fallback to keywords should pass visibility filter."""
+        session = AsyncMock()
+        chain = PriorityChain(session)
+        chain.matcher.match_by_vector = AsyncMock(side_effect=Exception("error"))
+        chain.matcher.match_by_keywords = AsyncMock(return_value=[])
+
+        await chain._search_global("query", "devops", None)
+
+        chain.matcher.match_by_keywords.assert_awaited_once_with(
+            "query", limit=10, domain="devops",
+            visibility_levels=["public"],
+        )
