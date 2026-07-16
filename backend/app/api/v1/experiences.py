@@ -19,6 +19,7 @@ from app.schemas.experience import (
 )
 from app.services.experience.graph import ExperienceGraph
 from app.services.experience.repository import ExperienceRepository
+from app.services.retrieval.embedder import get_embedder
 
 router = APIRouter()
 
@@ -39,6 +40,20 @@ async def create_experience(
 ) -> ExperienceResponse:
     repo = ExperienceRepository(session)
     experience = await repo.create(data)
+
+    # API 创建的经验视为已评估（Agent 已执行并反思）
+    experience.evaluation_status = "evaluated"
+    await session.commit()
+
+    # 生成 embedding 以支持向量检索
+    try:
+        embedder = get_embedder()
+        embed_text = f"{data.intent} {data.context.domain} {data.context.task_type}"
+        embedding = await embedder.embed_async(embed_text)
+        await repo.update_embedding(experience.id, embedding)
+    except Exception:
+        pass  # embedding 失败不阻塞经验创建
+
     return ExperienceResponse.model_validate(experience)
 
 

@@ -64,16 +64,15 @@ class AevumClient:
         Returns:
             按相似度排序的经验列表
         """
-        params: dict[str, Any] = {"query": query, "limit": limit}
+        body: dict[str, Any] = {"query": query, "limit": limit}
         if domain:
-            params["domain"] = domain
+            body["domain"] = domain
         if task_type:
-            params["task_type"] = task_type
+            body["task_type"] = task_type
 
-        resp = self._client.get("/api/v1/retrieval/search", params=params)
+        resp = self._client.post("/api/v1/retrieval/search", json=body)
         resp.raise_for_status()
         data = resp.json()
-        # API 返回 RankedResult 列表
         if isinstance(data, list):
             return [SearchResult.from_api(item) for item in data]
         return []

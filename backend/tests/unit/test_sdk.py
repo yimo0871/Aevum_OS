@@ -106,7 +106,7 @@ class TestAevumClient:
         ]
         mock_resp.raise_for_status = Mock()
         mock_client = Mock()
-        mock_client.get.return_value = mock_resp
+        mock_client.post.return_value = mock_resp
         mock_client_cls.return_value = mock_client
 
         client = AevumClient(api_key="ak_test")
@@ -115,7 +115,7 @@ class TestAevumClient:
         assert len(results) == 1
         assert results[0].intent == "deploy"
         assert results[0].similarity == 0.9
-        mock_client.get.assert_called_once()
+        mock_client.post.assert_called_once()
 
     @patch("aevum.client.httpx.Client")
     def test_search_empty(self, mock_client_cls: Mock) -> None:
@@ -123,7 +123,7 @@ class TestAevumClient:
         mock_resp.json.return_value = []
         mock_resp.raise_for_status = Mock()
         mock_client = Mock()
-        mock_client.get.return_value = mock_resp
+        mock_client.post.return_value = mock_resp
         mock_client_cls.return_value = mock_client
 
         client = AevumClient(api_key="ak_test")
@@ -175,19 +175,18 @@ class TestMemoryContext:
     @patch("aevum.client.httpx.Client")
     def test_memory_full_loop(self, mock_client_cls: Mock) -> None:
         """Test the full memory loop: search -> execute -> store."""
-        # Mock search response
+        # Mock search response (first POST)
         search_resp = Mock()
         search_resp.json.return_value = []
         search_resp.raise_for_status = Mock()
 
-        # Mock create response
+        # Mock create response (second POST)
         create_resp = Mock()
         create_resp.json.return_value = {"id": "new-exp", "intent": "test"}
         create_resp.raise_for_status = Mock()
 
         mock_client = Mock()
-        mock_client.get.return_value = search_resp
-        mock_client.post.return_value = create_resp
+        mock_client.post.side_effect = [search_resp, create_resp]
         mock_client_cls.return_value = mock_client
 
         client = AevumClient(api_key="ak_test")
@@ -206,12 +205,13 @@ class TestMemoryContext:
             )
 
         # After exit, create_experience should have been called
-        assert mock_client.post.called
-        post_body = mock_client.post.call_args[1]["json"]
-        assert post_body["intent"] == "deploy app"
-        assert post_body["outcome"]["success"] is True
-        assert post_body["reflection"]["what_worked"] == ["docker build"]
-        assert post_body["confidence_score"] == 0.9
+        assert mock_client.post.call_count == 2
+        # Second call is create_experience
+        create_body = mock_client.post.call_args_list[1][1]["json"]
+        assert create_body["intent"] == "deploy app"
+        assert create_body["outcome"]["success"] is True
+        assert create_body["reflection"]["what_worked"] == ["docker build"]
+        assert create_body["confidence_score"] == 0.9
 
     @patch("aevum.client.httpx.Client")
     def test_memory_with_existing_experience(self, mock_client_cls: Mock) -> None:
@@ -235,8 +235,7 @@ class TestMemoryContext:
         create_resp.raise_for_status = Mock()
 
         mock_client = Mock()
-        mock_client.get.return_value = search_resp
-        mock_client.post.return_value = create_resp
+        mock_client.post.side_effect = [search_resp, create_resp]
         mock_client_cls.return_value = mock_client
 
         client = AevumClient(api_key="ak_test")
@@ -251,12 +250,7 @@ class TestMemoryContext:
     def test_memory_search_failure_no_block(self, mock_client_cls: Mock) -> None:
         """Search failure should not block execution."""
         mock_client = Mock()
-        mock_client.get.side_effect = Exception("Network error")
-
-        create_resp = Mock()
-        create_resp.json.return_value = {"id": "new"}
-        create_resp.raise_for_status = Mock()
-        mock_client.post.return_value = create_resp
+        mock_client.post.side_effect = [Exception("Network error"), Mock(json=lambda: {"id": "new"}, raise_for_status=lambda: None)]
         mock_client_cls.return_value = mock_client
 
         client = AevumClient(api_key="ak_test")
@@ -265,8 +259,8 @@ class TestMemoryContext:
             assert mem.relevant_experiences == []
             mem.record_outcome(success=True)
 
-        # Experience still stored
-        assert mock_client.post.called
+        # Experience still stored (second post call)
+        assert mock_client.post.call_count == 2
 
     @patch("aevum.client.httpx.Client")
     def test_memory_store_failure_no_crash(self, mock_client_cls: Mock) -> None:
@@ -276,8 +270,7 @@ class TestMemoryContext:
         search_resp.raise_for_status = Mock()
 
         mock_client = Mock()
-        mock_client.get.return_value = search_resp
-        mock_client.post.side_effect = Exception("Store failed")
+        mock_client.post.side_effect = [search_resp, Exception("Store failed")]
         mock_client_cls.return_value = mock_client
 
         client = AevumClient(api_key="ak_test")

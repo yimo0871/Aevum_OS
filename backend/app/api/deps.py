@@ -86,25 +86,38 @@ async def get_current_admin(
 
 async def get_optional_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    x_api_key: str | None = Header(None, alias="X-API-Key"),
     session: AsyncSession = Depends(get_db_session),
 ) -> User | None:
-    """可选认证 - 如果 token 存在则返回用户，否则返回 None（不抛异常）."""
-    if credentials is None or credentials.scheme.lower() != "bearer":
-        return None
+    """可选认证 - 支持 JWT Bearer token 或 Agent API Key.
 
-    payload = decode_access_token(credentials.credentials)
-    if payload is None:
-        return None
+    优先检查 JWT，其次检查 API Key（返回 Agent 关联的用户）。
+    如果都没有则返回 None（不抛异常）。
+    """
+    # 1. 尝试 JWT Bearer token
+    if credentials and credentials.scheme.lower() == "bearer":
+        payload = decode_access_token(credentials.credentials)
+        if payload:
+            user_id = payload.get("sub")
+            if user_id:
+                result = await session.execute(select(User).where(User.id == user_id))
+                user = result.scalar_one_or_none()
+                if user and user.is_active:
+                    return user
 
-    user_id = payload.get("sub")
-    if not user_id:
-        return None
+    # 2. 尝试 Agent API Key
+    if x_api_key:
+        result = await session.execute(
+            select(Agent).where(Agent.api_key == x_api_key, Agent.is_active.is_(True))
+        )
+        agent = result.scalar_one_or_none()
+        if agent and agent.user_id:
+            result = await session.execute(select(User).where(User.id == agent.user_id))
+            user = result.scalar_one_or_none()
+            if user and user.is_active:
+                return user
 
-    result = await session.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
-    if user is None or not user.is_active:
-        return None
-    return user
+    return None
 
 
 async def get_current_agent(

@@ -376,11 +376,17 @@ class TestPriorityChainVisibility:
         session = AsyncMock()
         chain = PriorityChain(session)
         chain.matcher.match_by_vector = AsyncMock(return_value=[])
+        chain.matcher.match_by_keywords = AsyncMock(return_value=[])
 
         await chain._search_global("query", "devops", "deployment")
 
         chain.matcher.match_by_vector.assert_awaited_once_with(
             "query", limit=10, domain="devops", task_type="deployment",
+            visibility_levels=["public"],
+        )
+        # Should fall back to keyword search when vector returns empty
+        chain.matcher.match_by_keywords.assert_awaited_once_with(
+            "query", limit=10, domain="devops",
             visibility_levels=["public"],
         )
 

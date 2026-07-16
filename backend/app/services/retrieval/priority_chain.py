@@ -186,8 +186,15 @@ class PriorityChain:
     ) -> list[MatchResult]:
         """搜索全球经验（visibility=public）."""
         try:
-            return await self.matcher.match_by_vector(
+            results = await self.matcher.match_by_vector(
                 query, limit=self.max_results, domain=domain, task_type=task_type,
+                visibility_levels=["public"],
+            )
+            if results:
+                return results
+            # 向量搜索无结果时回退到关键词搜索
+            return await self.matcher.match_by_keywords(
+                query, limit=self.max_results, domain=domain,
                 visibility_levels=["public"],
             )
         except Exception:
