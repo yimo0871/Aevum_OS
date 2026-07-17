@@ -4,6 +4,29 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-17 (M5: 生态系统 - 经验市场 + 联邦网络)
+
+#### 经验市场
+- `backend/app/models/marketplace.py` ExperienceListing + Transaction 模型
+- `backend/alembic/versions/0012_marketplace.py` 迁移 0012
+- `backend/app/services/marketplace/marketplace_service.py` MarketplaceService
+- `backend/app/api/v1/marketplace.py` 7 个 API 端点 (上架/浏览/购买/下架/我的购买/我的销售)
+- 25 个单元测试
+
+#### 联邦经验网络
+- `backend/app/services/federation/federation_service.py` FederationService (对等节点注册/同步/联邦搜索)
+- `backend/app/api/v1/federation.py` 4 个 API 端点
+- 19 个单元测试
+
+#### 人机共创工作流
+- `backend/app/models/cocreation.py` CoCreationSession 模型
+- `backend/alembic/versions/0013_cocreation.py` 迁移 0013
+- `backend/app/api/v1/cocreation.py` 5 个 API 端点 (创建/探索/评审/列表)
+- 20 个单元测试
+
+### Vision 100% Complete - 2026-07-17
+所有 16 项愿景终态验收标准全部达成。项目从基础设施到生态系统完整实现。
+
 ### Added - 2026-07-17 (M4: 高级能力 - 多模态 + 实时流)
 
 #### 代码经验支持

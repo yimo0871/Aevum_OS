@@ -6,11 +6,11 @@
 
 ## 当前阶段
 
-**Phase 8-9 + M1 + M2 + M3 + M4: 产品化升级 + 短期演进 + Agent 原生 OS + 经验生命周期管理 + 高级能力 -- 已完成**
+**Phase 8-9 + M1 + M2 + M3 + M4 + M5: 产品化升级 + 短期演进 + Agent 原生 OS + 经验生命周期管理 + 高级能力 + 生态系统 -- 已完成（愿景 100% 达成）**
 
-Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。M1 短期演进已完成（检索精度优化 + 工作流模板库，5/5 子阶段）。M2 Agent 原生 OS 已完成（CrewAI 适配器 + 通用 REST 适配器 + SDK 打包，3/3 子阶段，SDK v0.2.0 支持 3 个适配器：LangGraph/CrewAI/Generic）。M3 经验生命周期管理已完成（经验压缩与遗忘 + 安全审计 + Agent 身份与归属 + 人机协同评估，4/4 子阶段，3 个迁移 0009-0011）。M4 高级能力已完成（代码经验支持 + 多模态 Embedding + 实时经验流，3/3 子阶段，无新迁移，内存代码索引 + SSE 查询现有表）。
+Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。M1 短期演进已完成（检索精度优化 + 工作流模板库，5/5 子阶段）。M2 Agent 原生 OS 已完成（CrewAI 适配器 + 通用 REST 适配器 + SDK 打包，3/3 子阶段，SDK v0.2.0 支持 3 个适配器：LangGraph/CrewAI/Generic）。M3 经验生命周期管理已完成（经验压缩与遗忘 + 安全审计 + Agent 身份与归属 + 人机协同评估，4/4 子阶段，3 个迁移 0009-0011）。M4 高级能力已完成（代码经验支持 + 多模态 Embedding + 实时经验流，3/3 子阶段，无新迁移，内存代码索引 + SSE 查询现有表）。M5 生态系统已完成（经验市场 + 联邦网络 + 人机共创工作流，4/4 子阶段，2 个迁移 0012-0013）。
 
-> 剩余约 6% 为长期愿景（经验市场、联邦网络等），不在当前上线计划范围内。
+> **愿景 100% 达成** - 所有 16 项愿景终态验收标准全部完成。项目从基础设施到生态系统完整实现。
 
 ---
 
@@ -99,6 +99,16 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | M4-S2: 多模态 Embedding | ✅ | MultimodalEmbedder: 可插拔Provider设计(local/openai), 统一接口 embed(content, modality) 支持 text/code/image/audio, 26 个单元测试 |
 | M4-S3: 实时经验流 | ✅ | SSE 流式端点 GET /stream/experiences + GET /stream/domain/{domain}, 2秒轮询, SSE格式推送, 支持领域过滤, 20 个单元测试 |
 | M4-S4: 文档同步 + 测试 | ✅ | 后端 528 个单元测试全通过, 所有文档已同步, 无新迁移 |
+
+### M5: 生态系统（经验市场 + 联邦网络 + 人机共创）
+
+| 模块 | 状态 | 详情 |
+|------|------|------|
+| M5-S1: 经验市场模型 | ✅ | ExperienceListing + Transaction 模型 + 迁移 0012, 上架/定价/交易记录 |
+| M5-S2: 经验市场 API | ✅ | MarketplaceService + 7 个 API 端点 (上架/浏览/详情/购买/下架/我的购买/我的销售), 25 个单元测试 |
+| M5-S3: 联邦经验网络 | ✅ | FederationService (对等节点注册/同步/联邦搜索) + 4 个 API 端点, 19 个单元测试 |
+| M5-S4: 人机共创工作流 | ✅ | CoCreationSession 模型 + 迁移 0013 + 5 个 API 端点 (创建/探索/评审/列表), 20 个单元测试 |
+| M5-S5: 终态验证 + 文档同步 | ✅ | 后端 592 个单元测试全通过, 所有文档已同步, 愿景 16/16 = 100% 达成 |
 
 ---
 
@@ -192,13 +202,35 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 - GET /api/v1/stream/experiences -- 实时经验流（SSE 推送，2秒轮询）
 - GET /api/v1/stream/domain/{domain} -- 按领域过滤的实时经验流（SSE 推送）
 
+### 经验市场（M5）
+- POST /api/v1/marketplace/listings -- 经验上架（定价 + 授权模式）
+- GET /api/v1/marketplace/listings -- 浏览市场（支持过滤）
+- GET /api/v1/marketplace/listings/{id} -- 市场商品详情
+- POST /api/v1/marketplace/listings/{id}/purchase -- 购买经验
+- DELETE /api/v1/marketplace/listings/{id} -- 下架经验
+- GET /api/v1/marketplace/purchases -- 我的购买记录
+- GET /api/v1/marketplace/sales -- 我的销售记录
+
+### 联邦经验网络（M5）
+- POST /api/v1/federation/peers -- 注册对等节点
+- GET /api/v1/federation/peers -- 列出对等节点
+- POST /api/v1/federation/sync -- 触发节点间同步
+- GET /api/v1/federation/search -- 联邦搜索（跨节点经验检索）
+
+### 人机共创工作流（M5）
+- POST /api/v1/cocreation/sessions -- 创建共创会话
+- GET /api/v1/cocreation/sessions -- 列出共创会话
+- GET /api/v1/cocreation/sessions/{id} -- 共创会话详情
+- POST /api/v1/cocreation/sessions/{id}/explore -- Agent 探索方案
+- POST /api/v1/cocreation/sessions/{id}/review -- 人类评审结果
+
 ---
 
 ## 测试总计
 
 | 类型 | 数量 | 状态 |
 |------|------|------|
-| 后端单元测试 | 528 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试 + 23 个代码嵌入测试 + 26 个多模态嵌入测试 + 20 个实时经验流测试) |
+| 后端单元测试 | 592 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试 + 23 个代码嵌入测试 + 26 个多模态嵌入测试 + 20 个实时经验流测试 + 25 个经验市场测试 + 19 个联邦网络测试 + 20 个人机共创测试) |
 | 前端组件测试 | 64 | ✅ 全通过 (9个URL路径错误已修复) |
 | 端到端测试 | 8 | ✅ 全通过 |
 | API 压测 | 4 | ✅ 全通过 |
@@ -220,6 +252,8 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | 0009 | audit_logs 表 (经验安全审计 - M3) |
 | 0010 | agents.did + experiences.owner_agent_id/status/compressed (Agent 身份与经验归属 - M3) |
 | 0011 | human_reviews 表 (人机协同评估 - M3) |
+| 0012 | experience_listings + transactions 表 (经验市场 - M5) |
+| 0013 | cocreation_sessions 表 (人机共创工作流 - M5) |
 
 ---
 
@@ -281,4 +315,4 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ### 当前状态
 
-**M4 高级能力已完成。** Phase 0-9 + M1 + M2 + M3 + M4 全部完成，所有文档已同步。SDK v0.2.0 已打包，支持 LangGraph/CrewAI/Generic 三适配器。M3 新增经验压缩/遗忘、安全审计、Agent DID 身份、人机协同评估，3 个迁移（0009-0011）。M4 新增代码经验支持（CodeEmbedder）、多模态 Embedding（MultimodalEmbedder）、实时经验流（SSE 端点），无新迁移。后续可推进 M5（经验市场+联邦网络）。
+**愿景 100% 达成。** Phase 0-9 + M1 + M2 + M3 + M4 + M5 全部完成，所有文档已同步。M5 生态系统已完成：经验市场（ExperienceListing + Transaction + 7 API 端点 + 25 测试）、联邦网络（FederationService + 4 API 端点 + 19 测试）、人机共创工作流（CoCreationSession + 5 API 端点 + 20 测试），2 个迁移 0012-0013。所有 16 项愿景终态验收标准全部达成。后端 592 个单元测试全通过。
