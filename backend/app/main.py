@@ -63,7 +63,9 @@ async def health() -> dict[str, str]:
 
 # API v1 routes
 from app.api.v1 import api_router
+from app.api.v1 import streaming
 from app.api.v1 import workflows
 
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(workflows.router, prefix="/api/v1", tags=["workflows"])
+app.include_router(streaming.router, prefix="/api/v1", tags=["streaming"])

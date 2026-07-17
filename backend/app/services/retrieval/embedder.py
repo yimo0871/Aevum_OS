@@ -117,3 +117,17 @@ def get_embedder() -> EmbedderProtocol:
             dim=settings.embedding_dimension,
         )
     return HashEmbedder(dim=settings.embedding_dimension)
+
+
+def get_multimodal_embedder(provider: str = "local") -> "MultimodalEmbedder":
+    """获取多模态向量化器实例（根据配置自动选择 provider）.
+
+    Args:
+        provider: "local"（默认，纯本地）或 "openai"（有 API Key 时使用 OpenAI）
+
+    Returns:
+        MultimodalEmbedder 实例
+    """
+    from app.services.retrieval.multimodal_embedder import MultimodalEmbedder
+
+    return MultimodalEmbedder(provider=provider)

@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-**Phase 0-9 + M1 + M2 + M3 全部完成** - 后端 459 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。M1 短期演进完成（检索精度优化 + 工作流模板库）。M2 Agent 原生 OS 完成（CrewAI + 通用 REST 适配器 + SDK v0.2.0 打包）。M3 经验生命周期管理完成（经验压缩与遗忘 + 安全审计 + Agent DID 身份 + 人机协同评估，3 迁移 0009-0011）。
+**Phase 0-9 + M1 + M2 + M3 + M4 全部完成** - 后端 528 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试 + 23 个代码嵌入测试 + 26 个多模态嵌入测试 + 20 个实时经验流测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。M1 短期演进完成（检索精度优化 + 工作流模板库）。M2 Agent 原生 OS 完成（CrewAI + 通用 REST 适配器 + SDK v0.2.0 打包）。M3 经验生命周期管理完成（经验压缩与遗忘 + 安全审计 + Agent DID 身份 + 人机协同评估，3 迁移 0009-0011）。M4 高级能力完成（代码经验支持 + 多模态 Embedding + 实时经验流 SSE，无新迁移）。
 
 ---
 
@@ -24,11 +24,11 @@
 
 ## 验证结果
 
-### 后端单元测试（2026-07-16）
+### 后端单元测试（2026-07-17）
 
 | 测试项 | 结果 | 详情 |
 |--------|------|------|
-| 单元测试总数 | ✅ 459 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试) |
+| 单元测试总数 | ✅ 528 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试 + 23 个代码嵌入测试 + 26 个多模态嵌入测试 + 20 个实时经验流测试) |
 | 可见性过滤 | ✅ 通过 | private/community/public 三级隔离 |
 | 优先级链四级 | ✅ 通过 | 用户->社区->全球->外部 |
 | 信任评分排序 | ✅ 通过 | trust_score + decay_factor 接入 ranker |
@@ -52,6 +52,9 @@
 | 经验安全审计 | ✅ 通过 | AuditLog 模型 + AuditLogger log/get_logs/get_actor_logs, 15 个测试 |
 | Agent 身份与归属 | ✅ 通过 | DID 生成 + 经验所有权追踪, 迁移 0010, 21 个测试 |
 | 人机协同评估 | ✅ 通过 | HumanReview 模型 + HumanReviewService, 迁移 0011, 25 个测试 |
+| 代码经验支持 | ✅ 通过 | CodeEmbedder 64维代码特征向量, 支持 Python/JS/Java/Go, 23 个测试 |
+| 多模态 Embedding | ✅ 通过 | MultimodalEmbedder 可插拔 Provider, text/code/image/audio 统一接口, 26 个测试 |
+| 实时经验流 | ✅ 通过 | SSE 流式端点 GET /stream/experiences + /stream/domain/{domain}, 20 个测试 |
 
 ### 前端测试（2026-07-16）
 
@@ -104,11 +107,14 @@
 | `tests/unit/test_audit_log.py` | 安全审计 (AuditLog + AuditLogger) | 15 |
 | `tests/unit/test_agent_identity.py` | Agent身份与归属 (DID + ownership) | 21 |
 | `tests/unit/test_human_review.py` | 人机协同评估 (HumanReview + trust adjustment) | 25 |
+| `tests/unit/test_code_embedder.py` | 代码嵌入器 (特征提取+向量化+相似度) | 23 |
+| `tests/unit/test_multimodal_embedder.py` | 多模态嵌入 (4模态+统一接口) | 26 |
+| `tests/unit/test_streaming.py` | 实时经验流 (SSE格式+领域过滤) | 20 |
 | `tests/e2e/test_pipeline_e2e.py` | 8步流水线/生命周期/人机分离 | 8 |
 | `tests/e2e/test_api_health.py` | API 路由/输入验证 | 9 |
 | `tests/integration/test_experiences_api.py` | API 端点集成 | 6 |
 
-**总计**: 459 单元测试 + 8 E2E + 6 集成 + 4 压测 = 477 测试用例
+**总计**: 528 单元测试 + 8 E2E + 6 集成 + 4 压测 = 546 测试用例
 
 ---
 

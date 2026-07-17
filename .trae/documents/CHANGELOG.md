@@ -4,6 +4,24 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-17 (M4: 高级能力 - 多模态 + 实时流)
+
+#### 代码经验支持
+- `backend/app/services/retrieval/code_embedder.py` CodeEmbedder: 64维代码特征向量, 支持Python/JS/Java/Go
+- `backend/app/services/retrieval/code_search.py` CodeSearchService: 代码经验索引与检索
+- 23 个单元测试
+
+#### 多模态 Embedding
+- `backend/app/services/retrieval/multimodal_embedder.py` MultimodalEmbedder: 可插拔Provider设计(local/openai)
+- 统一接口 embed(content, modality) 支持 text/code/image/audio
+- `backend/app/services/retrieval/embedder.py` 扩展 get_multimodal_embedder() 工厂
+- 26 个单元测试
+
+#### 实时经验流
+- `backend/app/api/v1/streaming.py` SSE 流式端点: GET /stream/experiences, GET /stream/domain/{domain}
+- 2秒轮询, SSE格式推送, 支持领域过滤
+- 20 个单元测试
+
 ### Added - 2026-07-17 (M3: 经验生命周期管理)
 
 #### 经验压缩与遗忘
