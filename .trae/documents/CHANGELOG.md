@@ -4,6 +4,20 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-17 (M2: Agent 原生 OS - 框架适配器扩展)
+
+#### CrewAI 适配器
+- `backend/aevum/adapters/crewai.py` AevumCrewWrapper: 包裹 CrewAI Crew，自动检索+存储经验
+- `backend/tests/unit/test_crewai_adapter.py` 14 个单元测试
+
+#### 通用 REST 适配器
+- `backend/aevum/adapters/generic.py` AevumHook + AevumContext: 框架无关钩子，任何框架可用
+- `backend/tests/unit/test_generic_adapter.py` 15 个单元测试
+
+#### SDK 打包
+- `backend/aevum/pyproject.toml` pip installable 包配置 (v0.2.0)
+- `backend/aevum/README.md` SDK 文档（安装/快速开始/三适配器示例/API参考）
+
 ### Added - 2026-07-16 (M1: 短期演进 - 检索精度 + 工作流库)
 
 #### 检索精度优化

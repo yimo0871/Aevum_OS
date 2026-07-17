@@ -6,9 +6,9 @@
 
 ## 当前阶段
 
-**Phase 8-9 + M1: 产品化升级 + 短期演进 -- 已完成**
+**Phase 8-9 + M1 + M2: 产品化升级 + 短期演进 + Agent 原生 OS -- 已完成**
 
-Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。M1 短期演进已完成（检索精度优化 + 工作流模板库，5/5 子阶段）。
+Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。M1 短期演进已完成（检索精度优化 + 工作流模板库，5/5 子阶段）。M2 Agent 原生 OS 已完成（CrewAI 适配器 + 通用 REST 适配器 + SDK 打包，3/3 子阶段，SDK v0.2.0 支持 3 个适配器：LangGraph/CrewAI/Generic）。
 
 > 剩余 20-25% 为长期愿景（经验市场、多模态、联邦网络等），不在当前上线计划范围内。
 
@@ -71,6 +71,15 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | M1-S4: 工作流 API + Repository | ✅ | 5 个 API 端点 + WorkflowTemplateRepository CRUD, 24 个单元测试 |
 | M1-S5: 种子工作流模板 | ✅ | 10 个高频任务模板 (部署/测试/调试/审查/迁移/优化/安全/日志/CI-CD/文档) |
 | M1-S6: 文档同步 + 测试 | ✅ | 后端 346 个单元测试全通过, 所有文档已同步 |
+
+### M2: Agent 原生 OS（框架适配器扩展）
+
+| 模块 | 状态 | 详情 |
+|------|------|------|
+| M2-S1: CrewAI 适配器 | ✅ | AevumCrewWrapper 包裹 CrewAI Crew, 自动检索+存储经验, 14 个单元测试 |
+| M2-S2: 通用 REST 适配器 | ✅ | AevumHook + AevumContext 框架无关钩子, 任何框架可用, 15 个单元测试 |
+| M2-S3: SDK 打包 | ✅ | pyproject.toml v0.2.0 pip installable + README.md, 3 适配器 (LangGraph/CrewAI/Generic) |
+| M2-S4: 文档同步 + 测试 | ✅ | 后端 375 个单元测试全通过, 所有文档已同步 |
 
 ---
 
@@ -159,7 +168,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 
 | 类型 | 数量 | 状态 |
 |------|------|------|
-| 后端单元测试 | 346 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试) |
+| 后端单元测试 | 375 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试) |
 | 前端组件测试 | 64 | ✅ 全通过 (9个URL路径错误已修复) |
 | 端到端测试 | 8 | ✅ 全通过 |
 | API 压测 | 4 | ✅ 全通过 |
@@ -184,6 +193,8 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 ## Git 提交历史
 
 ```
+93d2dd9 feat: M1 short-term evolution - retrieval precision + workflow library
+6c56e0e docs: add complete M0-M5 roadmap + update rules with ROADMAP-first protocol
 856bb73 feat: LangGraph adapter - AevumRunner for real Agent framework integration
 7098a9d docs: complete document sync closure - all 5 gaps fixed
 b02bcdf chore: enforce doc sync via 3-layer structural guarantee
@@ -237,4 +248,4 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ### 当前状态
 
-**M1 短期演进已完成。** Phase 0-9 + M1 全部完成，所有文档已同步。后续可推进 M2（Agent 原生 OS）或长期愿景（经验市场/多模态/联邦网络）。
+**M2 Agent 原生 OS 已完成。** Phase 0-9 + M1 + M2 全部完成，所有文档已同步。SDK v0.2.0 已打包，支持 LangGraph/CrewAI/Generic 三适配器。后续可推进 M3（经验生命周期）或长期愿景（经验市场/多模态/联邦网络）。

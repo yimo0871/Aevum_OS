@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-**Phase 0-9 + M1 全部完成** - 后端 346 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。M1 短期演进完成（检索精度优化 + 工作流模板库）。
+**Phase 0-9 + M1 + M2 全部完成** - 后端 375 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。M1 短期演进完成（检索精度优化 + 工作流模板库）。M2 Agent 原生 OS 完成（CrewAI + 通用 REST 适配器 + SDK v0.2.0 打包）。
 
 ---
 
@@ -28,7 +28,7 @@
 
 | 测试项 | 结果 | 详情 |
 |--------|------|------|
-| 单元测试总数 | ✅ 346 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试) |
+| 单元测试总数 | ✅ 375 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试) |
 | 可见性过滤 | ✅ 通过 | private/community/public 三级隔离 |
 | 优先级链四级 | ✅ 通过 | 用户->社区->全球->外部 |
 | 信任评分排序 | ✅ 通过 | trust_score + decay_factor 接入 ranker |
@@ -45,6 +45,9 @@
 | 检索质量指标 | ✅ 通过 | precision@k, recall@k, MRR, NDCG 4 个 IR 指标 + 22 个测试 |
 | 工作流模板 CRUD | ✅ 通过 | WorkflowTemplate 模型 + 5 API 端点 + Repository, 24 个测试 |
 | 种子工作流模板 | ✅ 通过 | 10 个高频任务模板入库, API 可查询 |
+| CrewAI 适配器 | ✅ 通过 | AevumCrewWrapper 包裹 CrewAI Crew, 自动检索+存储经验, 14 个测试 |
+| 通用 REST 适配器 | ✅ 通过 | AevumHook + AevumContext 框架无关钩子, 15 个测试 |
+| SDK 打包 | ✅ 通过 | pyproject.toml v0.2.0 pip installable + README.md, 3 适配器 (LangGraph/CrewAI/Generic) |
 
 ### 前端测试（2026-07-16）
 
@@ -91,11 +94,13 @@
 | `tests/unit/test_langgraph_adapter.py` | LangGraph 适配器 (AevumRunner + decorator) | 10 |
 | `tests/unit/test_retrieval_metrics.py` | 检索质量指标 (precision/recall/MRR/NDCG) | 22 |
 | `tests/unit/test_workflow_template.py` | 工作流模板 CRUD + 列表 + 使用计数 | 24 |
+| `tests/unit/test_crewai_adapter.py` | CrewAI 适配器 (AevumCrewWrapper) | 14 |
+| `tests/unit/test_generic_adapter.py` | 通用适配器 (AevumHook + AevumContext) | 15 |
 | `tests/e2e/test_pipeline_e2e.py` | 8步流水线/生命周期/人机分离 | 8 |
 | `tests/e2e/test_api_health.py` | API 路由/输入验证 | 9 |
 | `tests/integration/test_experiences_api.py` | API 端点集成 | 6 |
 
-**总计**: 346 单元测试 + 8 E2E + 6 集成 + 4 压测 = 364 测试用例
+**总计**: 375 单元测试 + 8 E2E + 6 集成 + 4 压测 = 393 测试用例
 
 ---
 
