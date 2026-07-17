@@ -4,12 +4,14 @@ import time
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db_session
 from app.models.experience import Experience
 from app.services.evaluation.experience_evaluator import ExperienceEvaluator
+from app.services.evaluation.human_review import HumanReviewService
 from app.services.evaluation.metrics import SystemMetricsCalculator
 from app.services.evaluation.task_evaluator import TaskEvaluator
 from app.services.experience.repository import ExperienceRepository
@@ -167,3 +169,88 @@ async def get_dashboard_data(
     }
     _set_cache("dashboard", result)
     return result
+
+
+# ── 人机协同评估（M3-S4）──
+
+
+class HumanReviewRequest(BaseModel):
+    """人类专家评审请求."""
+
+    reviewer_id: UUID = Field(..., description="评审者 ID")
+    rating: int = Field(..., ge=1, le=5, description="评分 (1-5)")
+    notes: str | None = Field(default=None, description="评审备注")
+    recommend_archive: bool = Field(default=False, description="是否建议归档")
+
+
+@router.post(
+    "/experiences/{experience_id}/human-review",
+    summary="人类专家评审",
+    description="提交人类专家对经验的评审，并据此调整信任评分。",
+)
+async def create_human_review(
+    experience_id: UUID,
+    data: HumanReviewRequest,
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """创建人类专家评审."""
+    service = HumanReviewService()
+    try:
+        review = await service.create_review(
+            experience_id=experience_id,
+            reviewer_id=data.reviewer_id,
+            rating=data.rating,
+            session=session,
+            notes=data.notes,
+            recommend_archive=data.recommend_archive,
+        )
+    except ValueError as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
+
+    return review.to_dict()
+
+
+@router.get(
+    "/experiences/{experience_id}/reviews",
+    summary="获取人类评审列表",
+    description="获取指定经验的所有人类专家评审记录。",
+)
+async def get_human_reviews(
+    experience_id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """获取经验的人类评审记录."""
+    service = HumanReviewService()
+    reviews = await service.get_reviews(experience_id, session)
+
+    return {
+        "experience_id": str(experience_id),
+        "reviews": [review.to_dict() for review in reviews],
+        "total": len(reviews),
+    }
+
+
+@router.get(
+    "/pending-reviews",
+    summary="获取待评审经验",
+    description="获取高使用量但低置信度、尚未有人类评审的经验列表。",
+)
+async def get_pending_reviews(
+    min_usage: int = 5,
+    max_confidence: float = 0.5,
+    limit: int = 50,
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """获取待评审经验列表."""
+    service = HumanReviewService()
+    experiences = await service.get_pending_reviews(
+        session,
+        min_usage=min_usage,
+        max_confidence=max_confidence,
+        limit=limit,
+    )
+
+    return {
+        "pending": [exp.to_dict() for exp in experiences],
+        "total": len(experiences),
+    }

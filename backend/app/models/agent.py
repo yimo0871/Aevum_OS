@@ -28,5 +28,10 @@ class Agent(Base):
     )
     last_active_at = Column(DateTime(timezone=True), nullable=True)
 
+    # ── 去中心化身份 (DID) ──
+    did = Column(String(255), nullable=True, index=True)
+    # ── 所有者名称（人类可读）──
+    owner_name = Column(String(200), nullable=True)
+
     def __repr__(self) -> str:
         return f"<Agent(id={self.id}, name={self.name})>"

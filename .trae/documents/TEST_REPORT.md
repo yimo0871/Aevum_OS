@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-**Phase 0-9 + M1 + M2 全部完成** - 后端 375 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。M1 短期演进完成（检索精度优化 + 工作流模板库）。M2 Agent 原生 OS 完成（CrewAI + 通用 REST 适配器 + SDK v0.2.0 打包）。
+**Phase 0-9 + M1 + M2 + M3 全部完成** - 后端 459 个单元测试全通过（含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试），前端 64 个组件测试全通过，E2E + 压测已编写。Agent SDK 端到端验证通过（73% 效率提升）。LangGraph 适配器验证通过（置信度 +0.43）。M1 短期演进完成（检索精度优化 + 工作流模板库）。M2 Agent 原生 OS 完成（CrewAI + 通用 REST 适配器 + SDK v0.2.0 打包）。M3 经验生命周期管理完成（经验压缩与遗忘 + 安全审计 + Agent DID 身份 + 人机协同评估，3 迁移 0009-0011）。
 
 ---
 
@@ -28,7 +28,7 @@
 
 | 测试项 | 结果 | 详情 |
 |--------|------|------|
-| 单元测试总数 | ✅ 375 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试) |
+| 单元测试总数 | ✅ 459 通过 | 0 失败 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试) |
 | 可见性过滤 | ✅ 通过 | private/community/public 三级隔离 |
 | 优先级链四级 | ✅ 通过 | 用户->社区->全球->外部 |
 | 信任评分排序 | ✅ 通过 | trust_score + decay_factor 接入 ranker |
@@ -48,6 +48,10 @@
 | CrewAI 适配器 | ✅ 通过 | AevumCrewWrapper 包裹 CrewAI Crew, 自动检索+存储经验, 14 个测试 |
 | 通用 REST 适配器 | ✅ 通过 | AevumHook + AevumContext 框架无关钩子, 15 个测试 |
 | SDK 打包 | ✅ 通过 | pyproject.toml v0.2.0 pip installable + README.md, 3 适配器 (LangGraph/CrewAI/Generic) |
+| 经验压缩与遗忘 | ✅ 通过 | CompressionManager compress/forget/auto_cleanup/find_redundant, 23 个测试 |
+| 经验安全审计 | ✅ 通过 | AuditLog 模型 + AuditLogger log/get_logs/get_actor_logs, 15 个测试 |
+| Agent 身份与归属 | ✅ 通过 | DID 生成 + 经验所有权追踪, 迁移 0010, 21 个测试 |
+| 人机协同评估 | ✅ 通过 | HumanReview 模型 + HumanReviewService, 迁移 0011, 25 个测试 |
 
 ### 前端测试（2026-07-16）
 
@@ -67,7 +71,7 @@
 | 用户登录 | ✅ 通过 | POST /api/v1/auth/login |
 | 经验列表 | ✅ 通过 | GET /api/v1/experiences (total=10001) |
 | 前端页面 | ✅ 通过 | /login, /register 可访问 |
-| 数据库迁移 | ✅ 通过 | alembic head = 0008 |
+| 数据库迁移 | ✅ 通过 | alembic head = 0011 |
 
 ---
 
@@ -96,11 +100,15 @@
 | `tests/unit/test_workflow_template.py` | 工作流模板 CRUD + 列表 + 使用计数 | 24 |
 | `tests/unit/test_crewai_adapter.py` | CrewAI 适配器 (AevumCrewWrapper) | 14 |
 | `tests/unit/test_generic_adapter.py` | 通用适配器 (AevumHook + AevumContext) | 15 |
+| `tests/unit/test_compression.py` | 经验压缩与遗忘 (compress/forget/cleanup/redundant) | 23 |
+| `tests/unit/test_audit_log.py` | 安全审计 (AuditLog + AuditLogger) | 15 |
+| `tests/unit/test_agent_identity.py` | Agent身份与归属 (DID + ownership) | 21 |
+| `tests/unit/test_human_review.py` | 人机协同评估 (HumanReview + trust adjustment) | 25 |
 | `tests/e2e/test_pipeline_e2e.py` | 8步流水线/生命周期/人机分离 | 8 |
 | `tests/e2e/test_api_health.py` | API 路由/输入验证 | 9 |
 | `tests/integration/test_experiences_api.py` | API 端点集成 | 6 |
 
-**总计**: 375 单元测试 + 8 E2E + 6 集成 + 4 压测 = 393 测试用例
+**总计**: 459 单元测试 + 8 E2E + 6 集成 + 4 压测 = 477 测试用例
 
 ---
 

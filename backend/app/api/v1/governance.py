@@ -10,9 +10,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_db_session
+from app.api.deps import get_current_admin, get_current_user, get_db_session
 from app.models.experience import Experience, ExperienceRelation
 from app.models.user import User
+from app.services.governance.audit import AuditLogger
+from app.services.governance.compression import CompressionManager
 from app.services.governance.trust import TrustScorer
 from app.services.governance.versioning import VersionManager
 
@@ -30,6 +32,20 @@ class CiteRequest(BaseModel):
     """引用经验请求."""
 
     citing_experience_id: UUID = Field(..., description="引用方经验 ID")
+
+
+class ForgetRequest(BaseModel):
+    """遗忘经验请求."""
+
+    reason: str = Field(..., description="遗忘原因 (expired/low_quality/redundant/zero_reuse)")
+
+
+class CleanupRequest(BaseModel):
+    """自动清理请求."""
+
+    threshold_days: int = Field(default=90, description="年龄阈值（天）")
+    min_trust: float = Field(default=0.1, description="信任评分上限")
+    min_reuse: int = Field(default=0, description="复用次数上限")
 
 
 @router.post(
@@ -288,4 +304,149 @@ async def get_experience_lineage(
             }
             for rel in descendants
         ],
+    }
+
+
+# ── 经验压缩与遗忘（M3-S1）──
+
+
+@router.post(
+    "/experiences/{experience_id}/compress",
+    summary="压缩经验",
+    description="压缩低质/冗余经验：设置 compressed 标记、存储摘要、降低信任权重。",
+)
+async def compress_experience(
+    experience_id: UUID,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """压缩一条经验."""
+    manager = CompressionManager()
+    experience = await manager.compress_experience(experience_id, session)
+
+    if experience is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "经验不存在")
+
+    # ── 记录审计日志 ──
+    audit_logger = AuditLogger()
+    await audit_logger.log(
+        action="compress",
+        entity_type="experience",
+        entity_id=experience_id,
+        session=session,
+        actor_id=current_user.id,
+        actor_type="user",
+        details={"compression_summary": experience.compression_summary},
+    )
+
+    return {
+        "experience_id": str(experience.id),
+        "compressed": experience.compressed,
+        "compression_summary": experience.compression_summary,
+        "confidence_score": experience.confidence_score,
+    }
+
+
+@router.post(
+    "/experiences/{experience_id}/forget",
+    summary="遗忘经验",
+    description="软删除经验：设置 status=forgotten 并记录原因。",
+)
+async def forget_experience(
+    experience_id: UUID,
+    data: ForgetRequest,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """遗忘一条经验."""
+    manager = CompressionManager()
+    try:
+        experience = await manager.forget_experience(experience_id, data.reason, session)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
+
+    if experience is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "经验不存在")
+
+    # ── 记录审计日志 ──
+    audit_logger = AuditLogger()
+    await audit_logger.log(
+        action="forget",
+        entity_type="experience",
+        entity_id=experience_id,
+        session=session,
+        actor_id=current_user.id,
+        actor_type="user",
+        details={"reason": data.reason},
+    )
+
+    return {
+        "experience_id": str(experience.id),
+        "status": experience.status,
+        "reason": data.reason,
+    }
+
+
+@router.post(
+    "/cleanup",
+    summary="自动清理经验",
+    description="管理员触发自动清理：遗忘过期的低信任、低复用经验。",
+)
+async def auto_cleanup(
+    data: CleanupRequest | None = None,
+    current_user: User = Depends(get_current_admin),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """自动清理过期经验."""
+    params = data or CleanupRequest()
+    manager = CompressionManager()
+    forgotten = await manager.auto_cleanup(
+        session,
+        threshold_days=params.threshold_days,
+        min_trust=params.min_trust,
+        min_reuse=params.min_reuse,
+    )
+
+    # ── 批量记录审计日志 ──
+    audit_logger = AuditLogger()
+    for exp in forgotten:
+        await audit_logger.log(
+            action="forget",
+            entity_type="experience",
+            entity_id=exp.id,
+            session=session,
+            actor_id=current_user.id,
+            actor_type="user",
+            details={"reason": "auto_cleanup"},
+        )
+
+    return {
+        "forgotten_count": len(forgotten),
+        "forgotten_ids": [str(exp.id) for exp in forgotten],
+    }
+
+
+# ── 审计日志检索（M3-S2）──
+
+
+@router.get(
+    "/audit/{entity_type}/{entity_id}",
+    summary="获取审计轨迹",
+    description="检索指定实体的审计日志轨迹。",
+)
+async def get_audit_trail(
+    entity_type: str,
+    entity_id: UUID,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """获取实体的审计轨迹."""
+    audit_logger = AuditLogger()
+    logs = await audit_logger.get_logs(entity_type, entity_id, session)
+
+    return {
+        "entity_type": entity_type,
+        "entity_id": str(entity_id),
+        "logs": [log.to_dict() for log in logs],
+        "total": len(logs),
     }

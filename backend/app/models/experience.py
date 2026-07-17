@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
@@ -63,6 +63,9 @@ class Experience(Base):
     # ── 数据隔离 ──
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
 
+    # ── Agent 所有权（经验归属的 Agent）──
+    owner_agent_id = Column(UUID(as_uuid=True), ForeignKey("agents.id"), nullable=True, index=True)
+
     # ── 可见性 ──
     # private: 仅创建者可见
     # community: 同社区用户可见
@@ -85,6 +88,14 @@ class Experience(Base):
     evaluation_status = Column(
         String(20), nullable=False, default="pending"
     )  # pending | evaluated | skipped
+
+    # ── 生命周期状态 ──
+    # active: 活跃 | forgotten: 已遗忘（软删除）
+    status = Column(String(20), nullable=False, default="active", server_default="active", index=True)
+
+    # ── 压缩标记与摘要 ──
+    compressed = Column(Boolean, nullable=False, default=False, server_default="false", index=True)
+    compression_summary = Column(Text, nullable=True)
 
     # ── 关系 ──
     traces = relationship("ExecutionTrace", back_populates="experience", cascade="all, delete-orphan")
@@ -122,6 +133,10 @@ class Experience(Base):
             "visibility": self.visibility,
             "community_id": str(self.community_id) if self.community_id else None,
             "evaluation_status": self.evaluation_status,
+            "status": self.status,
+            "compressed": self.compressed,
+            "compression_summary": self.compression_summary,
+            "owner_agent_id": str(self.owner_agent_id) if self.owner_agent_id else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

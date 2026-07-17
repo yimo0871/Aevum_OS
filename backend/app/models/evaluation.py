@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.core.database import Base
@@ -69,3 +69,44 @@ class SystemMetric(Base):
 
     def __repr__(self) -> str:
         return f"<SystemMetric({self.metric_name}={self.value})>"
+
+
+class HumanReview(Base):
+    """人类专家评审记录 - 人机协同评估.
+
+    用于记录人类专家对经验的评审意见，并据此调整信任评分。
+    """
+
+    __tablename__ = "human_reviews"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    experience_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("experiences.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    reviewer_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    rating = Column(Integer, nullable=False)  # 1-5 星
+    notes = Column(Text, nullable=True)
+    recommend_archive = Column(Boolean, nullable=False, default=False)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<HumanReview(experience={self.experience_id}, rating={self.rating})>"
+
+    def to_dict(self) -> dict:
+        """Convert to dictionary."""
+        return {
+            "id": str(self.id),
+            "experience_id": str(self.experience_id),
+            "reviewer_id": str(self.reviewer_id),
+            "rating": self.rating,
+            "notes": self.notes,
+            "recommend_archive": self.recommend_archive,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }

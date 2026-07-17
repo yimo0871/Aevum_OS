@@ -4,6 +4,32 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-17 (M3: 经验生命周期管理)
+
+#### 经验压缩与遗忘
+- `backend/app/services/governance/compression.py` CompressionManager: compress/forget/auto_cleanup/find_redundant
+- governance API: POST compress, POST forget, POST cleanup (admin)
+- 23 个单元测试
+
+#### 经验安全审计
+- `backend/app/models/audit_log.py` AuditLog 模型
+- `backend/alembic/versions/0009_audit_logs.py` 迁移 0009
+- `backend/app/services/governance/audit.py` AuditLogger: log/get_logs/get_actor_logs
+- governance API: GET audit trail
+- 15 个单元测试
+
+#### Agent 身份与经验归属
+- `backend/alembic/versions/0010_agent_did.py` 迁移 0010 (agents.did + experiences.owner_agent_id/status/compressed)
+- `backend/app/services/governance/identity.py` IdentityManager: generate_did/assign_ownership/verify_ownership
+- 21 个单元测试
+
+#### 人机协同评估
+- `backend/app/models/evaluation.py` HumanReview 模型
+- `backend/alembic/versions/0011_human_reviews.py` 迁移 0011
+- `backend/app/services/evaluation/human_review.py` HumanReviewService
+- evaluation API: POST human-review, GET reviews, GET pending-reviews
+- 25 个单元测试
+
 ### Added - 2026-07-17 (M2: Agent 原生 OS - 框架适配器扩展)
 
 #### CrewAI 适配器

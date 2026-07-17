@@ -6,11 +6,11 @@
 
 ## 当前阶段
 
-**Phase 8-9 + M1 + M2: 产品化升级 + 短期演进 + Agent 原生 OS -- 已完成**
+**Phase 8-9 + M1 + M2 + M3: 产品化升级 + 短期演进 + Agent 原生 OS + 经验生命周期管理 -- 已完成**
 
-Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。M1 短期演进已完成（检索精度优化 + 工作流模板库，5/5 子阶段）。M2 Agent 原生 OS 已完成（CrewAI 适配器 + 通用 REST 适配器 + SDK 打包，3/3 子阶段，SDK v0.2.0 支持 3 个适配器：LangGraph/CrewAI/Generic）。
+Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Phase 9 GEG 全球经验网络 + Human World 已 100% 完成（11/11 项）。Agent SDK 已完成（AevumClient + memory 上下文 + 演示场景）。LangGraph 适配器已完成（AevumRunner + 3 个真实场景验证）。M1 短期演进已完成（检索精度优化 + 工作流模板库，5/5 子阶段）。M2 Agent 原生 OS 已完成（CrewAI 适配器 + 通用 REST 适配器 + SDK 打包，3/3 子阶段，SDK v0.2.0 支持 3 个适配器：LangGraph/CrewAI/Generic）。M3 经验生命周期管理已完成（经验压缩与遗忘 + 安全审计 + Agent 身份与归属 + 人机协同评估，4/4 子阶段，3 个迁移 0009-0011）。
 
-> 剩余 20-25% 为长期愿景（经验市场、多模态、联邦网络等），不在当前上线计划范围内。
+> 剩余 15-20% 为长期愿景（多模态、实时经验流、经验市场、联邦网络等），不在当前上线计划范围内。
 
 ---
 
@@ -81,6 +81,16 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | M2-S3: SDK 打包 | ✅ | pyproject.toml v0.2.0 pip installable + README.md, 3 适配器 (LangGraph/CrewAI/Generic) |
 | M2-S4: 文档同步 + 测试 | ✅ | 后端 375 个单元测试全通过, 所有文档已同步 |
 
+### M3: 经验生命周期管理（经验压缩 + 安全审计 + Agent 身份 + 人机协同评估）
+
+| 模块 | 状态 | 详情 |
+|------|------|------|
+| M3-S1: 经验压缩与遗忘 | ✅ | CompressionManager: compress/forget/auto_cleanup/find_redundant, 23 个单元测试 |
+| M3-S2: 经验安全审计 | ✅ | AuditLog 模型 + 迁移 0009 + AuditLogger: log/get_logs/get_actor_logs, 15 个单元测试 |
+| M3-S3: Agent 身份与经验归属 | ✅ | DID 生成 + 经验所有权追踪, 迁移 0010 (agents.did + experiences.owner_agent_id/status/compressed), 21 个单元测试 |
+| M3-S4: 人机协同评估 | ✅ | HumanReview 模型 + 迁移 0011 + HumanReviewService, 25 个单元测试 |
+| M3-S5: 文档同步 + 测试 | ✅ | 后端 459 个单元测试全通过, 所有文档已同步 |
+
 ---
 
 ## 已实现的 API 端点
@@ -123,6 +133,10 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 - POST /api/v1/governance/experiences/{id}/cite -- 引用
 - GET /api/v1/governance/experiences/{id}/trust -- 信任评分
 - GET /api/v1/governance/experiences/{id}/lineage -- 经验谱系
+- POST /api/v1/governance/experiences/{id}/compress -- 压缩经验
+- POST /api/v1/governance/experiences/{id}/forget -- 遗忘经验
+- POST /api/v1/governance/cleanup -- 自动清理冗余经验（管理员）
+- GET /api/v1/governance/audit/{entity_type}/{entity_id} -- 审计追踪
 
 ### 社区
 - POST /api/v1/communities -- 创建社区
@@ -158,6 +172,9 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 - GET /api/v1/evaluation/dashboard -- Dashboard 数据
 - GET /api/v1/evaluation/metrics -- 系统指标
 - POST /api/v1/evaluation/experiences/{id} -- 评估经验
+- POST /api/v1/evaluation/experiences/{id}/human-review -- 人工评估经验
+- GET /api/v1/evaluation/experiences/{id}/reviews -- 获取经验评估列表
+- GET /api/v1/evaluation/pending-reviews -- 待审评估列表
 
 ### 执行（支持用户关联）
 - POST /api/v1/execution/tasks -- 提交任务（可选认证，关联用户）
@@ -168,7 +185,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 
 | 类型 | 数量 | 状态 |
 |------|------|------|
-| 后端单元测试 | 375 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试) |
+| 后端单元测试 | 459 | ✅ 全通过 (含 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试) |
 | 前端组件测试 | 64 | ✅ 全通过 (9个URL路径错误已修复) |
 | 端到端测试 | 8 | ✅ 全通过 |
 | API 压测 | 4 | ✅ 全通过 |
@@ -187,6 +204,9 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | 0006 | human_expressions 表 (双世界架构 - 人类表达层) |
 | 0007 | world_bridges 表 (双世界桥接 - HumanExpression <-> Experience) |
 | 0008 | workflow_templates 表 (工作流模板库 - M1 短期演进) |
+| 0009 | audit_logs 表 (经验安全审计 - M3) |
+| 0010 | agents.did + experiences.owner_agent_id/status/compressed (Agent 身份与经验归属 - M3) |
+| 0011 | human_reviews 表 (人机协同评估 - M3) |
 
 ---
 
@@ -248,4 +268,4 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ### 当前状态
 
-**M2 Agent 原生 OS 已完成。** Phase 0-9 + M1 + M2 全部完成，所有文档已同步。SDK v0.2.0 已打包，支持 LangGraph/CrewAI/Generic 三适配器。后续可推进 M3（经验生命周期）或长期愿景（经验市场/多模态/联邦网络）。
+**M3 经验生命周期管理已完成。** Phase 0-9 + M1 + M2 + M3 全部完成，所有文档已同步。SDK v0.2.0 已打包，支持 LangGraph/CrewAI/Generic 三适配器。M3 新增经验压缩/遗忘、安全审计、Agent DID 身份、人机协同评估，3 个迁移（0009-0011）。后续可推进 M4（多模态+实时流）或 M5（经验市场+联邦网络）。
