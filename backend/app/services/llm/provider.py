@@ -12,7 +12,10 @@ class LLMProvider:
         if cls._client is None:
             api_key = settings.openai_api_key
             if api_key and not api_key.startswith("sk-your") and not api_key.startswith("your-"):
-                cls._client = AsyncOpenAI(api_key=api_key)
+                cls._client = AsyncOpenAI(
+                    api_key=api_key,
+                    base_url=settings.openai_base_url,
+                )
         return cls._client
 
     @classmethod

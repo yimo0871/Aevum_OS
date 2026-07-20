@@ -43,6 +43,7 @@ class Settings(BaseSettings):
 
     # LLM / Embedding
     openai_api_key: str = ""
+    openai_base_url: str = "https://api.openai.com/v1"
     embedding_model: str = "text-embedding-3-small"
     embedding_dimension: int = 1536
 

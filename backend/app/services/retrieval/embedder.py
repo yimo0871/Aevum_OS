@@ -38,16 +38,17 @@ class OpenAIEmbedder:
         return self._dim
 
     async def embed(self, text: str) -> list[float]:
-        """使用 OpenAI API 生成向量嵌入."""
+        """使用 OpenAI 兼容 API 生成向量嵌入（支持 OpenAI / 火山引擎等）."""
         import httpx
 
         api_key = settings.openai_api_key
         if not api_key:
             return HashEmbedder(self._dim).embed(text)
 
+        base_url = settings.openai_base_url.rstrip("/")
         async with httpx.AsyncClient(timeout=30) as client:
             response = await client.post(
-                "https://api.openai.com/v1/embeddings",
+                f"{base_url}/embeddings",
                 headers={"Authorization": f"Bearer {api_key}"},
                 json={"input": text, "model": self.model},
             )
