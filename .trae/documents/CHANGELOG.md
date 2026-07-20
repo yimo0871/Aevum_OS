@@ -4,6 +4,24 @@
 
 ## [Unreleased]
 
+### Fixed + Verified - 2026-07-20 (安全修复 + 适配器闭环验证)
+
+#### 安全修复
+- `backend/app/api/v1/governance.py` 新增 `_assert_experience_accessible` 权限校验函数
+- fork/improve/cite 三个端点添加 visibility 权限校验（private/community/public）
+- `backend/tests/unit/test_governance_visibility.py` 13 个权限单元测试
+
+#### Bug 修复
+- `backend/aevum/adapters/crewai.py` + `langgraph.py` 修复 `steps: list[str]` 不兼容后端 `list[dict]` 导致 422 错误
+- `backend/app/api/v1/experiences.py` `create_experience` 添加 `get_optional_user` 依赖，修复经验 `user_id` 未设置导致 fork 自己的 private 经验返回 403
+
+#### 验证脚本
+- `backend/scripts/verify_adapter_loop.py` Agent 适配器闭环验证（3/3 通过：CrewAI + LangGraph + Generic）
+- `backend/scripts/verify_e2e_user_flow.py` 端到端用户流程验证（9/9 通过：visibility 隔离 + fork 权限 + 跨用户共享）
+
+#### 文档清理
+- `.gitignore` 添加 `.deps/` 规则，清理误提交的依赖目录
+
 ### Added - 2026-07-17 (M5: 生态系统 - 经验市场 + 联邦网络)
 
 #### 经验市场

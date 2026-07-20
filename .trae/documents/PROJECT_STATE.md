@@ -315,4 +315,4 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ### 当前状态
 
-**愿景 100% 达成。** Phase 0-9 + M1 + M2 + M3 + M4 + M5 全部完成，所有文档已同步。M5 生态系统已完成：经验市场（ExperienceListing + Transaction + 7 API 端点 + 25 测试）、联邦网络（FederationService + 4 API 端点 + 19 测试）、人机共创工作流（CoCreationSession + 5 API 端点 + 20 测试），2 个迁移 0012-0013。所有 16 项愿景终态验收标准全部达成。后端 592 个单元测试全通过。
+**愿景 100% 达成 + 真实场景验证 2/4 完成。** Phase 0-9 + M1-M5 全部完成。安全修复完成（fork/improve/cite visibility 权限校验 + 13 个测试）。适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。修复 3 个 bug（适配器 steps 兼容 + create_experience user_id 关联 + governance visibility 校验）。后端 605 个单元测试全通过。剩余验证：多节点联邦部署（需多实例）+ 真实 LLM 集成（需 OpenAI API Key）。
