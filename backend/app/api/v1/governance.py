@@ -11,6 +11,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_admin, get_current_user, get_db_session
+from app.models.community import user_community
 from app.models.experience import Experience, ExperienceRelation
 from app.models.user import User
 from app.services.governance.audit import AuditLogger
@@ -20,6 +21,34 @@ from app.services.governance.versioning import VersionManager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+async def _assert_experience_accessible(
+    experience: Experience, current_user: User, session: AsyncSession
+) -> None:
+    """校验当前用户是否有权访问该经验（fork/improve/cite 前的权限检查）.
+
+    规则:
+    - 自己的经验: 始终可访问
+    - public 经验: 任何人可访问
+    - community 经验: 同社区成员可访问
+    - private 经验: 仅创建者可访问
+    """
+    if experience.user_id == current_user.id:
+        return
+    if experience.visibility == "public":
+        return
+    if experience.visibility == "community" and experience.community_id is not None:
+        result = await session.execute(
+            select(user_community.c.community_id).where(
+                user_community.c.user_id == current_user.id,
+                user_community.c.community_id == experience.community_id,
+            )
+        )
+        if result.fetchone() is not None:
+            return
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "无权访问此社区经验")
+    raise HTTPException(status.HTTP_403_FORBIDDEN, "无权访问此私有经验")
 
 
 class ImproveRequest(BaseModel):
@@ -68,6 +97,8 @@ async def fork_experience(
         logger.warning("[API:FORK] 源经验不存在: experience_id=%s", experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "源经验不存在")
 
+    await _assert_experience_accessible(source, current_user, session)
+
     manager = VersionManager()
     new_experience = await manager.fork(experience_id, current_user.id, session)
     if new_experience is None:
@@ -106,6 +137,8 @@ async def improve_experience(
     if source is None:
         logger.warning("[API:IMPROVE] 源经验不存在: experience_id=%s", experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "源经验不存在")
+
+    await _assert_experience_accessible(source, current_user, session)
 
     manager = VersionManager()
     new_experience = await manager.improve(
@@ -153,6 +186,10 @@ async def cite_experience(
     if citing is None:
         logger.warning("[API:CITE] 引用方经验不存在: citing_experience_id=%s", data.citing_experience_id)
         raise HTTPException(status.HTTP_404_NOT_FOUND, "引用方经验不存在")
+
+    # 权限校验：被引用经验必须对当前用户可见，引用方经验必须属于当前用户
+    await _assert_experience_accessible(target, current_user, session)
+    await _assert_experience_accessible(citing, current_user, session)
 
     logger.info(
         "[API:CITE] 双方经验已验证: target='%s', citing='%s'",
