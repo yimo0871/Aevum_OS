@@ -40,8 +40,13 @@ router = APIRouter()
 )
 async def create_experience(
     data: ExperienceCreate,
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> ExperienceResponse:
+    # 关联当前用户（如果已认证）
+    if current_user and not data.user_id:
+        data.user_id = current_user.id
+
     repo = ExperienceRepository(session)
     experience = await repo.create(data)
 
