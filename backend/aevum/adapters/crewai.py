@@ -128,6 +128,10 @@ class AevumCrewWrapper:
         confidence = _extract_field(result, "confidence", 0.5)
         constraints = inputs.get("constraints", {}) if isinstance(inputs, dict) else {}
 
+        # 后端期望 steps 是 list[dict]，兼容 list[str]
+        if steps and isinstance(steps[0], str):
+            steps = [{"name": s} for s in steps]
+
         try:
             new_exp = self.client.create_experience(
                 context={

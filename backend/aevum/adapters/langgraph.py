@@ -113,6 +113,10 @@ class AevumRunner:
         steps = result.get("steps", [])
         confidence = result.get("confidence", 0.5)
 
+        # 后端期望 steps 是 list[dict]，兼容 list[str]
+        if steps and isinstance(steps[0], str):
+            steps = [{"name": s} for s in steps]
+
         # 5. Store execution as new experience
         logger.info("[AevumRunner] Storing execution as experience (duration=%.1fs)", duration)
         try:
@@ -176,12 +180,15 @@ class AevumRunner:
         duration = time.time() - start_time
 
         success = result.get("success", True)
+        _steps = result.get("steps", [])
+        if _steps and isinstance(_steps[0], str):
+            _steps = [{"name": s} for s in _steps]
         try:
             new_exp = self.client.create_experience(
                 context={"domain": self.domain, "task_type": self.task_type, "constraints": {}},
                 intent=task,
                 outcome={"success": success, "metrics": {"duration_s": round(duration, 2)}},
-                execution={"steps": result.get("steps", []), "tools": result.get("tools", []), "trace": {}},
+                execution={"steps": _steps, "tools": result.get("tools", []), "trace": {}},
                 reflection={
                     "what_worked": result.get("what_worked", []),
                     "what_failed": result.get("what_failed", []),
