@@ -47,10 +47,14 @@ class OpenAIEmbedder:
 
         base_url = settings.openai_base_url.rstrip("/")
         async with httpx.AsyncClient(timeout=30) as client:
+            payload: dict = {"input": text, "model": self.model}
+            # 部分模型支持降维（如 doubao-embedding-vision 支持 1024）
+            if self._dim and self._dim < 2048:
+                payload["dimensions"] = self._dim
             response = await client.post(
                 f"{base_url}/embeddings",
                 headers={"Authorization": f"Bearer {api_key}"},
-                json={"input": text, "model": self.model},
+                json=payload,
             )
             response.raise_for_status()
             data = response.json()

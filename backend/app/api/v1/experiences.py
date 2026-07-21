@@ -58,7 +58,11 @@ async def create_experience(
     try:
         embedder = get_embedder()
         embed_text = f"{data.intent} {data.context.domain} {data.context.task_type}"
-        embedding = await embedder.embed_async(embed_text)
+        # OpenAIEmbedder.embed 是 async，HashEmbedder.embed 是 sync
+        if hasattr(embedder, "embed_async"):
+            embedding = await embedder.embed_async(embed_text)
+        else:
+            embedding = await embedder.embed(embed_text)
         await repo.update_embedding(experience.id, embedding)
     except Exception:
         pass  # embedding 失败不阻塞经验创建
