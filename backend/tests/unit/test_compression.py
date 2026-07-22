@@ -200,11 +200,11 @@ class TestAutoCleanup:
         session = AsyncMock()
         session.flush = AsyncMock()
 
-        # First execute returns the candidates; second returns empty reuse relations
+        # First execute returns the candidates; second returns reuse count
         candidates_result = MagicMock()
         candidates_result.scalars.return_value.all.return_value = [old_exp]
         reuse_result = MagicMock()
-        reuse_result.scalars.return_value.all.return_value = []
+        reuse_result.scalar.return_value = 0
         session.execute = AsyncMock(side_effect=[candidates_result, reuse_result])
 
         manager = CompressionManager()
@@ -229,7 +229,7 @@ class TestAutoCleanup:
         candidates_result = MagicMock()
         candidates_result.scalars.return_value.all.return_value = [old_exp]
         reuse_result = MagicMock()
-        reuse_result.scalars.return_value.all.return_value = []
+        reuse_result.scalar.return_value = 0
         session.execute = AsyncMock(side_effect=[candidates_result, reuse_result])
 
         manager = CompressionManager()

@@ -50,8 +50,7 @@ def _mock_session(scalar_result=None, scalars_result=None):
     """创建模拟 AsyncSession."""
     session = AsyncMock()
     result = MagicMock()
-    if scalar_result is not None:
-        result.scalar_one_or_none.return_value = scalar_result
+    result.scalar_one_or_none.return_value = scalar_result
     if scalars_result is not None:
         scalars_mock = MagicMock()
         scalars_mock.all.return_value = scalars_result
@@ -73,6 +72,14 @@ class TestCreateAgent:
         uid = uuid4()
         user = _make_user(uid)
         session = _mock_session()
+
+        async def _flush_side_effect(*args, **kwargs):
+            added = session.add.call_args[0][0]
+            added.id = uuid4()
+            added.created_at = datetime.now(timezone.utc)
+            added.is_active = True
+
+        session.flush = AsyncMock(side_effect=_flush_side_effect)
         data = AgentCreate(name="MyAgent", description="A test agent")
 
         result = await create_agent(data, user, session)
@@ -89,6 +96,14 @@ class TestCreateAgent:
         uid = uuid4()
         user = _make_user(uid)
         session = _mock_session()
+
+        async def _flush_side_effect(*args, **kwargs):
+            added = session.add.call_args[0][0]
+            added.id = uuid4()
+            added.created_at = datetime.now(timezone.utc)
+            added.is_active = True
+
+        session.flush = AsyncMock(side_effect=_flush_side_effect)
         data = AgentCreate(name="MyAgent")
 
         result = await create_agent(data, user, session)

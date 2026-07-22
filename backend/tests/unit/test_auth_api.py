@@ -45,8 +45,7 @@ def _mock_session(scalar_result=None, scalars_result=None):
     """创建模拟 AsyncSession."""
     session = AsyncMock()
     result = MagicMock()
-    if scalar_result is not None:
-        result.scalar_one_or_none.return_value = scalar_result
+    result.scalar_one_or_none.return_value = scalar_result
     if scalars_result is not None:
         scalars_mock = MagicMock()
         scalars_mock.all.return_value = scalars_result
@@ -65,6 +64,17 @@ class TestRegister:
     async def test_register_success(self):
         """注册成功 -> 返回 Token."""
         session = _mock_session(scalar_result=None)
+
+        async def _flush_side_effect(*args, **kwargs):
+            added = session.add.call_args[0][0]
+            added.id = uuid4()
+            added.is_active = True
+            added.is_admin = False
+            added.bio = ""
+            added.created_at = datetime.now(timezone.utc)
+            added.updated_at = datetime.now(timezone.utc)
+
+        session.flush = AsyncMock(side_effect=_flush_side_effect)
         data = UserCreate(
             email="new@example.com", username="newuser", password="strongpass123"
         )

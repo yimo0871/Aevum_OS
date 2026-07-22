@@ -67,11 +67,11 @@ def _make_experience(eid=None, user_id=None, status="pending"):
     return exp
 
 
-def _make_agent(aid=None, user_id=None):
+def _make_agent(aid=None, user_id=None, name="TestAgent"):
     agent = MagicMock()
     agent.id = aid or uuid4()
     agent.user_id = user_id or uuid4()
-    agent.name = "TestAgent"
+    agent.name = name
     agent.api_key = "sk-test-key-1234567890"
     agent.is_active = True
     agent.created_at = datetime.now(timezone.utc)

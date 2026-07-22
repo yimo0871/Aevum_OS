@@ -278,7 +278,7 @@
 - 经验治理层
   - `app/services/governance/trust.py` TrustScorer（多维信任评分）
   - `app/services/governance/decay.py` DecayManager（时间衰减因子）
-  - `app/services/governance/lineage.py` LineageTracker（经验谱系追踪）
+  - `app/services/governance/versioning.py` VersioningManager（经验版本/谱系追踪）
   - `app/api/v1/governance.py` 信任评分/谱系 API
   - 迁移 0003: trust_score + evaluation_status 字段
 - 前端登录/注册页面
