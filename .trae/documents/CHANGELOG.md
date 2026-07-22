@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+### Docs - 2026-07-22 (README 完善 + 配置模板)
+
+- `README.md` 完整重写：快速上手/Agent SDK/生产部署/配置参考/测试指南/项目结构
+- `.env.example` 新建开发环境配置模板（覆盖所有必要配置项）
+- `.env.production.example` 新建生产环境配置模板
+- `.env.example` 补充 `ALGORITHM=HS256` 配置项
+
 ### Fixed - 2026-07-22 (中优先级技术债务修复 TD-04~09)
 
 - `backend/app/api/v1/marketplace.py` GET 端点添加 `get_optional_user` 认证 (TD-04)
