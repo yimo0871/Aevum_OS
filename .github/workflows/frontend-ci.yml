@@ -4,12 +4,22 @@ on:
   push:
     branches: [main, master, develop]
     paths:
-      - "frontend/**"
+      - "frontend/src/**"
+      - "frontend/package*.json"
+      - "frontend/tsconfig*.json"
+      - "frontend/next.config.*"
+      - "frontend/tailwind.config.*"
+      - "frontend/postcss.config.*"
       - ".github/workflows/frontend-ci.yml"
   pull_request:
     branches: [main, master]
     paths:
-      - "frontend/**"
+      - "frontend/src/**"
+      - "frontend/package*.json"
+      - "frontend/tsconfig*.json"
+      - "frontend/next.config.*"
+      - "frontend/tailwind.config.*"
+      - "frontend/postcss.config.*"
 
 jobs:
   test:
