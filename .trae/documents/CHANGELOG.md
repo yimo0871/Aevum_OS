@@ -4,6 +4,26 @@
 
 ## [Unreleased]
 
+### Added - 2026-07-22 (迭代优化：检索精度 + 生产性能)
+
+#### 方向一：检索精度优化
+- `backend/app/services/retrieval/hybrid_search.py` 混合检索模块（向量+BM25加权融合，alpha=0.7）
+- `backend/app/services/retrieval/reranker.py` LLM重排器（top-K结果LLM评分重排，优雅降级）
+- `backend/app/services/retrieval/query_expander.py` 查询扩展器（LLM生成查询变体多路召回）
+- `backend/app/core/config.py` 新增7个配置项（hybrid_search_alpha/enabled, reranker_enabled/top_k, query_expansion_enabled/max）
+- 21个新增测试（test_hybrid_search.py 8个 + test_reranker.py 7个 + test_query_expander.py 6个）
+
+#### 方向三：生产性能优化
+- `backend/alembic/versions/0016_performance_indexes.py` 数据库索引迁移（5个复合索引+GIN全文检索）
+- `backend/app/core/cache.py` Redis缓存层（检索结果+embedding缓存，无Redis优雅降级）
+- `backend/app/services/retrieval/embedder.py` 添加 embed_batch 批量嵌入方法（减少网络往返）
+- `backend/scripts/perf_baseline.py` 性能基线压测脚本（P50/P95/P99/QPS）
+- 15个新增测试（test_cache.py 12个 + test_embed_batch.py 3个）
+
+#### 测试结果
+- 后端测试 680 -> 716（+36个新测试），716 passed, 2 pre-existing failures
+- 数据库迁移 15 -> 16
+
 ### Docs - 2026-07-22 (README 完善 + 配置模板)
 
 - `README.md` 完整重写：快速上手/Agent SDK/生产部署/配置参考/测试指南/项目结构

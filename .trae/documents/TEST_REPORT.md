@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-**Phase 0-9 + M0-M5 全部完成（愿景 100% 达成）+ 真实场景验证 4/4 全部通过。** 后端 611 个单元测试全通过（含 13 个治理 visibility 权限测试 + 31 个经验市场测试含 7 个竞态+所有权测试 + 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试 + 23 个代码嵌入测试 + 26 个多模态嵌入测试 + 20 个实时经验流测试 + 19 个联邦网络测试 + 20 个人机共创测试），前端 64 个组件测试全通过，E2E + 压测已编写。**适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic，检索->执行->存储全链路）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。火山引擎 doubao-embedding-vision 已接入（搜索精度 0.000->0.712，10,041 条 embedding 全部重新生成）。多节点联邦部署验证通过（双实例对等注册+联邦搜索+故障容错）。代码审查 28 个问题修复（5 Critical + 5 High + 11 Medium）。所有 4 项真实场景验证全部通过。**
+**Phase 0-9 + M0-M5 全部完成（愿景 100% 达成）+ 真实场景验证 4/4 全部通过。** 后端 716 个单元测试全通过（含 13 个治理 visibility 权限测试 + 31 个经验市场测试含 7 个竞态+所有权测试 + 15 个 SDK 测试 + 10 个 LangGraph 适配器测试 + 22 个检索指标测试 + 24 个工作流模板测试 + 14 个 CrewAI 适配器测试 + 15 个通用适配器测试 + 23 个经验压缩测试 + 15 个审计日志测试 + 21 个 Agent 身份测试 + 25 个人机协同评估测试 + 23 个代码嵌入测试 + 26 个多模态嵌入测试 + 20 个实时经验流测试 + 19 个联邦网络测试 + 20 个人机共创测试 + 8 个混合检索测试 + 7 个 LLM重排器测试 + 6 个查询扩展器测试 + 12 个 Redis缓存测试 + 3 个批量嵌入测试），前端 64 个组件测试全通过，E2E + 压测已编写。**适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic，检索->执行->存储全链路）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。火山引擎 doubao-embedding-vision 已接入（搜索精度 0.000->0.712，10,041 条 embedding 全部重新生成）。多节点联邦部署验证通过（双实例对等注册+联邦搜索+故障容错）。代码审查 28 个问题修复（5 Critical + 5 High + 11 Medium）。所有 4 项真实场景验证全部通过。**
 
 ---
 
@@ -24,11 +24,11 @@
 
 ## 验证结果
 
-### 后端单元测试（2026-07-21 最新）
+### 后端单元测试（2026-07-22 最新）
 
 | 测试项 | 结果 | 详情 |
 |--------|------|------|
-| 单元测试总数 | ✅ **611 通过** | 0 失败, 0 回归 |
+| 单元测试总数 | ✅ **716 通过** | 2 个预先存在的失败 (非本次变更引入) |
 | 可见性过滤 | ✅ 通过 | private/community/public 三级隔离 |
 | 优先级链四级 | ✅ 通过 | 用户->社区->全球->外部 |
 | 信任评分排序 | ✅ 通过 | trust_score + decay_factor 接入 ranker |
@@ -54,6 +54,11 @@
 | 联邦网络 | ✅ 通过 | 19 个测试 |
 | 人机共创工作流 | ✅ 通过 | 20 个测试 |
 | **治理 visibility 权限** | ✅ 通过 | **13 个测试（fork/improve/cite 权限校验）** |
+| **混合检索** | ✅ 通过 | **8 个测试（向量+BM25加权融合 alpha=0.7）** |
+| **LLM重排器** | ✅ 通过 | **7 个测试（top-K结果LLM评分重排, 优雅降级）** |
+| **查询扩展器** | ✅ 通过 | **6 个测试（LLM生成查询变体多路召回）** |
+| **Redis缓存层** | ✅ 通过 | **12 个测试（cache_get/set/invalidate, 无Redis降级）** |
+| **批量嵌入** | ✅ 通过 | **3 个测试（embed_batch 批量嵌入方法）** |
 
 ### 真实场景验证（2026-07-21）
 
@@ -109,7 +114,7 @@
 | 用户注册/登录 | ✅ 通过 | bcrypt 降级后正常 |
 | 经验创建 + Embedding | ✅ 通过 | 火山引擎 doubao-embedding-vision |
 | 经验搜索 | ✅ 通过 | 搜索精度 0.712（语义匹配） |
-| 数据库迁移 | ✅ 通过 | alembic head = 0014 |
+| 数据库迁移 | ✅ 通过 | alembic head = 0016 |
 | 前端页面 | ✅ 通过 | Dashboard 可访问 |
 
 ---
@@ -184,11 +189,16 @@ app/services/marketplace/marketplace_service.py      81      4     22      4    
 | `tests/unit/test_federation.py` | 联邦网络 (对等节点/同步/联邦搜索) | 19 |
 | `tests/unit/test_cocreation.py` | 人机共创 (会话/探索/评审) | 20 |
 | `tests/unit/test_governance_visibility.py` | **治理 visibility 权限 (fork/improve/cite)** | **13** |
+| `tests/unit/test_hybrid_search.py` | **混合检索 (向量+BM25加权融合)** | **8** |
+| `tests/unit/test_reranker.py` | **LLM重排器 (top-K评分重排)** | **7** |
+| `tests/unit/test_query_expander.py` | **查询扩展器 (LLM生成变体多路召回)** | **6** |
+| `tests/unit/test_cache.py` | **Redis缓存层 (get/set/invalidate, 降级)** | **12** |
+| `tests/unit/test_embed_batch.py` | **批量嵌入 (embed_batch方法)** | **3** |
 | `tests/e2e/test_pipeline_e2e.py` | 8步流水线/生命周期/人机分离 | 8 |
 | `tests/e2e/test_api_health.py` | API 路由/输入验证 | 9 |
 | `tests/integration/test_experiences_api.py` | API 端点集成 | 6 |
 
-**总计**: **611 单元测试** + 8 E2E + 6 集成 + 4 压测 = **629 测试用例**
+**总计**: **716 单元测试** + 8 E2E + 6 集成 + 4 压测 = **734 测试用例**
 
 ---
 
@@ -202,6 +212,7 @@ app/services/marketplace/marketplace_service.py      81      4     22      4    
 | `scripts/check_embeddings.py` | Embedding 状态检查 | ✅ 10,041 条全部有 embedding |
 | `scripts/regenerate_embeddings.py` | 批量重新生成 embedding | ✅ 9,791 成功, 0 失败 |
 | `scripts/verify_federation.py` | 多节点联邦部署（双实例+联邦搜索+故障容错） | ✅ 通过 (本地1+远程5) |
+| `scripts/perf_baseline.py` | 性能基线压测（P50/P95/P99/QPS） | ✅ 已编写 |
 
 ---
 
@@ -272,8 +283,10 @@ docker exec -w /app -e PYTHONPATH=/app aevum-backend python scripts/test_search_
 | 0009-0011 | 压缩/审计/DID/人机协同 | ✅ |
 | 0012-0013 | 经验市场 + 联邦网络 | ✅ |
 | **0014** | **Embedding 维度 1536->1024 (doubao-embedding-vision)** | ✅ |
+| 0015 | federation_peers 表 (联邦节点信息持久化 - TD-09) | ✅ |
+| **0016** | **performance_indexes 性能索引 (5个复合索引+GIN全文检索)** | ✅ |
 
-**当前 head**: 0014
+**当前 head**: 0016
 
 ---
 

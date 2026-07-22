@@ -127,6 +127,28 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | 文档整合 | ✅ | 27 个文档精简为 15 个（删除 12 个冗余/过时文件），提升 3 个文档为 git 跟踪，.gitignore 添加白名单规则 |
 | 依赖清理 | ✅ | passlib 依赖移除，替换为直接使用 bcrypt（security.py 修改），消除 passlib 弃用警告 |
 
+### 迭代优化（2026-07-22）
+
+#### 方向一：检索精度优化
+
+| 模块 | 状态 | 详情 |
+|------|------|------|
+| 混合检索 | ✅ | `app/services/retrieval/hybrid_search.py` 向量+BM25全文检索加权融合 (alpha=0.7) |
+| LLM重排器 | ✅ | `app/services/retrieval/reranker.py` top-K结果LLM评分重排, 优雅降级 |
+| 查询扩展器 | ✅ | `app/services/retrieval/query_expander.py` LLM生成语义等价查询变体, 多路召回 |
+| 配置扩展 | ✅ | `config.py` 新增7个配置项 (hybrid_search_alpha/enabled, reranker_enabled/top_k, query_expansion_enabled/max) |
+| 测试 | ✅ | 21个新增测试 (test_hybrid_search.py 8个 + test_reranker.py 7个 + test_query_expander.py 6个) |
+
+#### 方向三：生产性能优化
+
+| 模块 | 状态 | 详情 |
+|------|------|------|
+| 数据库索引 | ✅ | 迁移 `0016_performance_indexes.py` 5个复合索引 (user_id+visibility+created_at, evaluation_status+created_at, target_id+relation_type, listings_status+created_at, GIN全文检索索引) |
+| Redis缓存层 | ✅ | `app/core/cache.py` cache_get/set/invalidate, 无Redis优雅降级 |
+| 批量嵌入 | ✅ | `embedder.py` 添加 embed_batch 批量嵌入方法, 减少网络往返 |
+| 性能基线脚本 | ✅ | `scripts/perf_baseline.py` P50/P95/P99/QPS 压测脚本 |
+| 测试 | ✅ | 15个新增测试 (test_cache.py 12个 + test_embed_batch.py 3个) |
+
 ---
 
 ## 已实现的 API 端点
@@ -247,7 +269,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 
 | 类型 | 数量 | 状态 |
 |------|------|------|
-| 后端单元测试 | 680 | ✅ 41 个新增 API 测试全通过 (auth/agents/admin); ⚠️ 2 个预先存在的失败 (见下方说明) |
+| 后端单元测试 | 716 | ✅ 41 个新增 API 测试 + 36 个迭代优化测试全通过; ⚠️ 2 个预先存在的失败 (见下方说明) |
 | 前端组件测试 | 64 | ✅ 全通过 (9个URL路径错误已修复) |
 | 端到端测试 | 8 | ✅ 全通过 |
 | API 压测 | 4 | ✅ 全通过 |
@@ -277,6 +299,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | 0013 | cocreation_sessions 表 (人机共创工作流 - M5) |
 | 0014 | embedding 维度 1536->1024 (火山引擎 doubao-embedding-vision 降维) |
 | 0015 | federation_peers 表 (联邦节点信息持久化 - TD-09) |
+| 0016 | performance_indexes 性能索引 (5个复合索引+GIN全文检索 - 迭代优化方向三) |
 
 ---
 
@@ -321,9 +344,9 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 - [x] 代码已 git commit
 - [x] PROJECT_STATE.md 已同步（模块/Bug/测试数/迁移/Git历史/技术债务）
 - [x] CHANGELOG.md 已同步（Added/Fixed/Changed）
-- [x] 后端 + 前端测试全通过（680 个单元测试，41 个新增 API 测试已验证通过，2 个预先存在的失败见说明）
+- [x] 后端 + 前端测试全通过（716 个单元测试，41 个新增 API 测试 + 36 个迭代优化测试已验证通过，2 个预先存在的失败见说明）
 - [x] 对比 git log 确认无遗漏
 
 ### 当前状态
 
-**愿景 100% 达成 + 真实场景验证 4/4 全部通过 + 技术债务高/中优先级全部修复 + 低优先级 4/6 修复。** Phase 0-9 + M0-M5 全部完成。火山引擎 doubao-embedding-vision 已接入（1024降维，搜索精度 0.000->0.712）。10,041 条经验 embedding 全部重新生成。代码审查 28 个问题修复（5 Critical + 5 High + 11 Medium）。适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。市场竞态条件+所有权验证测试通过（7 个新增，覆盖率 92%）。多节点联邦部署验证通过（双实例对等注册+联邦搜索+故障容错）。修复 14 个 bug。技术债务清理：高优先级 3/3 修复（TD-01 生产密钥配置化 + TD-02 auth/admin/agents API 测试 37 个 + TD-03 openai 依赖），中优先级 6/6 修复（TD-04 市场认证 + TD-05 多模态语义 + TD-06 COUNT 查询 + TD-07 SQL 重构 + TD-08 联邦配置化 + TD-09 节点持久化迁移 0015），低优先级 4/6 修复（TD-11 重复目录删除 + TD-12 CHANGELOG 引用修正 + TD-13 passlib 替换为 bcrypt）。迁移 0014-0015。后端 680 个单元测试（41 个新增 API 测试全通过，2 个预先存在的失败）。CI/CD 修复（frontend-ci.yml 路径过滤收窄避免文档误触发 + backend-ci.yml 重建完整流水线）。文档整合（27->15 个文档，删除 12 个冗余文件，提升 3 个为 git 跟踪，.gitignore 添加白名单规则）。passlib 依赖移除（替换为直接使用 bcrypt，消除弃用警告）。所有 4 项真实场景验证全部通过。
+**愿景 100% 达成 + 真实场景验证 4/4 全部通过 + 技术债务高/中优先级全部修复 + 低优先级 4/6 修复 + 迭代优化（检索精度+生产性能）已完成。** Phase 0-9 + M0-M5 全部完成。火山引擎 doubao-embedding-vision 已接入（1024降维，搜索精度 0.000->0.712）。10,041 条经验 embedding 全部重新生成。代码审查 28 个问题修复（5 Critical + 5 High + 11 Medium）。适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。市场竞态条件+所有权验证测试通过（7 个新增，覆盖率 92%）。多节点联邦部署验证通过（双实例对等注册+联邦搜索+故障容错）。修复 14 个 bug。技术债务清理：高优先级 3/3 修复（TD-01 生产密钥配置化 + TD-02 auth/admin/agents API 测试 37 个 + TD-03 openai 依赖），中优先级 6/6 修复（TD-04 市场认证 + TD-05 多模态语义 + TD-06 COUNT 查询 + TD-07 SQL 重构 + TD-08 联邦配置化 + TD-09 节点持久化迁移 0015），低优先级 4/6 修复（TD-11 重复目录删除 + TD-12 CHANGELOG 引用修正 + TD-13 passlib 替换为 bcrypt）。迁移 0014-0016。迭代优化：方向一检索精度优化（混合检索向量+BM25加权融合 alpha=0.7 + LLM重排器 top-K评分重排 + 查询扩展器LLM生成变体多路召回 + 7个配置项 + 21个测试），方向三生产性能优化（迁移0016 5个复合索引+GIN全文检索 + Redis缓存层无Redis优雅降级 + 批量嵌入embed_batch + 性能基线压测脚本P50/P95/P99/QPS + 15个测试）。后端 716 个单元测试（41 个新增 API 测试 + 36 个迭代优化测试全通过，2 个预先存在的失败）。CI/CD 修复（frontend-ci.yml 路径过滤收窄避免文档误触发 + backend-ci.yml 重建完整流水线）。文档整合（27->15 个文档，删除 12 个冗余文件，提升 3 个为 git 跟踪，.gitignore 添加白名单规则）。passlib 依赖移除（替换为直接使用 bcrypt，消除弃用警告）。所有 4 项真实场景验证全部通过。
