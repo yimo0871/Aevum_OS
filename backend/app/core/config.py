@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com/v1"
     embedding_model: str = "text-embedding-3-small"
-    embedding_dimension: int = 1536
+    embedding_dimension: int = 1024
 
     # LLM 配置
     llm_model: str = "gpt-4o-mini"

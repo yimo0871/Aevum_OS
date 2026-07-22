@@ -41,6 +41,7 @@ async def fetch_new_experiences(
     query = select(Experience).where(
         Experience.created_at > since,
         Experience.status == "active",
+        Experience.visibility == "public",
     )
     if domain:
         query = query.where(Experience.context["domain"].astext == domain)

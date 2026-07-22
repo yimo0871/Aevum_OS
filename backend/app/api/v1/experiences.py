@@ -7,7 +7,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session, get_optional_user
+from app.api.deps import get_db_session, get_optional_user, get_current_user
 from app.models.user import User
 from app.schemas.experience import (
     ExperienceCreate,
@@ -138,6 +138,7 @@ async def get_experience(
 async def update_experience(
     experience_id: UUID,
     data: ExperienceUpdate,
+    current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> ExperienceResponse:
     repo = ExperienceRepository(session)
@@ -158,6 +159,7 @@ async def update_experience(
 )
 async def delete_experience(
     experience_id: UUID,
+    current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> None:
     repo = ExperienceRepository(session)
@@ -182,6 +184,7 @@ async def delete_experience(
 async def add_relation(
     experience_id: UUID,
     data: RelationCreate,
+    current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> RelationResponse:
     logger.info(

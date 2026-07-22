@@ -29,7 +29,11 @@ services:
     env_file:
       - .env
     environment:
-      - ENVIRONMENT=production
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - POSTGRES_HOST=db
+      - DATABASE_URL=postgresql+asyncpg://aevum:aevum_secure_2024@db:5432/aevum
+      - SECRET_KEY=pr0d-s3cr3t-7f4a9c2e8b1d6a3f5e0c9d4b7a2f8e1c6d3a9b5f0e7c2d4a1b8f6e3c9d5a0b7
     depends_on:
       db:
         condition: service_healthy
@@ -47,7 +51,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: aevum-worker-prod
-    command: celery -A app.core.celery_app worker --loglevel=info --concurrency=4
+    command: celery -A app.celery_app worker --loglevel=info --concurrency=4
     env_file:
       - .env
     depends_on:

@@ -31,7 +31,7 @@ class HumanExpression(Base):
     # 可选元数据
     metadata_ = Column("metadata", JSONB, nullable=False, default=dict)
     # 语义向量（后端存储时自动生成，供 Agent 观察用）
-    embedding = Column(Vector(1536), nullable=True)
+    embedding = Column(Vector(1024), nullable=True)
     created_at = Column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )

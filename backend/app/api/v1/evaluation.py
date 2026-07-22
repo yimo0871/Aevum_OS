@@ -8,8 +8,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session
+from app.api.deps import get_current_user, get_db_session
 from app.models.experience import Experience
+from app.models.user import User
 from app.services.evaluation.experience_evaluator import ExperienceEvaluator
 from app.services.evaluation.human_review import HumanReviewService
 from app.services.evaluation.metrics import SystemMetricsCalculator
@@ -43,6 +44,7 @@ def _set_cache(key: str, val):
 async def evaluate_experience(
     experience_id: UUID,
     session: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     """评估经验对象."""
     repo = ExperienceRepository(session)
@@ -65,12 +67,10 @@ async def evaluate_experience(
         confidence_score=result.confidence_score,
         evaluation_status="evaluated",
     ))
-    await session.commit()
 
     # ── 保存评估记录 ──
     evaluation_model = evaluator.to_evaluation_model(result)
     session.add(evaluation_model)
-    await session.commit()
 
     return result.to_dict()
 
@@ -192,13 +192,14 @@ async def create_human_review(
     experience_id: UUID,
     data: HumanReviewRequest,
     session: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     """创建人类专家评审."""
     service = HumanReviewService()
     try:
         review = await service.create_review(
             experience_id=experience_id,
-            reviewer_id=data.reviewer_id,
+            reviewer_id=current_user.id,
             rating=data.rating,
             session=session,
             notes=data.notes,

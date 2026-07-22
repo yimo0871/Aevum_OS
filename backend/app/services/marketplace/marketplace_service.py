@@ -49,6 +49,8 @@ class MarketplaceService:
         experience = await session.get(Experience, experience_id)
         if experience is None:
             raise ValueError(f"经验不存在: {experience_id}")
+        if experience and experience.user_id != seller_id:
+            raise ValueError("无权出售他人的经验")
 
         listing = ExperienceListing(
             experience_id=experience_id,
@@ -154,7 +156,12 @@ class MarketplaceService:
         Raises:
             ValueError: 挂单不存在、挂单不可购买、买家是卖家
         """
-        listing = await self.get_listing(listing_id, session)
+        result = await session.execute(
+            select(ExperienceListing)
+            .where(ExperienceListing.id == listing_id)
+            .with_for_update()
+        )
+        listing = result.scalar_one_or_none()
         if listing is None:
             raise ValueError(f"挂单不存在: {listing_id}")
 

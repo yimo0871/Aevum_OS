@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from enum import IntEnum
 
@@ -21,6 +22,8 @@ from app.models.experience import Experience
 from app.services.retrieval.external import ExternalResult, get_external_search_provider
 from app.services.retrieval.matcher import ExperienceMatcher, MatchResult
 from app.services.retrieval.ranker import ExperienceRanker, RankedResult
+
+logger = logging.getLogger(__name__)
 
 
 class PriorityLevel(IntEnum):
@@ -158,6 +161,7 @@ class PriorityChain:
                 task_type=task_type, user_id=user_id
             )
         except Exception:
+            logger.warning("[PRIORITY_CHAIN] 用户级经验检索失败", exc_info=True)
             return []
 
     async def _search_community(
@@ -178,6 +182,7 @@ class PriorityChain:
                 community_ids=community_ids,
             )
         except Exception:
+            logger.warning("[PRIORITY_CHAIN] 社区级经验检索失败", exc_info=True)
             return []
 
     async def _search_global(
@@ -198,6 +203,7 @@ class PriorityChain:
                 visibility_levels=["public"],
             )
         except Exception:
+            logger.warning("[PRIORITY_CHAIN] 全球级向量检索失败，回退关键词检索", exc_info=True)
             return await self.matcher.match_by_keywords(
                 query, limit=self.max_results, domain=domain,
                 visibility_levels=["public"],
@@ -217,6 +223,7 @@ class PriorityChain:
         try:
             results = await provider.search(query, limit=self.max_results)
         except Exception:
+            logger.warning("[PRIORITY_CHAIN] 外部网络检索失败", exc_info=True)
             return []
 
         matches: list[MatchResult] = []

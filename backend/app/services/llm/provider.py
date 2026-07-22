@@ -1,8 +1,11 @@
 """LLM 服务提供者 - 支持多模型."""
 from __future__ import annotations
+import logging
 from typing import Optional
 from openai import AsyncOpenAI
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 class LLMProvider:
     _client: Optional[AsyncOpenAI] = None
@@ -37,6 +40,7 @@ class LLMProvider:
             )
             return response.choices[0].message.content or ""
         except Exception:
+            logger.warning("[LLM] 文本生成失败", exc_info=True)
             return ""
 
     @classmethod

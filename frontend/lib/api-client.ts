@@ -135,7 +135,10 @@ export const retrievalApi = {
     domain?: string
     limit?: number
   }): Promise<SearchResult[]> => {
-    return fetchAPI<SearchResult[]>(`/api/v1/retrieval/search?${buildQuery(params)}`)
+    return fetchAPI<SearchResult[]>("/api/v1/retrieval/search", {
+      method: "POST",
+      body: JSON.stringify(params),
+    })
   },
 }
 
