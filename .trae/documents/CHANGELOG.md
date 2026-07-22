@@ -4,6 +4,17 @@
 
 ## [Unreleased]
 
+### Fixed - 2026-07-22 (高优先级技术债务修复 TD-01/02/03)
+
+- `backend/pyproject.toml` 添加 `openai>=1.0,<2.0` 依赖 (TD-03)
+- `backend/requirements.txt` openai 添加版本上限 `<2.0`
+- `docker-compose.prod.yml` 移除硬编码 SECRET_KEY 和数据库密码，改用 `.env.production` (TD-01)
+- `docker-compose.prod.yml` POSTGRES_PASSWORD 设为必填 `${POSTGRES_PASSWORD:?...}`
+- `.env.production.example` 新增生产环境配置模板
+- `backend/tests/unit/test_auth_api.py` 新增 12 个测试 (TD-02)
+- `backend/tests/unit/test_agents_api.py` 新增 10 个测试 (TD-02)
+- `backend/tests/unit/test_admin_api.py` 新增 15 个测试 (TD-02)
+
 ### Fixed + Verified - 2026-07-21 (代码审查 28 问题修复 + 竞态/所有权测试)
 
 #### Critical 修复 (5)

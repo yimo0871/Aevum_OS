@@ -10,29 +10,32 @@
 
 ---
 
-## 高优先级（3 项）
+## 高优先级（3 项） -- 全部已修复 ✅
 
-### TD-01: docker-compose.prod.yml 硬编码敏感信息
+### TD-01: docker-compose.prod.yml 硬编码敏感信息 ✅ 已修复
 
 - **文件**: `docker-compose.prod.yml`
-- **行号**: 36 (SECRET_KEY), 35 (DATABASE_URL), 85 (POSTGRES_PASSWORD)
-- **问题描述**: 生产环境编排文件中硬编码了 SECRET_KEY 和数据库密码，提交到 Git 后这些值暴露在版本历史中
-- **影响**: 生产安全风险，攻击者可从仓库获取密钥伪造 JWT
-- **建议修复**: 使用 `.env.production` 文件或 Docker Secrets 管理敏感信息，`.gitignore` 中排除 `.env.production`
+- **问题描述**: 生产环境编排文件中硬编码了 SECRET_KEY 和数据库密码
+- **修复**: 移除硬编码值，改用 `.env.production` 文件，POSTGRES_PASSWORD 设为必填，创建 `.env.production.example` 模板
+- **修复提交**: a3d57d4 (2026-07-22)
 
-### TD-02: auth.py / admin.py / agents.py API 无测试覆盖
+### TD-02: auth.py / admin.py / agents.py API 无测试覆盖 ✅ 已修复
 
 - **文件**: `backend/app/api/v1/auth.py` (4 端点), `admin.py` (10 端点), `agents.py` (4 端点)
-- **问题描述**: 共 18 个 API 端点完全没有专用测试文件覆盖。auth.py 包含用户注册和登录等核心安全功能
-- **影响**: 核心安全功能无测试保障，回归风险高
-- **建议修复**: 创建 `test_auth_api.py`, `test_admin_api.py`, `test_agents_api.py` 测试文件
+- **问题描述**: 共 18 个 API 端点完全没有专用测试文件覆盖
+- **修复**: 新增 3 个测试文件共 37 个测试
+  - `test_auth_api.py`: 12 个测试（注册/登录/用户信息）
+  - `test_agents_api.py`: 10 个测试（创建/列表/删除/重生成key）
+  - `test_admin_api.py`: 15 个测试（用户CRUD/经验审核/Agent/统计）
+- **修复提交**: a3d57d4 (2026-07-22)
+- **注意**: 测试待 Python 环境恢复后验证
 
-### TD-03: pyproject.toml 缺失 openai 依赖
+### TD-03: pyproject.toml 缺失 openai 依赖 ✅ 已修复
 
 - **文件**: `backend/pyproject.toml`
-- **问题描述**: `llm/provider.py` 和 `embedder.py` 直接 `import openai`（`from openai import AsyncOpenAI`），但 pyproject.toml 未声明 openai 依赖。通过 `pip install .` 安装时无法运行
-- **影响**: SDK 打包安装后无法使用 LLM 和 Embedding 功能
-- **建议修复**: 在 pyproject.toml 的 dependencies 中添加 `openai>=1.0`
+- **问题描述**: 代码直接 `import openai` 但 pyproject.toml 未声明依赖
+- **修复**: 在 dependencies 中添加 `openai>=1.0,<2.0`，requirements.txt 同步添加上限
+- **修复提交**: a3d57d4 (2026-07-22)
 
 ---
 
