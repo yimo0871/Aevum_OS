@@ -100,5 +100,14 @@ Aevum_薪火OS_产品路演.md
 Aevum_薪火OS_会话总结.md
 Aevum_薪火OS_会话总结_v2.md
 Autonomous_Project_Execution_Charter.md
-.trae/documents/
+# .trae/documents/ 以下文件纳入版本控制，其余忽略
+.trae/documents/*
+!.trae/documents/PROJECT_STATE.md
+!.trae/documents/ROADMAP.md
+!.trae/documents/CHANGELOG.md
+!.trae/documents/ARCHITECTURE.md
+!.trae/documents/TECH_DEBT.md
+!.trae/documents/TEST_REPORT.md
+!.trae/documents/DECISIONS.md
+!.trae/documents/KNOWLEDGE.md
 .gitignore.local

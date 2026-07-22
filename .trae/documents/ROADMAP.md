@@ -347,7 +347,6 @@ M5: 生态系统（L1 + L3）-- 经验市场 + 联邦网络
 - `PROJECT_STATE.md` - 当前进度、测试数、迁移历史、Git 历史
 - `CHANGELOG.md` - Added/Fixed/Changed 条目
 - `TEST_REPORT.md` - 测试数、测试文件清单
-- `TASKS.md` - 任务状态更新
 - `ROADMAP.md`（本文件）- 里程碑进度标记
 
 ### 4.3 新对话恢复协议
