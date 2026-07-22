@@ -315,4 +315,4 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ### 当前状态
 
-**愿景 100% 达成 + 真实场景验证 2/4 完成。** Phase 0-9 + M1-M5 全部完成。安全修复完成（fork/improve/cite visibility 权限校验 + 13 个测试）。适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。修复 3 个 bug（适配器 steps 兼容 + create_experience user_id 关联 + governance visibility 校验）。后端 605 个单元测试全通过。剩余验证：多节点联邦部署（需多实例）+ 真实 LLM 集成（需 OpenAI API Key）。
+**愿景 100% 达成 + 真实场景验证 3/4 完成。** Phase 0-9 + M0-M5 全部完成。火山引擎 doubao-embedding-vision 已接入（1024降维，搜索精度 0.000->0.712）。10,041 条经验 embedding 全部重新生成。安全修复完成（fork/improve/cite visibility 权限校验 + 13 个测试）。适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。修复 5 个 bug（适配器 steps 兼容 + create_experience user_id 关联 + governance visibility 校验 + OpenAIEmbedder embed_async + bcrypt 4.1 兼容）。迁移 0014（vector 1536->1024）。后端 605 个单元测试全通过。剩余验证：多节点联邦部署（需多实例）。

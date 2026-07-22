@@ -4,6 +4,28 @@
 
 ## [Unreleased]
 
+### Fixed + Verified - 2026-07-21 (火山引擎集成 + Embedding 修复)
+
+#### 火山引擎 Coding Plan 集成
+- `backend/app/core/config.py` 新增 `openai_base_url` 配置项，支持 OpenAI 兼容 API
+- `backend/app/services/retrieval/embedder.py` 使用配置的 base_url，支持 `dimensions` 降维参数
+- `backend/app/services/llm/provider.py` LLM client 支持 base_url
+- `.env.example` 添加火山引擎 Coding Plan 配置示例（doubao-embedding-vision, 1024维）
+- `backend/alembic/versions/0014_change_embedding_dim.py` 迁移：vector(1536) -> vector(1024)
+- `backend/scripts/regenerate_embeddings.py` 10,041 条经验 embedding 全部重新生成（0 失败）
+- 搜索精度从 0.000 (HashEmbedder) 提升到 0.712 (doubao-embedding-vision)
+
+#### Bug 修复
+- `backend/app/api/v1/experiences.py` `create_experience` 添加 `get_optional_user` 依赖 + 修复 `OpenAIEmbedder` 无 `embed_async` 方法导致新经验缺 embedding
+- `backend/aevum/adapters/crewai.py` + `langgraph.py` 修复 `steps: list[str]` 不兼容后端 `list[dict]` 导致 422 错误
+- bcrypt 4.1+ 兼容性问题（降级到 <4.1）
+
+#### 验证脚本
+- `backend/scripts/verify_adapter_loop.py` Agent 适配器闭环验证（3/3 通过）
+- `backend/scripts/verify_e2e_user_flow.py` 端到端用户流程验证（9/9 通过）
+- `backend/scripts/test_search_precision.py` 搜索精度验证（0.712 语义匹配）
+- `backend/scripts/check_embeddings.py` embedding 状态检查
+
 ### Fixed + Verified - 2026-07-20 (安全修复 + 适配器闭环验证)
 
 #### 安全修复
