@@ -27,13 +27,11 @@ services:
     container_name: aevum-backend-prod
     command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
     env_file:
-      - .env
+      - .env.production
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
       - POSTGRES_HOST=db
-      - DATABASE_URL=postgresql+asyncpg://aevum:aevum_secure_2024@db:5432/aevum
-      - SECRET_KEY=pr0d-s3cr3t-7f4a9c2e8b1d6a3f5e0c9d4b7a2f8e1c6d3a9b5f0e7c2d4a1b8f6e3c9d5a0b7
     depends_on:
       db:
         condition: service_healthy
@@ -53,7 +51,7 @@ services:
     container_name: aevum-worker-prod
     command: celery -A app.celery_app worker --loglevel=info --concurrency=4
     env_file:
-      - .env
+      - .env.production
     depends_on:
       - backend
       - redis
@@ -82,7 +80,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-aevum}
       POSTGRES_USER: ${POSTGRES_USER:-aevum}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aevum_secure_2024}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请在.env.production中设置POSTGRES_PASSWORD}
     volumes:
       - aevum-db-data:/var/lib/postgresql/data
     healthcheck:

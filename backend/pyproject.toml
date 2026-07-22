@@ -29,6 +29,9 @@ dependencies = [
     # HTTP Client
     "httpx>=0.28.0",
 
+    # LLM / Embedding
+    "openai>=1.0,<2.0",
+
     # Utilities
     "python-dateutil>=2.9.0",
     "python-dotenv>=1.0.1",
