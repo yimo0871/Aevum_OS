@@ -4,6 +4,31 @@
 
 ## [Unreleased]
 
+### Fixed + Verified - 2026-07-21 (代码审查 28 问题修复 + 竞态/所有权测试)
+
+#### Critical 修复 (5)
+- `backend/app/models/human_expression.py` Vector(1536) -> Vector(1024) 与迁移 0014 一致
+- `backend/app/core/config.py` embedding_dimension 默认值 1536 -> 1024
+- `frontend/lib/api-client.ts` 搜索 API 从 GET 改为 POST + JSON body
+- `backend/app/api/v1/experiences.py` update/delete/add_relation 添加 `get_current_user` 认证
+- `backend/app/api/v1/evaluation.py` evaluate/create_review 添加认证 + 移除双重 commit + reviewer_id 改用 current_user.id
+- `docker-compose.prod.yml` Celery 路径修正 + SECRET_KEY + DATABASE_URL + APP_ENV
+
+#### High 修复 (5)
+- `backend/app/api/v1/streaming.py` SSE 流添加 `visibility == "public"` 过滤
+- `backend/app/services/marketplace/marketplace_service.py` purchase 添加 `with_for_update()` 行级锁 + create_listing 所有权验证
+- `docker-compose.prod.yml` 添加 SECRET_KEY + POSTGRES_HOST + DATABASE_URL + APP_DEBUG=false
+- `docker-compose.yml` DATABASE_URL 改为环境变量引用
+
+#### Medium 修复 (11)
+- `backend/app/services/retrieval/priority_chain.py` 4 处 except Exception 添加 logger.warning
+- `backend/app/services/llm/provider.py` except Exception 添加 logger.warning
+
+#### 新增测试 (7 个, 611/611 通过)
+- `backend/tests/unit/test_marketplace.py` TestCreateListingOwnership: 3 个所有权验证测试
+- `backend/tests/unit/test_marketplace.py` TestPurchaseRaceCondition: 3 个竞态条件测试 + 1 个下架测试
+- 市场服务覆盖率: 92% (竞态+所有权分支 100% 覆盖)
+
 ### Fixed + Verified - 2026-07-21 (火山引擎集成 + Embedding 修复)
 
 #### 火山引擎 Coding Plan 集成

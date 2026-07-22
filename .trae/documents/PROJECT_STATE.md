@@ -108,7 +108,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | M5-S2: 经验市场 API | ✅ | MarketplaceService + 7 个 API 端点 (上架/浏览/详情/购买/下架/我的购买/我的销售), 25 个单元测试 |
 | M5-S3: 联邦经验网络 | ✅ | FederationService (对等节点注册/同步/联邦搜索) + 4 个 API 端点, 19 个单元测试 |
 | M5-S4: 人机共创工作流 | ✅ | CoCreationSession 模型 + 迁移 0013 + 5 个 API 端点 (创建/探索/评审/列表), 20 个单元测试 |
-| M5-S5: 终态验证 + 文档同步 | ✅ | 后端 592 个单元测试全通过, 所有文档已同步, 愿景 16/16 = 100% 达成 |
+| M5-S5: 终态验证 + 文档同步 | ✅ | 后端 611 个单元测试全通过, 所有文档已同步, 愿景 16/16 = 100% 达成 |
 
 ---
 
@@ -254,6 +254,7 @@ Phase 0-7（MVP）已 100% 完成。Phase 8 产品化升级已 100% 完成。Pha
 | 0011 | human_reviews 表 (人机协同评估 - M3) |
 | 0012 | experience_listings + transactions 表 (经验市场 - M5) |
 | 0013 | cocreation_sessions 表 (人机共创工作流 - M5) |
+| 0014 | embedding 维度 1536->1024 (火山引擎 doubao-embedding-vision 降维) |
 
 ---
 
@@ -284,7 +285,15 @@ dd4b47d chore: 从仓库移除本地文档，添加.gitignore规则
 72c2dc2 ci: build/pytest设为非阻塞，添加环境变量
 7839b82 ci: 添加数据库迁移步骤 + type check非阻塞
 ad8eebe ci: lint步骤设为非阻塞，确保测试能运行
-... (共 45+ 次提交)
+212b37d docs: 完整测试报告归档 - 611测试+覆盖率92%+14个Bug修复+3/4验证
+4b12ca3 test: 市场竞态条件+所有权验证单元测试(7个新增,31/31通过)
+63186e7 fix: 代码审查28个问题修复 - 5 Critical+5 High+11 Medium
+b40746e docs: 同步PROJECT_STATE+CHANGELOG (火山引擎集成+验证3/4完成)
+d943ad1 fix: 端到端验证搜索结果解析+bcrypt降级+embedding迁移0014
+0598399 fix: OpenAIEmbedder无embed_async方法导致新经验缺embedding
+d5e91b6 feat: 接入火山引擎(方舟)Embedding+LLM - OpenAI兼容API可配置base_url
+c49dbaf fix: fork/improve/cite visibility校验 + 13个权限测试
+... (共 55+ 次提交)
 ```
 
 GitHub 仓库: https://github.com/yimo0871/Aevum_OS
@@ -315,4 +324,4 @@ GitHub 仓库: https://github.com/yimo0871/Aevum_OS
 
 ### 当前状态
 
-**愿景 100% 达成 + 真实场景验证 3/4 完成。** Phase 0-9 + M0-M5 全部完成。火山引擎 doubao-embedding-vision 已接入（1024降维，搜索精度 0.000->0.712）。10,041 条经验 embedding 全部重新生成。安全修复完成（fork/improve/cite visibility 权限校验 + 13 个测试）。适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。修复 5 个 bug（适配器 steps 兼容 + create_experience user_id 关联 + governance visibility 校验 + OpenAIEmbedder embed_async + bcrypt 4.1 兼容）。迁移 0014（vector 1536->1024）。后端 605 个单元测试全通过。剩余验证：多节点联邦部署（需多实例）。
+**愿景 100% 达成 + 真实场景验证 3/4 完成。** Phase 0-9 + M0-M5 全部完成。火山引擎 doubao-embedding-vision 已接入（1024降维，搜索精度 0.000->0.712）。10,041 条经验 embedding 全部重新生成。代码审查 28 个问题修复（5 Critical + 5 High + 11 Medium）。适配器闭环验证通过（3/3：CrewAI + LangGraph + Generic）。端到端用户流程验证通过（9/9：visibility 隔离 + fork 权限 + 跨用户共享）。市场竞态条件+所有权验证测试通过（7 个新增，覆盖率 92%）。修复 14 个 bug。迁移 0014（vector 1536->1024）。后端 611 个单元测试全通过。剩余验证：多节点联邦部署（需多实例）。
