@@ -65,7 +65,10 @@ def search(token, query):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert r.status_code == 200, f"搜索失败: {r.status_code} {r.text}"
-    return r.json()
+    # 搜索结果结构: [{experience: {...}, score, matched_factors}, ...]
+    results = r.json()
+    # 展平 experience 字段方便后续处理
+    return [{"id": r.get("experience", {}).get("id"), "intent": r.get("experience", {}).get("intent", ""), "score": r.get("score", 0)} for r in results]
 
 
 def fork(token, experience_id):
