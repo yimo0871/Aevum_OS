@@ -19,6 +19,7 @@ def _make_experience(**overrides) -> Experience:
     """Build an Experience ORM object for testing."""
     defaults = dict(
         id=uuid.uuid4(),
+        user_id=uuid.uuid4(),
         context={"domain": "devops"},
         intent="Deploy application",
         execution={},
@@ -154,7 +155,7 @@ class TestCreateListing:
             price=15.0,
             license_type="paid",
         )
-        result = await service.create_listing(exp.id, uuid.uuid4(), data, session)
+        result = await service.create_listing(exp.id, exp.user_id, data, session)
 
         session.add.assert_called_once()
         assert result.title == "Test Listing"
@@ -168,7 +169,7 @@ class TestCreateListing:
 
         service = MarketplaceService()
         data = ListingCreate(experience_id=exp.id, title="Free Listing")
-        result = await service.create_listing(exp.id, uuid.uuid4(), data, session)
+        result = await service.create_listing(exp.id, exp.user_id, data, session)
 
         assert result.price == 0.0
         assert result.license_type == "free"
@@ -425,3 +426,133 @@ class TestListListings:
 
         assert total == 0
         assert result == []
+
+
+# ── Ownership verification tests ──
+
+
+class TestCreateListingOwnership:
+    """Test ownership verification in MarketplaceService.create_listing."""
+
+    @pytest.mark.asyncio
+    async def test_create_listing_not_owner_raises(self) -> None:
+        """非经验所有者不能创建挂单."""
+        owner_id = uuid.uuid4()
+        attacker_id = uuid.uuid4()
+        exp = _make_experience(user_id=owner_id)
+        session = _make_mock_session(get_return=exp)
+
+        service = MarketplaceService()
+        data = ListingCreate(experience_id=exp.id, title="Stolen Listing", price=10.0)
+        with pytest.raises(ValueError, match="无权出售他人的经验"):
+            await service.create_listing(exp.id, attacker_id, data, session)
+
+    @pytest.mark.asyncio
+    async def test_create_listing_owner_succeeds(self) -> None:
+        """经验所有者可以创建挂单."""
+        owner_id = uuid.uuid4()
+        exp = _make_experience(user_id=owner_id)
+        session = _make_mock_session(get_return=exp)
+
+        service = MarketplaceService()
+        data = ListingCreate(experience_id=exp.id, title="My Listing", price=20.0)
+        result = await service.create_listing(exp.id, owner_id, data, session)
+
+        assert result.seller_id == owner_id
+        assert result.title == "My Listing"
+
+    @pytest.mark.asyncio
+    async def test_create_listing_experience_with_null_user_id_raises(self) -> None:
+        """经验无归属用户（user_id=None）时不能创建挂单."""
+        exp = _make_experience(user_id=None)
+        session = _make_mock_session(get_return=exp)
+
+        service = MarketplaceService()
+        data = ListingCreate(experience_id=exp.id, title="Orphan Listing")
+        with pytest.raises(ValueError, match="无权出售他人的经验"):
+            await service.create_listing(exp.id, uuid.uuid4(), data, session)
+
+
+# ── Purchase race condition tests ──
+
+
+class TestPurchaseRaceCondition:
+    """Test race condition handling in MarketplaceService.purchase."""
+
+    @pytest.mark.asyncio
+    async def test_purchase_uses_row_lock(self) -> None:
+        """验证 purchase 使用行级锁 (with_for_update)."""
+        seller_id = uuid.uuid4()
+        buyer_id = uuid.uuid4()
+        listing = _make_listing(seller_id=seller_id, status="active")
+
+        # 捕获 execute 调用的参数，验证 with_for_update 被调用
+        session = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = listing
+        session.execute = AsyncMock(return_value=result_mock)
+        session.flush = AsyncMock()
+
+        service = MarketplaceService()
+        await service.purchase(listing.id, buyer_id, session)
+
+        # 验证 execute 被调用
+        assert session.execute.called
+        # 检查传入的 SQL 是否包含 FOR UPDATE
+        call_args = session.execute.call_args
+        # with_for_update() 会修改 SQL 语句对象，我们验证它被调用过
+        # 由于使用的是 SQLAlchemy select().with_for_update()，结果 SQL 应包含 FOR UPDATE
+        executed_stmt = call_args[0][0] if call_args[0] else call_args[1].get("statement")
+        if executed_stmt is not None:
+            compiled = str(executed_stmt.compile(compile_kwargs={"literal_binds": True}))
+            assert "FOR UPDATE" in compiled, f"Expected FOR UPDATE in query, got: {compiled}"
+
+    @pytest.mark.asyncio
+    async def test_purchase_concurrent_second_buyer_sees_sold(self) -> None:
+        """模拟并发购买：第二个买家看到 status=sold 时应报错."""
+        seller_id = uuid.uuid4()
+        buyer1_id = uuid.uuid4()
+        buyer2_id = uuid.uuid4()
+
+        # 第一个买家购买时挂单是 active
+        listing_active = _make_listing(seller_id=seller_id, status="active")
+        # 第二个买家查询时挂单已变为 sold（模拟行级锁释放后的状态）
+        listing_sold = _make_listing(seller_id=seller_id, status="sold")
+
+        # 第一次 purchase 返回 active 挂单
+        session1 = AsyncMock()
+        result1 = MagicMock()
+        result1.scalar_one_or_none.return_value = listing_active
+        session1.execute = AsyncMock(return_value=result1)
+        session1.flush = AsyncMock()
+
+        # 第二次 purchase 返回 sold 挂单
+        session2 = AsyncMock()
+        result2 = MagicMock()
+        result2.scalar_one_or_none.return_value = listing_sold
+        session2.execute = AsyncMock(return_value=result2)
+        session2.flush = AsyncMock()
+
+        service = MarketplaceService()
+
+        # 第一个买家成功购买
+        tx1, updated1 = await service.purchase(listing_active.id, buyer1_id, session1)
+        assert updated1.status == "sold"
+        assert tx1.buyer_id == buyer1_id
+
+        # 第二个买家购买失败（挂单已 sold）
+        with pytest.raises(ValueError, match="不可购买"):
+            await service.purchase(listing_sold.id, buyer2_id, session2)
+
+    @pytest.mark.asyncio
+    async def test_purchase_delisted_listing_raises(self) -> None:
+        """已下架挂单不可购买."""
+        listing = _make_listing(status="delisted")
+        session = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = listing
+        session.execute = AsyncMock(return_value=result_mock)
+
+        service = MarketplaceService()
+        with pytest.raises(ValueError, match="不可购买"):
+            await service.purchase(listing.id, uuid.uuid4(), session)
