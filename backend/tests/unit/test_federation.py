@@ -44,38 +44,44 @@ class TestFederationInit:
 
     def test_list_peers_empty_by_default(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        assert service.list_peers() == []
+        assert service._peers == {}
 
-    def test_register_peer(self) -> None:
+    @pytest.mark.asyncio
+    async def test_register_peer(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        peer = service.register_peer("http://node2:8000/", "node-2")
+        peer = await service.register_peer("http://node2:8000/", "node-2")
         assert peer["url"] == "http://node2:8000"
         assert peer["id"] == "node-2"
-        assert len(service.list_peers()) == 1
+        assert len(await service.list_peers()) == 1
 
-    def test_register_multiple_peers(self) -> None:
+    @pytest.mark.asyncio
+    async def test_register_multiple_peers(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
-        service.register_peer("http://node3:8000", "node-3")
-        assert len(service.list_peers()) == 2
+        await service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node3:8000", "node-3")
+        assert len(await service.list_peers()) == 2
 
-    def test_register_peer_overwrites_same_id(self) -> None:
+    @pytest.mark.asyncio
+    async def test_register_peer_overwrites_same_id(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
-        service.register_peer("http://node2:9000", "node-2")
-        assert len(service.list_peers()) == 1
-        assert service.list_peers()[0]["url"] == "http://node2:9000"
+        await service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node2:9000", "node-2")
+        peers = await service.list_peers()
+        assert len(peers) == 1
+        assert peers[0]["url"] == "http://node2:9000"
 
-    def test_unregister_peer(self) -> None:
+    @pytest.mark.asyncio
+    async def test_unregister_peer(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
-        result = service.unregister_peer("node-2")
+        await service.register_peer("http://node2:8000", "node-2")
+        result = await service.unregister_peer("node-2")
         assert result is True
-        assert service.list_peers() == []
+        assert await service.list_peers() == []
 
-    def test_unregister_peer_not_found(self) -> None:
+    @pytest.mark.asyncio
+    async def test_unregister_peer_not_found(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        result = service.unregister_peer("unknown")
+        result = await service.unregister_peer("unknown")
         assert result is False
 
 
@@ -88,7 +94,7 @@ class TestSyncExperience:
     @pytest.mark.asyncio
     async def test_sync_to_single_peer_success(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node2:8000", "node-2")
 
         mock_resp = _make_mock_response(status_code=201, json_data={"id": "abc"})
         with patch("app.services.federation.federation_service.httpx.AsyncClient") as mock_client_cls:
@@ -105,8 +111,8 @@ class TestSyncExperience:
     @pytest.mark.asyncio
     async def test_sync_to_multiple_peers(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
-        service.register_peer("http://node3:8000", "node-3")
+        await service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node3:8000", "node-3")
 
         mock_resp = _make_mock_response(status_code=200)
         with patch("app.services.federation.federation_service.httpx.AsyncClient") as mock_client_cls:
@@ -130,8 +136,8 @@ class TestSyncExperience:
     @pytest.mark.asyncio
     async def test_sync_peer_failure_does_not_break(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
-        service.register_peer("http://node3:8000", "node-3")
+        await service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node3:8000", "node-3")
 
         with patch("app.services.federation.federation_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
@@ -158,7 +164,7 @@ class TestFetchFromPeer:
     @pytest.mark.asyncio
     async def test_fetch_success(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node2:8000", "node-2")
 
         peer_results = [{"experience": {"id": "abc"}, "score": 0.9}]
         mock_resp = _make_mock_response(status_code=200, json_data=peer_results)
@@ -182,7 +188,7 @@ class TestFetchFromPeer:
     @pytest.mark.asyncio
     async def test_fetch_peer_connection_error_returns_empty(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node2:8000", "node-2")
 
         with patch("app.services.federation.federation_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
@@ -207,7 +213,7 @@ class TestFederatedSearch:
     @pytest.mark.asyncio
     async def test_federated_search_combines_local_and_peer(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node2:8000", "node-2")
 
         peer_results = [{"experience": {"id": "abc"}, "score": 0.9}]
         mock_resp = _make_mock_response(status_code=200, json_data=peer_results)
@@ -241,8 +247,8 @@ class TestFederatedSearch:
     @pytest.mark.asyncio
     async def test_federated_search_peer_failure_graceful(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
-        service.register_peer("http://node3:8000", "node-3")
+        await service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node3:8000", "node-3")
 
         with patch("app.services.federation.federation_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
@@ -264,8 +270,8 @@ class TestFederatedSearch:
     @pytest.mark.asyncio
     async def test_federated_search_partial_peer_failure(self) -> None:
         service = FederationService("http://node1:8000", "node-1")
-        service.register_peer("http://node2:8000", "node-2")
-        service.register_peer("http://node3:8000", "node-3")
+        await service.register_peer("http://node2:8000", "node-2")
+        await service.register_peer("http://node3:8000", "node-3")
 
         good_resp = _make_mock_response(status_code=200, json_data=[{"id": "ok"}])
         with patch("app.services.federation.federation_service.httpx.AsyncClient") as mock_client_cls:

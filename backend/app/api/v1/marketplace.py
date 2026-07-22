@@ -8,7 +8,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_db_session
+from app.api.deps import get_current_user, get_db_session, get_optional_user
 from app.models.user import User
 from app.schemas.marketplace import (
     ListingCreate,
@@ -62,6 +62,7 @@ async def list_listings(
     license_type: str | None = Query(None, description="许可类型过滤"),
     min_price: float | None = Query(None, ge=0.0, description="最低价格"),
     max_price: float | None = Query(None, ge=0.0, description="最高价格"),
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> ListingListResponse:
     service = MarketplaceService()
@@ -90,6 +91,7 @@ async def list_listings(
 )
 async def get_listing(
     listing_id: UUID,
+    current_user: User | None = Depends(get_optional_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> ListingResponse:
     service = MarketplaceService()

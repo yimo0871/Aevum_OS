@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 
+### Fixed - 2026-07-22 (中优先级技术债务修复 TD-04~09)
+
+- `backend/app/api/v1/marketplace.py` GET 端点添加 `get_optional_user` 认证 (TD-04)
+- `backend/app/services/retrieval/multimodal_embedder.py` 同步接口使用 `asyncio.run()` 保留语义嵌入 (TD-05)
+- `backend/app/services/governance/compression.py` 低效 `len()` 改为 `func.count()` (TD-06)
+- `backend/app/services/retrieval/matcher.py` SQL 拼接改为条件列表一次构建 (TD-07)
+- `backend/app/core/config.py` 新增 `node_url`/`node_id` 配置项 (TD-08)
+- `backend/app/api/v1/federation.py` 从 `settings` 读取节点配置 (TD-08)
+- `backend/app/models/federation_peer.py` 新增 `FederationPeer` 模型 (TD-09)
+- `backend/alembic/versions/0015_federation_peers.py` 新增迁移创建 `federation_peers` 表 (TD-09)
+- `backend/app/services/federation/federation_service.py` 节点信息持久化到数据库 (TD-09)
+
 ### Fixed - 2026-07-22 (高优先级技术债务修复 TD-01/02/03)
 
 - `backend/pyproject.toml` 添加 `openai>=1.0,<2.0` 依赖 (TD-03)

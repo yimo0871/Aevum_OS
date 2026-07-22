@@ -8,6 +8,7 @@ from app.models.community import Community, user_community
 from app.models.evaluation import Evaluation, HumanReview, SystemMetric
 from app.models.execution import ExecutionTrace
 from app.models.experience import Experience, ExperienceRelation
+from app.models.federation_peer import FederationPeer
 from app.models.human_expression import HumanExpression
 from app.models.marketplace import ExperienceListing, Transaction
 from app.models.user import User
@@ -33,4 +34,5 @@ __all__ = [
     "ExperienceListing",
     "Transaction",
     "CoCreationSession",
+    "FederationPeer",
 ]

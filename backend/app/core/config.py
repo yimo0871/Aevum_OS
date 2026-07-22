@@ -60,6 +60,10 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: str = '["http://localhost:3000"]'
 
+    # Federation
+    node_url: str = "http://localhost:8000"
+    node_id: str = "local"
+
     # Retrieval weights (M1-S1: configurable ranking weights)
     weight_context_similarity: float = 0.25
     weight_success_rate: float = 0.15

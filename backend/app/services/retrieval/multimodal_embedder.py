@@ -122,7 +122,11 @@ class MultimodalEmbedder:
 
         # 判断是否为协程函数（OpenAIEmbedder.embed 是 async）
         if inspect.iscoroutinefunction(embed_fn):
-            # 异步嵌入器：同步接口降级为 HashEmbedder
-            return HashEmbedder(dim=self._text_dim).embed(text)
+            # 异步嵌入器：通过 asyncio.run 调用，保留语义嵌入
+            try:
+                return asyncio.run(embed_fn(text))
+            except RuntimeError:
+                # 已在事件循环中（如 Celery worker），降级为 HashEmbedder
+                return HashEmbedder(dim=self._text_dim).embed(text)
 
         return embed_fn(text)

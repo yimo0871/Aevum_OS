@@ -6,7 +6,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.experience import Experience, ExperienceRelation
@@ -178,12 +178,12 @@ class CompressionManager:
 
             # ── 查询复用次数 ──
             reuse_result = await session.execute(
-                select(ExperienceRelation).where(
+                select(func.count(ExperienceRelation.id)).where(
                     ExperienceRelation.target_id == exp.id,
                     ExperienceRelation.relation_type == "reuse",
                 )
             )
-            reuse_count = len(reuse_result.scalars().all())
+            reuse_count = reuse_result.scalar() or 0
 
             # ── 判断是否满足清理条件 ──
             if trust_score < min_trust and reuse_count < min_reuse:

@@ -39,55 +39,37 @@
 
 ---
 
-## 中优先级（6 项）
+## 中优先级（6 项） -- 全部已修复 ✅
 
-### TD-04: marketplace.py GET 端点无认证
+### TD-04: marketplace.py GET 端点无认证 ✅ 已修复
 
-- **文件**: `backend/app/api/v1/marketplace.py`
-- **行号**: 58 (list_listings), 91 (get_listing)
-- **问题描述**: 两个 GET 端点缺少 `get_current_user` 依赖，未认证用户可浏览市场数据
-- **影响**: 市场数据可能包含敏感信息（卖家 ID、价格策略等）
-- **建议修复**: 添加 `get_optional_user` 或 `get_current_user` 依赖
+- **修复**: `list_listings` 和 `get_listing` 添加 `get_optional_user` 依赖
+- **修复提交**: 2026-07-22
 
-### TD-05: multimodal_embedder.py 同步接口降级丢失语义
+### TD-05: multimodal_embedder.py 同步接口降级丢失语义 ✅ 已修复
 
-- **文件**: `backend/app/services/retrieval/multimodal_embedder.py`
-- **行号**: 124-126
-- **问题描述**: `_sync_embed_text` 方法检测到 OpenAIEmbedder（async embed）时降级为 HashEmbedder，丢失语义嵌入能力
-- **影响**: 配置了 OpenAI provider 时，同步接口仍使用无语义的哈希向量
-- **建议修复**: 提供异步接口 `embed_text_async`，或在同步方法中使用 `asyncio.run()` 调用异步 embedder
+- **修复**: `_sync_embed_text` 使用 `asyncio.run()` 调用异步 embedder，保留语义嵌入（同时修复 TD-10 未使用的 import）
+- **修复提交**: 2026-07-22
 
-### TD-06: compression.py 低效 count 查询
+### TD-06: compression.py 低效 count 查询 ✅ 已修复
 
-- **文件**: `backend/app/services/governance/compression.py`
-- **行号**: 180-186
-- **问题描述**: 使用 `len(result.scalars().all())` 加载所有行到内存后取长度，而非 SQL `COUNT()` 聚合
-- **影响**: 大数据量下内存开销和性能问题
-- **建议修复**: 改为 `select(func.count(ExperienceRelation.id)).where(...)`
+- **修复**: `len(result.scalars().all())` 改为 `select(func.count())` + `.scalar()`
+- **修复提交**: 2026-07-22
 
-### TD-07: matcher.py SQL 字符串拼接构建
+### TD-07: matcher.py SQL 字符串拼接构建 ✅ 已修复
 
-- **文件**: `backend/app/services/retrieval/matcher.py`
-- **行号**: 85-128
-- **问题描述**: `match_by_vector` 方法通过 `text(sql.text + "...")` 拼接 SQL 字符串
-- **影响**: 可读性差、易出错、难以维护（无 SQL 注入风险，参数已绑定）
-- **建议修复**: 改用 SQLAlchemy ORM `select()` + 动态 `.where()` 链式构建
+- **修复**: 改用条件列表 + `" AND ".join()` 一次构建完整 SQL，消除反复 `text(sql.text + ...)` 拼接
+- **修复提交**: 2026-07-22
 
-### TD-08: federation.py 硬编码 localhost:8000
+### TD-08: federation.py 硬编码 localhost:8000 ✅ 已修复
 
-- **文件**: `backend/app/api/v1/federation.py`
-- **行号**: 31-32
-- **问题描述**: `get_federation_service()` 中硬编码 `node_url="http://localhost:8000"` 和 `node_id="local"`，未从配置读取
-- **影响**: 部署到非本地环境时联邦功能失效
-- **建议修复**: 从 `settings` 读取 `node_url` 和 `node_id` 配置项
+- **修复**: config.py 新增 `node_url`/`node_id` 配置项，federation.py 从 `settings` 读取
+- **修复提交**: 2026-07-22
 
-### TD-09: 联邦节点信息不持久化
+### TD-09: 联邦节点信息不持久化 ✅ 已修复
 
-- **文件**: `backend/app/services/federation/federation_service.py`
-- **行号**: 37
-- **问题描述**: 对等节点注册信息存储在内存字典 `self._peers` 中，服务重启后丢失
-- **影响**: 每次重启需要重新注册所有对等节点
-- **建议修复**: 创建 `federation_peers` 数据库表持久化节点关系
+- **修复**: 新增 `FederationPeer` 模型 + 迁移 0015，`register_peer`/`list_peers`/`unregister_peer` 改为 async + 可选 session 参数持久化到数据库，保留内存缓存向后兼容
+- **修复提交**: 2026-07-22
 
 ---
 

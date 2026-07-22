@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_admin, get_current_user, get_db_session
+from app.core.config import settings
 from app.models.user import User
 from app.services.federation.federation_service import FederationService
 from app.services.retrieval.matcher import ExperienceMatcher
@@ -28,8 +29,8 @@ def get_federation_service() -> FederationService:
     global _federation_node
     if _federation_node is None:
         _federation_node = FederationService(
-            node_url="http://localhost:8000",
-            node_id="local",
+            node_url=settings.node_url,
+            node_id=settings.node_id,
         )
     return _federation_node
 
@@ -62,10 +63,11 @@ class SyncRequest(BaseModel):
 async def register_peer(
     data: PeerRegisterRequest,
     current_user: User = Depends(get_current_admin),
+    session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     service = get_federation_service()
-    peer_info = service.register_peer(data.peer_url, data.peer_id)
-    return {"peer": peer_info, "total_peers": len(service.list_peers())}
+    peer_info = await service.register_peer(data.peer_url, data.peer_id, session)
+    return {"peer": peer_info, "total_peers": len(await service.list_peers(session))}
 
 
 @router.get(
@@ -75,9 +77,10 @@ async def register_peer(
 )
 async def list_peers(
     current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     service = get_federation_service()
-    peers = service.list_peers()
+    peers = await service.list_peers(session)
     return {"peers": peers, "total": len(peers)}
 
 
@@ -90,6 +93,7 @@ async def sync_experience(
     experience_id: UUID,
     data: SyncRequest | None = None,
     current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
 ) -> dict:
     service = get_federation_service()
     exp_data = data.experience_data if data else None
@@ -97,7 +101,7 @@ async def sync_experience(
     return {
         "experience_id": str(experience_id),
         "sync_results": results,
-        "total_peers": len(service.list_peers()),
+        "total_peers": len(await service.list_peers(session)),
     }
 
 

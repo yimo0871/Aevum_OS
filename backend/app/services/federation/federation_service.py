@@ -7,9 +7,14 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timezone
 from uuid import UUID
 
 import httpx
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.federation_peer import FederationPeer
 
 logger = logging.getLogger(__name__)
 
@@ -36,19 +41,46 @@ class FederationService:
         # 已注册的对等节点: {peer_id: {"url": peer_url, "id": peer_id}}
         self._peers: dict[str, dict] = {}
 
-    def register_peer(self, peer_url: str, peer_id: str) -> dict:
+    async def register_peer(
+        self,
+        peer_url: str,
+        peer_id: str,
+        session: AsyncSession | None = None,
+    ) -> dict:
         """注册一个远程 Aevum 节点.
+
+        同时写入数据库（如果提供 session）和内存缓存，确保服务重启后不丢失。
 
         Args:
             peer_url: 对等节点 URL
             peer_id: 对等节点唯一标识
+            session: 数据库会话（可选，传入时持久化到数据库）
 
         Returns:
             注册的对等节点信息
         """
         peer_url = peer_url.rstrip("/")
         peer_info = {"url": peer_url, "id": peer_id}
+        # 更新内存缓存
         self._peers[peer_id] = peer_info
+
+        # 写入数据库
+        if session is not None:
+            now = datetime.now(timezone.utc)
+            peer = await session.get(FederationPeer, peer_id)
+            if peer is None:
+                peer = FederationPeer(
+                    id=peer_id,
+                    url=peer_url,
+                    registered_at=now,
+                    last_seen_at=now,
+                )
+                session.add(peer)
+            else:
+                # 已存在则更新 URL 和最后活跃时间
+                peer.url = peer_url
+                peer.last_seen_at = now
+            await session.flush()
 
         logger.info(
             "[FEDERATION] 对等节点已注册: peer_id=%s, url=%s (本节点=%s)",
@@ -56,28 +88,62 @@ class FederationService:
         )
         return peer_info
 
-    def list_peers(self) -> list[dict]:
+    async def list_peers(self, session: AsyncSession | None = None) -> list[dict]:
         """列出所有已注册的对等节点.
+
+        提供数据库会话时从数据库读取并同步刷新内存缓存；
+        未提供时从内存缓存读取（向后兼容）。
+
+        Args:
+            session: 数据库会话（可选）
 
         Returns:
             对等节点信息列表
         """
+        if session is not None:
+            result = await session.execute(select(FederationPeer))
+            peers = result.scalars().all()
+            # 同步刷新内存缓存，保持与数据库一致
+            self._peers = {
+                p.id: {"url": p.url, "id": p.id} for p in peers
+            }
+            return [{"url": p.url, "id": p.id} for p in peers]
         return list(self._peers.values())
 
-    def unregister_peer(self, peer_id: str) -> bool:
+    async def unregister_peer(
+        self,
+        peer_id: str,
+        session: AsyncSession | None = None,
+    ) -> bool:
         """注销对等节点.
+
+        同时从数据库（如果提供 session）和内存缓存中删除。
 
         Args:
             peer_id: 对等节点唯一标识
+            session: 数据库会话（可选，传入时从数据库删除）
 
         Returns:
             是否成功注销
         """
+        deleted = False
+
+        # 从数据库删除
+        if session is not None:
+            peer = await session.get(FederationPeer, peer_id)
+            if peer is not None:
+                await session.delete(peer)
+                await session.flush()
+                deleted = True
+
+        # 清除内存缓存
         if peer_id in self._peers:
             del self._peers[peer_id]
+            deleted = True
+
+        if deleted:
             logger.info("[FEDERATION] 对等节点已注销: peer_id=%s", peer_id)
-            return True
-        return False
+        return deleted
 
     async def sync_experience(
         self, experience_id: UUID, experience_data: dict | None = None

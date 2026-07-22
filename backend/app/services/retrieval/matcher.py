@@ -82,6 +82,37 @@ class ExperienceMatcher:
         vector_str = f"[{','.join(str(v) for v in query_vector)}]"
 
         # 使用 pgvector 的余弦距离查询
+        # pgvector 的 <=> 操作符需通过 text() 包装，过滤条件用列表构建后拼接
+        conditions = [text("evaluation_status != 'pending'")]
+        params: dict = {"vector": vector_str}
+
+        if domain:
+            conditions.append(text("context->>'domain' = :domain"))
+            params["domain"] = domain
+
+        if task_type:
+            conditions.append(text("context->>'task_type' = :task_type"))
+            params["task_type"] = task_type
+
+        if user_id:
+            conditions.append(text("user_id = :user_id"))
+            params["user_id"] = user_id
+
+        if visibility_levels:
+            conditions.append(text("visibility = ANY(:visibility_levels)"))
+            params["visibility_levels"] = visibility_levels
+
+        if exclude_user_id:
+            conditions.append(text("(user_id IS NULL OR user_id != :exclude_user_id)"))
+            params["exclude_user_id"] = exclude_user_id
+
+        if community_ids:
+            conditions.append(text("(visibility != 'community' OR community_id = ANY(:community_ids))"))
+            params["community_ids"] = community_ids
+
+        conditions.append(text("1 - (embedding <=> :vector) >= :min_sim"))
+        params["min_sim"] = min_similarity
+
         sql = text("""
             SELECT id, timestamp, context, intent, execution, outcome,
                    reflection, reusable_patterns, confidence_score,
@@ -89,42 +120,10 @@ class ExperienceMatcher:
                    visibility, user_id, community_id,
                    1 - (embedding <=> :vector) as similarity
             FROM experiences
-            WHERE evaluation_status != 'pending'
+            WHERE """ + " AND ".join(str(c) for c in conditions) + """
+            ORDER BY embedding <=> :vector
+            LIMIT :limit
         """)
-
-        params: dict = {"vector": vector_str}
-
-        if domain:
-            sql = text(sql.text + " AND context->>'domain' = :domain")
-            params["domain"] = domain
-
-        if task_type:
-            sql = text(sql.text + " AND context->>'task_type' = :task_type")
-            params["task_type"] = task_type
-
-        if user_id:
-            sql = text(sql.text + " AND user_id = :user_id")
-            params["user_id"] = user_id
-
-        if visibility_levels:
-            # PostgreSQL ANY 数组匹配
-            sql = text(sql.text + " AND visibility = ANY(:visibility_levels)")
-            params["visibility_levels"] = visibility_levels
-
-        if exclude_user_id:
-            sql = text(sql.text + " AND (user_id IS NULL OR user_id != :exclude_user_id)")
-            params["exclude_user_id"] = exclude_user_id
-
-        if community_ids:
-            # 社区隔离：community 可见性的经验仅返回用户所属社区内的
-            # public 可见性的经验不受社区限制
-            sql = text(sql.text + " AND (visibility != 'community' OR community_id = ANY(:community_ids))")
-            params["community_ids"] = community_ids
-
-        sql = text(sql.text + " AND 1 - (embedding <=> :vector) >= :min_sim")
-        params["min_sim"] = min_similarity
-
-        sql = text(sql.text + " ORDER BY embedding <=> :vector LIMIT :limit")
         params["limit"] = limit
 
         result = await self.session.execute(sql, params)
