@@ -60,6 +60,43 @@ class OpenAIEmbedder:
             data = response.json()
             return data["data"][0]["embedding"]
 
+    async def embed_batch(self, texts: list[str]) -> list[list[float]]:
+        """批量嵌入多条文本.
+
+        一次性发送多条文本到 embedding API，减少网络往返。
+        无 API Key 时逐条降级为 HashEmbedder。
+
+        Args:
+            texts: 文本列表
+
+        Returns:
+            向量列表（与输入文本一一对应）
+        """
+        if not texts:
+            return []
+
+        api_key = settings.openai_api_key
+        if not api_key:
+            hash_embedder = HashEmbedder(self._dim)
+            return [hash_embedder.embed(t) for t in texts]
+
+        import httpx
+
+        base_url = settings.openai_base_url.rstrip("/")
+        async with httpx.AsyncClient(timeout=60) as client:
+            payload: dict = {"input": texts, "model": self.model}
+            if self._dim and self._dim < 2048:
+                payload["dimensions"] = self._dim
+            response = await client.post(
+                f"{base_url}/embeddings",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json=payload,
+            )
+            response.raise_for_status()
+            data = response.json()
+            # API 返回按输入顺序排列
+            return [item["embedding"] for item in data["data"]]
+
 
 class HashEmbedder:
     """哈希模拟向量化器（无 API Key 时的降级方案）.

@@ -73,6 +73,18 @@ class Settings(BaseSettings):
     weight_confidence: float = 0.13
     weight_trust_score: float = 0.20
 
+    # Hybrid search
+    hybrid_search_alpha: float = 0.7  # 向量权重 (1-alpha 为关键词权重)
+    hybrid_search_enabled: bool = True
+
+    # LLM Re-ranking
+    reranker_enabled: bool = True
+    reranker_top_k: int = 10
+
+    # Query expansion
+    query_expansion_enabled: bool = True
+    query_expansion_max: int = 3
+
     @property
     def database_url_computed(self) -> str:
         """Compute database URL if not explicitly set."""
